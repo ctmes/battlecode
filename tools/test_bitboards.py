@@ -85,42 +85,7 @@ def run(trials=400, seed=1):
         x0, y0 = rng.randrange(w), rng.randrange(h)
         assert b.window(x0, y0) == bits([((x0 + c) % w, (y0 + r) % h) for r in range(7) for c in range(7)], w), \
             f"window mismatch trial {trial}"
-        # time-aware flood: tail cells become free one per step
-        seq_cells = rng.sample(cells, rng.randint(0, 12))
-        seq = [y * w + x for x, y in seq_cells]
-        delay = rng.choice((0, 1))
-        need = rng.choice((5, 30, 10 ** 9))
-        want_t = naive_flood_t(w, h, free, wv, wh, start, seq_cells, delay, need)
-        got_t = b.flood_t(free_mask, start[1] * w + start[0], need, seq, delay)
-        assert got_t == want_t, f"flood_t mismatch trial {trial}: {got_t} != {want_t}"
-    print(f"ok: {trials} random tori, flood + early exit + layers + window + timed flood match naive references")
-
-
-def naive_flood_t(w, h, free, wv, wh, start, seq, delay, need):
-    free = set(free)
-    reach = {start}
-    i = 0
-    while True:
-        j = i - delay
-        if 0 <= j < len(seq):
-            free.add(seq[j])
-        new = set(reach)
-        for x, y in reach:
-            for nxt, blocked in (
-                (((x + 1) % w, y), ((x + 1) % w, y) in wv),
-                (((x - 1) % w, y), (x, y) in wv),
-                ((x, (y + 1) % h), (x, (y + 1) % h) in wh),
-                ((x, (y - 1) % h), (x, y) in wh),
-            ):
-                if not blocked and nxt in free:
-                    new.add(nxt)
-        # like the bitboard version, cells outside `free` never survive (the start cell must be free)
-        new &= free
-        i += 1
-        cnt = len(new)
-        if cnt >= need or (new == reach and (i - delay >= len(seq) or i > cnt)):
-            return cnt
-        reach = new
+    print(f"ok: {trials} random tori, flood + early exit + layers + window mask match naive references")
 
 
 if __name__ == "__main__":

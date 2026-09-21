@@ -1,8 +1,10 @@
 """Fast local matches on the official WASM engine, run in-process (no bot subprocesses, no sandbox).
 
 Run with the venv interpreter (it has wasmtime + unswbc):
-    .venv\\Scripts\\python.exe tools\\arena.py [--opponent greedy|self] [--maps maps] [--reps 1] [--split N]
+    .venv\\Scripts\\python.exe tools\\arena.py [--opponent NAME|self|all] [--maps maps] [--reps 1] [--split N]
 
+NAME is one of the sparring bots in tools/opponents.py (--list shows them), self plays the brain against itself,
+and all runs every sparring bot in turn and ends with one summary table.
 This measures behaviour (deaths, wins), not judge points: use `unswbc run --sandbox -v` for points.
 """
 import argparse
@@ -14,8 +16,8 @@ from collections import Counter
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "bot"))
-import proto  # noqa: E402
-from brain import Brain, MOVES  # noqa: E402
+from brain import Brain  # noqa: E402
+from opponents import OPPONENTS  # noqa: E402
 from unswbc.engine import EngineModule  # noqa: E402
 
 DEATH = {"W": "wall", "S": "self", "O": "other body", "H": "head-on", "A": "no action"}
@@ -31,36 +33,6 @@ class BrainPlayer:
 
     def reply(self, did, block):
         return self.brains[did].act(block)
-
-
-class GreedyPlayer:
-    """Sparring partner: steps onto an adjacent pearl if it is safe, else any non-fatal move (prefers heading)."""
-
-    def __init__(self, name="greedy"):
-        self.name, self.dims = name, {}
-
-    def spawn(self, did, init):
-        _, _, w, h, _ = proto.parse_init(init)
-        self.dims[did] = (w, h)
-
-    def reply(self, did, block):
-        w, h = self.dims[did]
-        t = proto.parse_turn(block)
-        occ = {(int(q[2]), int(q[3])) for q in t.parts}
-        vt = t.edges[11].split()
-        kelp = (t.edges[3].split()[3] == b"w", vt[4] == b"w", t.edges[4].split()[3] == b"w", vt[3] == b"w")
-        win = (17, 25, 31, 23)  # window tile of the N, E, S, W neighbour
-        safe = []
-        for d in range(4):
-            if kelp[d] or ((t.hx + proto.DX[d]) % w, (t.hy + proto.DY[d]) % h) in occ:
-                continue
-            safe.append(d)
-        for d in safe:
-            if t.flags[win[d]] == b"1":
-                return MOVES[d]
-        if t.dir in safe:
-            return MOVES[t.dir]
-        return MOVES[safe[0]] if safe else MOVES[0]
 
 
 def play(engine, map_bytes, pa, pb):
@@ -97,40 +69,19 @@ def play(engine, map_bytes, pa, pb):
     return res, deaths, errors
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--opponent", default="greedy", choices=("greedy", "self"))
-    ap.add_argument("--maps", default=str(ROOT / "maps"))
-    ap.add_argument("--reps", type=int, default=1)
-    ap.add_argument("--split", type=int, default=0, help="enable splitting at this length (0 = off)")
-    ap.add_argument("--lenient", action="store_true", help="swallow brain exceptions like the shipped bot does")
-    ap.add_argument("--deaths", action="store_true", help="print the last decision context of each of my deaths")
-    ap.add_argument("--only", default="", help="substring filter on map names")
-    ap.add_argument("--params", default="", help="comma list of brain parameter overrides, e.g. pessimistic=0,timed=0")
-    ap.add_argument("--quiet", action="store_true", help="summary only")
-    args = ap.parse_args()
-
-    global DEBUG_DEATHS
-    DEBUG_DEATHS = args.deaths
-    Brain.debug = True
-    Brain.strict = not args.lenient
-    params = {"split_len": args.split} if args.split else {}
-    for kv in filter(None, args.params.split(",")):
-        k, v = kv.split("=")
-        params[k] = float(v) if "." in v else int(v)
-    params = params or None
-    engine = EngineModule()
-    maps = [m for m in sorted(pathlib.Path(args.maps).glob("*.map")) if args.only in m.stem]
+def versus(kind, engine, maps, reps, params, opp_params, quiet):
+    """Plays the brain against one kind of opponent on every map, on both sides, `reps` times; returns the tallies."""
     total = Counter()
     t_all = time.perf_counter()
-    print(f"{'map':22s} {'size':>7s} {'side':>4s} {'result':>7s} {'rounds':>6s} {'len me/opp':>11s} {'dr me/opp':>9s}  my deaths")
+    if not quiet:
+        print(f"{'map':22s} {'size':>7s} {'side':>4s} {'result':>7s} {'rounds':>6s} {'len me/opp':>11s} {'dr me/opp':>9s}  my deaths")
     for mp in maps:
         data = mp.read_bytes()
         size = data.split(b"\n", 1)[0].decode().replace("MAP ", "").replace(" ", "x")
-        for rep in range(args.reps):
+        for rep in range(reps):
             for me_side in ("A", "B"):
                 me = BrainPlayer("me", params)
-                other = BrainPlayer("opp", params) if args.opponent == "self" else GreedyPlayer()
+                other = BrainPlayer("opp", opp_params) if kind == "self" else OPPONENTS[kind](seed=rep)
                 pa, pb = (me, other) if me_side == "A" else (other, me)
                 res, deaths, errors = play(engine, data, pa, pb)
                 win = res.winner
@@ -144,7 +95,7 @@ def main():
                 for k, v in mine.items():
                     total["died:" + k] += v
                 total["errors"] += len(errors)
-                if not args.quiet:
+                if not quiet:
                     print(f"{mp.stem:22s} {size:>7s} {me_side:>4s} {outcome:>7s} {res.rounds + 1:>6d} "
                           f"{my_len:>5d}/{op_len:<5d} {my_dr:>4d}/{op_dr:<4d}  {dict(mine) or '-'}")
                 total["my_len"] += my_len
@@ -153,6 +104,54 @@ def main():
                     print(errors[0])
     print(f"\n{sum(total[k] for k in ('win', 'draw', 'loss'))} games in {time.perf_counter() - t_all:.1f}s: "
           f"{dict(total)}")
+    return total
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--opponent", default="greedy", choices=[*OPPONENTS, "self", "all"])
+    ap.add_argument("--list", action="store_true", help="list the sparring bots and exit")
+    ap.add_argument("--maps", default=str(ROOT / "maps"))
+    ap.add_argument("--reps", type=int, default=1)
+    ap.add_argument("--split", type=int, default=0, help="enable splitting at this length (0 = off)")
+    ap.add_argument("--lenient", action="store_true", help="swallow brain exceptions like the shipped bot does")
+    ap.add_argument("--deaths", action="store_true", help="print the last decision context of each of my deaths")
+    ap.add_argument("--only", default="", help="substring filter on map names")
+    ap.add_argument("--params", default="", help="comma list of brain parameter overrides, e.g. pessimistic=0,timed=0")
+    ap.add_argument("--opp-params", default=None, help="parameter overrides for the opponent brain (with --opponent self)")
+    ap.add_argument("--quiet", action="store_true", help="summary only")
+    args = ap.parse_args()
+    if args.list:
+        for name, cls in OPPONENTS.items():
+            print(f"{name:12s} {' '.join(cls.__doc__.split())}")
+        return
+
+    global DEBUG_DEATHS
+    DEBUG_DEATHS = args.deaths
+    Brain.debug = True
+    Brain.strict = not args.lenient
+    def parse_params(text, base=None):
+        out = dict(base or {})
+        for kv in filter(None, text.split(",")):
+            k, v = kv.split("=")
+            out[k] = float(v) if "." in v else int(v)
+        return out or None
+
+    params = parse_params(args.params, {"split_len": args.split} if args.split else None)
+    opp_params = params if args.opp_params is None else parse_params(args.opp_params)
+    engine = EngineModule()
+    maps = [m for m in sorted(pathlib.Path(args.maps).glob("*.map")) if args.only in m.stem]
+    kinds = list(OPPONENTS) if args.opponent == "all" else [args.opponent]
+    results = {}
+    for kind in kinds:
+        if len(kinds) > 1:
+            print(f"\n=== vs {kind} ===")
+        results[kind] = versus(kind, engine, maps, args.reps, params, opp_params, args.quiet or len(kinds) > 1)
+    if len(kinds) > 1:
+        print(f"\n{'opponent':12s} {'win':>4s} {'draw':>4s} {'loss':>4s} {'my deaths':>9s} {'errors':>6s}")
+        for kind, tot in results.items():
+            died = sum(v for k, v in tot.items() if k.startswith("died:"))
+            print(f"{kind:12s} {tot['win']:>4d} {tot['draw']:>4d} {tot['loss']:>4d} {died:>9d} {tot['errors']:>6d}")
 
 
 if __name__ == "__main__":

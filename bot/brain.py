@@ -34,16 +34,34 @@ DEFAULTS = {
     "need_cap": 120,        # ... capped, so the flood fill can exit early
     "area": 10.0,           # bonus when not trapped
     "pessimistic": 1,       # trap check counts only tiles seen so far (unseen tiles may be kelp pockets)
-    "timed": 0,             # trap check vacates the tail one segment per step (measured worse than static)
-    "seq_cap": 48,          # ... for at most this many tail segments
     "head_risk": 400.0,     # adjacent enemy head (we are the longer dragon: a trade hurts us)
     "head_risk_small": 100.0,  # adjacent enemy head when we are much shorter (a trade helps us)
     "trade_ratio": 0.5,     # we count as "much shorter" below this fraction of the enemy's visible length
     "team_head_risk": 250.0,
     "straight": 5.0,        # keep heading
-    "split_len": 10 ** 9,   # split when length >= this (off by default)
-    "split_child": 3,
-    "split_units": 8,       # ... and the team has fewer dragons than this
+    # Arena sweeps (round-robin, 16 games per pair): earlier splitting, smaller children and a higher team cap all
+    # win; split_len 3-4 beat 6/8/12, child 2 beat 3/4, cap 64 >= 16 > 8 > 4. Splitting always ends at unit_limit.
+    "split_len": 4,         # children (dragons born by a split) split when length >= this
+    "split_child": 2,
+    "split_units": 10 ** 6,  # ... and the team has fewer dragons than this (the engine's unit limit also applies)
+    # Founders (alive at round 0) seed the swarm, then stop splitting so one dragon grows: the round-500 tiebreak is
+    # the longest living dragon, and a swarm of length-4 dragons loses it.
+    "founder_split_len": 4,
+    "founder_units": 10 ** 6,  # founders split only while the team has fewer dragons than this
+    "grow_mod": 0,          # children with id % grow_mod == 0 never split: they grow (0 = every child swarms)
+    # Dynamic split conditions (all off by default): split only when the situation supports another dragon.
+    "tiles_per_unit": 0,    # team-size target = map tiles / this, at least 2 and at most the unit limit (0 = off)
+    "split_pearls": 0,      # ... and at least this many pearls are in view (food for the extra mouth)
+    "split_r_end": 10 ** 9,  # ... and it is before this round (late children do not pay back)
+    "split_min_exits": 1,   # ... and the parent has at least this many safe moves (not cornered)
+    "dead_end": 0.0,        # penalty for stepping onto a cell with a single way on
+    "need_floor": 0,        # room a move must leave, at least (short dragons otherwise pass tiny pockets)
+    "squeeze": 0.0,         # bonus per safe move a nearby enemy head loses (herding towards walls and bodies)
+    "voro": 0.0,            # weight of (cells I reach first - cells enemy heads reach first), Tron-style territory
+    "voro_radius": 8,       # ... measured this many steps out
+    "deny": 0.0,            # bonus for a move that leaves a visible enemy head less room (area denial / herding)
+    "deny_radius": 4,       # only enemy heads this close (Manhattan) are considered
+    "deny_margin": 2,       # an enemy counts as enclosed when its region is smaller than its visible length + this
     "budget_ns": 60_000_000,  # self-metering: skip optional work past this (points on the judge)
 }
 
@@ -70,6 +88,9 @@ class Brain:
         self.body = []  # own head-to-tail cells, reconstructed from the head trail
         self.own = 0  # bitboard of self.body
         self.tail = None
+        tpu = self.p["tiles_per_unit"]
+        self.target = unit_limit if tpu <= 0 else max(2, min(unit_limit, n // tpu))  # preferred team size
+        self.founder = None  # True when alive at round 0 (decided on the first turn)
         self.errors = 0
         self.t0 = 0
 
@@ -82,12 +103,15 @@ class Brain:
         """Returns the action bytes (e.g. b'MOVE N\\n'); never raises."""
         self.t0 = _pc()
         try:
-            return self.decide(proto.parse_turn(block))
+            action = self.decide(proto.parse_turn(block))
         except Exception:  # noqa: BLE001 - a crash would kill the dragon
             if self.strict:
                 raise
             self.errors += 1
             return self.fallback(block)
+        if self.debug:
+            self.dbg["act"] = action
+        return action
 
     def over(self):
         return _pc() - self.t0 > self.p["budget_ns"]
@@ -117,25 +141,6 @@ class Brain:
             cnt = reach.bit_count()
             if cnt >= need:
                 return cnt
-
-    def flood_t(self, free, start, need, seq, delay):
-        """Like flood(), but tail cells `seq` (tail first) become free one per step, as the tail retreats."""
-        reach = 1 << start
-        step = self._step
-        n = len(seq)
-        i = 0
-        while True:
-            j = i - delay
-            if 0 <= j < n:
-                free |= 1 << seq[j]
-            new = step(reach, free)
-            i += 1
-            cnt = new.bit_count()
-            # a stalled frontier may resume when more tail cells vacate, but the head cannot wait: it must
-            # keep moving, so it survives at most about `cnt` steps inside the region
-            if cnt >= need or (new == reach and (i - delay >= n or i > cnt)):
-                return cnt
-            reach = new
 
     def window(self, x0, y0):
         """Bitboard of the 7x7 window whose top-left tile is (x0, y0), wrapped."""
@@ -218,6 +223,70 @@ class Brain:
                 self.own &= self.full ^ (1 << body.pop())
         self.tail = body[length - 1] if len(body) >= length else None
 
+    # ------------------------------------------------------------------ decision helpers
+    def want_split(self, t, heads, n_ok):
+        """Splitting means standing still this turn and giving up length, so it needs a reason."""
+        p = self.p
+        length = t.length
+        child = p["split_child"]
+        if child < 2 or length - child < 2 or t.units >= self.limit or t.rnd >= p["split_r_end"]:
+            return False
+        if n_ok < p["split_min_exits"] or any(e for e, _ in heads.values()):
+            return False  # cornered, or an enemy head is in view
+        if self.founder:  # founders seed the swarm, then grow
+            return length >= p["founder_split_len"] and t.units < min(p["founder_units"], self.target)
+        if p["grow_mod"] > 0 and self.id % p["grow_mod"] == 0:
+            return False  # a designated grower
+        if length < p["split_len"] or t.units >= min(p["split_units"], self.target):
+            return False
+        return t.flags.count(b"1") >= p["split_pearls"]
+
+    def exits(self, tidx, tx, ty, back, free):
+        """Free, passable neighbours of cell (tx, ty), not counting the way back."""
+        w_, h_ = self.W, self.H
+        okh, okv = self.okh, self.okv
+        n = 0
+        if back != 0 and (free >> (((ty - 1) % h_) * w_ + tx)) & 1 and (okh >> tidx) & 1:
+            n += 1
+        c = ty * w_ + (tx + 1) % w_
+        if back != 1 and (free >> c) & 1 and (okv >> c) & 1:
+            n += 1
+        c = ((ty + 1) % h_) * w_ + tx
+        if back != 2 and (free >> c) & 1 and (okh >> c) & 1:
+            n += 1
+        if back != 3 and (free >> (ty * w_ + (tx - 1) % w_)) & 1 and (okv >> tidx) & 1:
+            n += 1
+        return n
+
+    def territory(self, mine0, foes, free, radius):
+        """Cells I reach strictly first minus cells the enemy heads reach strictly first (simultaneous dilation)."""
+        free = free | mine0 | foes
+        m, e = mine0, foes
+        step = self._step
+        for _ in range(radius):
+            nm = step(m, free) & (self.full ^ e)
+            ne = step(e, free) & (self.full ^ m)
+            tie = nm & ne  # reached by both this step: nobody's
+            m2 = m | (nm & (self.full ^ tie))
+            e2 = e | (ne & (self.full ^ tie))
+            if m2 == m and e2 == e:
+                break
+            m, e = m2, e2
+        return m.bit_count() - e.bit_count()
+
+    def safe_moves(self, ex, ey, occ, extra):
+        """How many of an enemy head's moves would not kill a dragon that only looks at its four neighbours."""
+        w_, h_ = self.W, self.H
+        okh, okv = self.okh, self.okv
+        e = ey * w_ + ex
+        cs = (((ey - 1) % h_) * w_ + ex, ey * w_ + (ex + 1) % w_, ((ey + 1) % h_) * w_ + ex, ey * w_ + (ex - 1) % w_)
+        passable = ((okh >> e) & 1, (okv >> cs[1]) & 1, (okh >> cs[2]) & 1, (okv >> e) & 1)
+        n = 0
+        for d in range(4):
+            if passable[d] and not (occ >> cs[d]) & 1 and cs[d] != extra:
+                n += 1
+        return n
+
     # ------------------------------------------------------------------ decision
     def decide(self, t):
         p = self.p
@@ -273,10 +342,9 @@ class Brain:
             best = min(range(4), key=lambda d: (status[d], d != t.dir))
             return MOVES[best]
 
-        # split, only when it is safe to stand still this turn (no enemy head next to us)
-        if (length >= p["split_len"] and t.units < self.limit and t.units < p["split_units"]
-                and p["split_child"] >= 2 and length - p["split_child"] >= 2
-                and not any(e for e, _ in heads.values())):
+        if self.founder is None:
+            self.founder = t.rnd == 0
+        if self.want_split(t, heads, len(ok)):
             return b"SPLIT %d\n" % p["split_child"]
         if len(ok) == 1 or self.over():
             return MOVES[ok[0]]
@@ -295,12 +363,38 @@ class Brain:
         kk = p["pearl_k"]
         if pm and not self.over():
             lay = self.layers(pm, free, kk)
-        need = min(length + p["need_margin"], p["need_cap"])
+        need = min(max(length + p["need_margin"], p["need_floor"]), p["need_cap"])
         tail = self.tail
         free_trap = free & self.seen if p["pessimistic"] else free
-        seq = None
-        if p["timed"] and tail is not None:
-            seq = self.body[::-1][:min(length - 1, p["seq_cap"])]  # tail first
+
+        # enemy heads close enough to squeeze: (cell, area they need, how short of it they already are)
+        foes = []
+        if p["deny"] > 0 and not self.over():
+            for hc, (enemy, pid) in heads.items():
+                if not enemy:
+                    continue
+                ex, ey = hc % w_, hc // w_
+                if min((ex - hx) % w_, (hx - ex) % w_) + min((ey - hy) % h_, (hy - ey) % h_) <= p["deny_radius"]:
+                    need_e = segs.get(pid, 1) + p["deny_margin"]
+                    base = self.flood(free | (1 << hc), hc, need_e)
+                    foes.append((hc, need_e, need_e - base if base < need_e else 0))
+
+        # enemy heads to squeeze: (x, y, safe moves they have now)
+        sq = []
+        if p["squeeze"] > 0:
+            for hc, (enemy, pid) in heads.items():
+                if enemy:
+                    ex, ey = hc % w_, hc // w_
+                    if min((ex - hx) % w_, (hx - ex) % w_) + min((ey - hy) % h_, (hy - ey) % h_) <= p["deny_radius"]:
+                        sq.append((ex, ey, self.safe_moves(ex, ey, occ, -1)))
+
+        foe_heads = 0  # bitboard of enemy heads close enough to contest territory
+        if p["voro"] > 0:
+            for hc, (enemy, pid) in heads.items():
+                if enemy:
+                    ex, ey = hc % w_, hc // w_
+                    if min((ex - hx) % w_, (hx - ex) % w_) + min((ey - hy) % h_, (hy - ey) % h_) <= p["voro_radius"]:
+                        foe_heads |= 1 << hc
 
         best_d, best_s = ok[0], -1e18
         for d in ok:
@@ -318,16 +412,26 @@ class Brain:
                         break
             if not self.over():
                 fr = free_trap | (1 << tidx)
-                if seq is not None:
-                    area = self.flood_t(fr, tidx, need, seq, 1 if on_pearl else 0)
-                else:
-                    if tail is not None and not on_pearl:
-                        fr |= 1 << tail  # the tail cell is vacated by this move
-                    area = self.flood(fr, tidx, need)
+                if tail is not None and not on_pearl:
+                    fr |= 1 << tail  # the tail cell is vacated by this move
+                area = self.flood(fr, tidx, need)
                 if area < need:
                     s -= p["trap"] * (need - area) / need
                 else:
                     s += p["area"]
+                if p["dead_end"] and self.exits(tidx, tx, ty, (d + 2) % 4, free) < 2:
+                    s -= p["dead_end"]
+                for hc, need_e, base_short in foes:  # herding: leave visible enemies less room than they need
+                    left = self.flood((free ^ (1 << tidx)) | (1 << hc), hc, need_e)
+                    short = need_e - left if left < need_e else 0
+                    if short > base_short:
+                        s += p["deny"] * (short - base_short) / need_e
+            if foe_heads and not self.over():
+                s += p["voro"] * self.territory(1 << tidx, foe_heads, free, p["voro_radius"])
+            for ex, ey, before in sq:
+                after = self.safe_moves(ex, ey, occ, tidx)
+                if after < before:  # fewer exits (0 = boxed in: it dies next turn)
+                    s += p["squeeze"] * (before - after) * (3 - min(after, 2))
             for hc, (enemy, pid) in heads.items():
                 ex = hc % w_
                 ey = hc // w_
