@@ -1,0 +1,735 @@
+Overview
+The probe has landed at the bottom of the ocean depths, and through the camera you can see hundreds upon thousands of pearls, scattered amongst the sea floor. Deep sea dragons live here too, so in order to blend in, you and your team will be controlling a group of magnificent leviathan-like automata.
+
+Each of your serpentine machines can collect pearls to grow in length; at the end of the mission, your longest robot (and its pearls) will be extracted back to the surface.
+
+As such, compete with other teams to stay alive and obtain the longest dragon!
+
+
+
+
+R12
+A game played on a 16 by 16 map. Team A (blue) wins after eliminating all dragons from team B (orange).
+Specifications
+Each team can control up to 64 dragons at a time. Your team will write exactly one program, which each dragon will execute, running its own copy of your program. A corollary of this is that individual dragons do not share any program memory with other dragons, and hence the only way to communicate dragon-to-dragon is via the sonar system.
+
+Each dragon gets approximately 25 milliseconds at most to compute and execute actions each turn. This is not entirely correct, so for more details about computational limits for each of your dragons, see the Timeouts section.
+
+Gameplay
+Your resident games expert notices that the interactions between these sea dragons are similar to the rules of the retro video game Snake, save for some differences:
+
+These dragons can spontaneously split in two.
+Dragons only communicate through long-distance sonar.
+A dragon can move multiple times within a turn, though at a cost.
+Next Steps
+You can read about the full rules of the game starting from Structure.
+After that, feel free to started with your first bot at Quickstart!
+Some more technical information about the engine and turn order starts from IO Protocol.
+Once you've submitted your bot to the ladder, see ELO System to understand rating and matches.
+Next
+
+Structure
+Rounds and Turns
+Each game lasts at most 500 rounds. Within each round, every currently living dragon will perform some number of actions. One of these time steps is known as a turn.
+
+Turns are carried out in ascending order of dragon ID. This means on a given dragon's turn, all dragons with lesser IDs have already acted, and all dragons with greater IDs have not. For more details about the game loop, see Execution Order.
+
+Scoring
+Each game has three possible outcomes: team A wins, team B wins, or a draw.
+
+Your team is eliminated when all of your dragons perish. Upon the elimination of any team, the game automatically ends, regardless of the current round number. If exactly one team is eliminated, the other wins. If both teams are eliminated in the same round, the game is a draw. Otherwise, after 500 rounds, the winner is decided by the following tiebreaks in order:
+
+The team with the longest living dragon.
+The team with the greatest total length across all of its dragons.
+Draw (no winning team decided).
+
+Game Map
+Dimensions
+Games will be played on maps which are two-dimensional rectangular grids. Both width and height will be between 10 and 64 cells inclusive.
+
+The top left corner will be denoted with coordinates (0, 0), with the x-coordinate increasing towards the right and the y-coordinate increasing down. North is oriented upwards.
+
+Dragons can query the dimensions of the map as follows:
+
+Python
+C
+C++
+Copy Code
+width, height = game.get_map_size()
+Symmetry
+To ensure fairness between teams, each map is guaranteed to be symmetric. This will either be via vertical mirroring, horizontal mirroring, or a 180 degree rotation.
+
+Dragons are not able to easily query the symmetry of the map; that one's up to you!
+
+Topology
+The map edges 'wrap around'; specifically, a dragon that moves outside the bounds of the map will find itself on the other side.
+
+On any sort of visual representation of a map, this is denoted by dashed lines running down the east and south borders. Nothing renders on these borders (instead, see their equivalent west and north borders respectively).
+
+
+
+
+R4
+A dragon can keep moving right past the east border.
+Composition
+Maps are composed of tiles and edges. Again, note that edges along the east and north map border are equivalent to their west and north counterparts (as dictated by the wrap-around).
+
+See Pearls for information about certain tiles, and Kelp and Portals for information about nonempty edge types.
+
+Pearls
+Pearls are the sole resource available, and are used to increase the length of dragons.
+
+Pearl Spawning
+Each tile has a countdown which is visible to all dragons which can inspect the tile (see Vision). This countdown represents the number of rounds until said tile next attempts to spawn a pearl. Thus, each round the countdown decrements by 1. Countdowns are decremented at the start of each round, before any dragon moves (see Execution order). When the countdown reaches zero, the tile attempts to spawn a pearl. Regardless of the outcome of this attempt, the countdown resets.
+
+An attempt to spawn a pearl succeeds only when the tile is empty (i.e. no dragon segments nor pearls occupy it).
+
+Resetting the countdown involves drawing uniformly at random from [min_gap, max_gap]. These values are tile-specific properties set on the map, but are not publicly visible to dragons. A tile with max_gap 0 never spawns pearls and always reports a countdown of -1.
+
+
+
+
+R1
+The marked tile's countdown reaches zero while it is empty, and so a pearl spawns.
+Python
+C
+C++
+Copy Code
+soonest = None
+for tile in ct.get_tiles():
+    if tile.get_pearl_time() < 0:
+        continue  # never spawns
+    if soonest is None or tile.get_pearl_time() < soonest.get_pearl_time():
+        soonest = tile
+
+if soonest is not None:
+    where = soonest.get_position()
+    ct.set_indicator_string(f"pearl at {where.x},{where.y} in {soonest.get_pearl_time()}")
+Symmetric Pearls
+On a symmetric map, each tile shares a countdown with its mirror image, so pearls will attempt to spawn symmetrically. Of course, if one of the tiles is blocked when the countdown reaches 0, a pearl will only spawn on the other tile.
+
+Death
+When a dragon dies, it will drop half its length in pearls. See Death for more.
+
+Kelp and Portals
+Kelp and portals exist on the edges between tiles, not the tiles themselves. This includes the edges along the map border.
+
+
+
+
+R2
+This poor dragon travels through a portal, straight into kelp.
+Kelp
+Kelp is the first type of special edge. Their job is to function as barriers; in particular, a dragon cannot pass from one tile to another across a kelp edge. If it tries, it dies (hit wall) and drops pearls like any other dead dragon.
+
+Kelp is a plant. There are no other special properties of kelp.
+
+Python
+C
+C++
+Copy Code
+def is_safe(direction: unswbc.Direction) -> bool:
+    here = ct.get_position()
+    tile = ct.get_tile(here)
+    if tile is None:
+        return False
+
+    edge = tile.get_edge(direction)
+    if edge.get_edge_type() == unswbc.EdgeType.KELP:
+        return False
+
+    ahead = ct.get_tile(here.add_dir(direction))
+    return ahead is None or ahead.get_dragon() is None
+Portals
+Portals are the second type of special edge, and they allow for quick traversal of the map, conditional on your bravery. Each portal has an ID, which is an almost-unique non-negative integer. Exactly one other portal shares the same ID: these two portals are connected.
+
+There are a couple constraints on connected portals. A pair of connected portals are guaranteed to have the same orientation (i.e. both lying along a vertical edge or a horizontal edge). Furthermore, both portals either lie on the map's line of symmetry, or both lie off it. This ensures that each portal maps to exactly one other portal without ambiguity.
+
+Portals are double-sided, so you can enter from either side. Entering a portal from the left causes the head of your dragon to emerge from the right, and vice versa. The corresponding behaviour for vertically oriented portals is left as an exercise for you.
+
+Dragons cannot see through to the other side of portals (see Vision), so it usually won't know what's on the other side.
+
+Sonar travels through portals.
+
+Python
+C
+C++
+Copy Code
+edge = tile.get_edge(direction)
+if edge.get_edge_type() == unswbc.EdgeType.PORTAL:
+    ct.output_log(f"portal {edge.get_portal_id()} to the {direction.value}")
+
+    Vision
+Every dragon can only see the 7 by 7 square of tiles centred on its head; that is, all 49 tiles with a Chebyshev distance no greater than 3. This vision square wraps around the map as well due to its topology.
+
+Again, note that vision does not extend to the far side of a portal, which is visible only if it is within three tiles of the head by ordinary distance.
+
+
+
+
+R0
+A visualisation of a dragon's vision square as it moves. Note the interactions with portals and map borders.
+Vision Information
+For each tile in view, the dragon receives its (absolute) coordinates, its contents (pearls and dragon parts), its pearl countdown (see Pearls) and its four edges (see Kelp and Portals).
+
+Python
+C
+C++
+Copy Code
+tile = ct.get_tile(pos)             # None when pos is outside the window
+
+tile.get_position()                 # board coordinates, already wrapped
+tile.get_pearl_time()               # rounds until a pearl spawns here; -1 if never
+tile.has_pearl()                    # True if a pearl is on it now
+
+edge = tile.get_edge(unswbc.Direction.NORTH)
+edge.get_edge_type()                # EdgeType.EMPTY, EdgeType.KELP or EdgeType.PORTAL
+edge.get_portal_id()                # id shared with the partner edge; -1 if not a portal
+
+part = tile.get_dragon()            # None if no dragon is on it
+if part is not None:
+    part.get_team()                 # Team.A or Team.B
+    part.get_id()                   # which dragon
+    part.is_head()                  # True for the head
+    part.get_dir()                  # head: its heading; body: the way to the head
+A turn that steps onto a neighbouring pearl when it can see one, and onto a tile with no dragon on it otherwise:
+
+Python
+C
+C++
+Copy Code
+def execute_turn() -> None:
+    here = ct.get_position()
+    fallback = unswbc.Direction.NORTH
+
+    for direction in unswbc.Direction.get_direction_list():
+        tile = ct.get_tile(here.add_dir(direction))
+        if tile is None:
+            continue
+        if tile.has_pearl():
+            ct.make_move(direction)
+            return
+        if tile.get_dragon() is None:
+            fallback = direction
+
+    ct.make_move(fallback)
+
+    Movement
+Movement is considered a type of action that a dragon can perform on a turn. Note that each dragon must output at least one action per turn (only the last one is actually performed; see Death for a list of death conditions). The only other type of action which can be performed is splitting.
+
+Movement, like all other unit actions, is performed only once the turn is complete.
+
+Standard Movement
+
+
+
+R0
+Dragons move eastwards.
+Each dragon can move one tile in any cardinal direction (north, east, south, west) each turn. This causes the head to move in said direction, with the rest of the body following along.
+
+Dragons can even move backwards, though doing so causes its head to squeeze into its own neck, a move which often proves fatal.
+
+A dragon's facing direction is the direction of its head from its first body (non-head) segment. The facing direction of its body segments is defined similarly (direction to the next segment towards the head).
+
+Python
+C
+C++
+Raw
+Copy Code
+ct.make_move(unswbc.Direction.EAST)
+Eating Pearls
+
+
+
+R0
+A dragon eats a pearl and grows longer by a unit.
+When a dragon moves its head onto a pearl, the pearl is automatically eaten and the tail does not advance that turn. In other words, the dragon grows a body segment.
+
+Eating pearls is the only way to gain length.
+
+Collisions
+
+
+
+R0
+Everyone dies via various means except the orange dragon.
+A dragon dies if its head moves into any obstacles. This includes kelp, any segment of another dragon, or any segment of itself.
+
+Note that this death condition is checked before any actual movement. This means a dragon will die moving into own tail, even if the tail would have moved out of the way in the same turn.
+
+If the destination contains another dragon's head, both dragons die, regardless of their team.
+
+Python
+C
+C++
+Copy Code
+ahead = ct.get_tile(here.add_dir(direction))
+part = ahead.get_dragon() if ahead is not None else None
+if part is not None:
+    if part.is_head():
+        continue  # both of us would die
+    continue      # only I would die
+A dragon that dies drops pearls along its body. See Death for more information.
+
+Sprinting
+
+
+
+R2
+Dragon decides to sprint north + north + east.
+Dragons may decide to move several times in one turn in varying directions.
+
+Although all moves happen within a single turn, collision checking (and pearl eating) is performed at every step. This means that in theory, a dragon might die performing NNE, but live with ENN, even though they target the same destination.
+
+Every additional move costs a unit segment of the sprinting dragon. More rigorously, moving x steps in a turn removes x - 1 segments.
+
+Python
+C
+C++
+Raw
+Copy Code
+ct.make_moves([
+    unswbc.Direction.NORTH,
+    unswbc.Direction.NORTH,
+    unswbc.Direction.EAST,
+])
+Death by Sprint
+
+
+
+R1
+Dragon implodes due to oversprinting.
+
+Splitting
+Splitting is another action that dragons can perform. A dragon can only perform one action per turn.
+
+
+
+
+R2
+A length 6 dragon splits. The parent continues east. The child leaves west, head first, from the old tail.
+A dragon may split itself to create a new dragon on its team. Note that the minimum length for any dragon is 2. The child consists of the parent's rear segments in reverse order, so the parent's old tail becomes the child's head and the child faces away from the parent.
+
+The child receives the next unused dragon id, and takes its first turn later in the same round. The child is controlled by a brand new instance of your program, and has no memory of the parent.
+
+Constraints
+A split is legal only if all of the following hold:
+
+The child has length at least 2. SPLIT 1 is never legal.
+The parent has length at least 2 after the split. A dragon of length 6 may split 2, 3 or 4.
+The team has fewer than 64 living dragons.
+Requesting an illegal split kills the parent with no valid action.
+
+Python
+C
+C++
+Raw
+Copy Code
+if ct.can_split(2):
+    ct.do_split(2)
+else:
+    ct.make_move(unswbc.Direction.NORTH)
+
+    Sonar
+Sending
+
+
+
+R2
+Two teammates. Each turn the ray leaves the sender and stops at the first body it meets.
+Once per turn a dragon may send one unsigned 32-bit integer. After the dragon's action has been applied, if the dragon is still alive, the signal travels in a straight line from its head in the direction it now faces. This signal, wraps around the board and passes through portals, stopping at the first kelp or dragon part it hits. If it hits a dragon, the message is delivered to that dragon, which may be the sender itself. If it reaches no dragon within WIDTH + HEIGHT tiles, it is lost.
+
+Python
+C
+C++
+Raw
+Copy Code
+ct.send_sonar(1806)
+
+for message in ct.get_sonar_messages():
+    ct.output_log(f"heard {message}")
+Receiving
+
+
+
+R2
+The first message reaches our friend, but then an enemy gets in the way and intercepts all our later messages.
+
+Death
+A dragon dies when its head collides with something, or when its program fails to produce a valid action on its turn.
+
+Causes of Death
+Reason	Cause
+Hit Wall	Moved into kelp.
+Hit Self	Moved into its own body, including its tail.
+Hit Other Body	Moved into a segment of another dragon from any team.
+Head to Head	Moved into another dragon's head, causing both dragons to die.
+No Valid Action	Requested a sprint it could not pay for, requested an illegal split, produced a malformed command, or outputted no action.
+Mandatory Action
+The engine treats a turn with no valid action as suicide. Any dragon whose program crashes or outputs nothing (or garbage) will be killed. Dragons which fail to end their turn before the time limit but have outputted at least one valid action will experience a different fate (see Timeouts).
+
+Pearl Dropping
+Upon death, dragons exhibit a startling phenomenon: starting from their head, every second body segment crystallises into pearls. A dragon of length L therefore drops ⌈L/2⌉ pearls.
+
+
+
+
+R3
+A dragon dies and drops pearls at every second segment.
+
+Game format
+By facing off with competitor teams through ranked and unranked games, you will get an ELO score that determines your spot on the leaderboard. Your ELO score increases when you win games, and decreases when you lose games. ELO System sets out the arithmetic and the tiers.
+
+Ranked and unranked
+A ranked battle consists of five games and will cause team ELOs to update. Maps are chosen at random by the competition server. Ranked battles come from two places: the ones you request, and the autoscrim draws below, which are ranked as well. In an unranked battle, teams may choose to verse another team on particular maps; one game is played for each map. Unranked battles do not update ELOs nor rankings. Your team keeps the same colour across every game of a battle, and after each battle you will be able to see the replays.
+
+Requesting a battle ('scrim')
+You can request a battle against a specific team on the leaderboard or from a team's page in find a team. The battle outcome appears in All battles and in Your battles. Note that all battles are publicly viewable, so be wise about concealing your strategy!
+
+Both teams need an active submission. Unranked battles are then open to every team; ranked ones need the switch on under Settings on both Team pages, and must target a team rated no more than 50 below you, although anyone above you is fair game. That switch waits eight hours between flips, so nobody can duck a rating by turning it off between requests. You cannot start a second battle against a team while one is still pending or running. Your team may start 60 games an hour by hand, which is 12 ranked scrims.
+
+Battles you are drawn into ('autoscrim')
+Autoscrim battles are ranked. They move your rating exactly as a ranked battle you asked for does, and most of the games your team plays will be these, so your place on the ladder is mostly decided by them.
+
+You do not have to ask for every battle. Every two hours, on the UTC boundary, the ladder is sorted and each team is drawn an opponent from the eight places above and the eight below it, so you meet teams near your own rating. The draw favours opponents you have not played for a while, and over a day you see most of the ladder around you.
+
+You are in the draw whenever you have an active submission; the ranked switch in your settings governs only the battles teams request. Each draw is a ranked five-game series on five maps chosen at random, at most one per team per round, and it does not spend your hourly allowance.
+
+Submitting a bot
+Using either the CLI or the website, you may upload and submit code. Once submissions are made, they cannot be deleted. Only one submission can be 'active' at a time. Your 'active' submission is the one that the game server will use for any incoming / outgoing battles.
+
+
+
+ELO System
+There is one ladder and one rating per team, starting at 1500. Every ranked battle moves both teams along it; unranked battles leave it alone.
+
+What a rating means
+A rating is a prediction. Put two of them side by side and Elo turns the gap into an expected share of the battle's five games. Two equal teams are predicted to split them 2.5 each. A team 400 points ahead is predicted to take about 4.5 of the 5.
+
+When the battle finishes, what actually happened is compared with that prediction. If you outperform relative to your ELO, you take rating off the other team; if you fall short, you lose ELO. The two changes are equal and opposite, so the total on the ladder never moves.
+
+This is why a rating eventually settles somewhere. If you sit above the level you actually play at, you will keep losing ELO until your results support where you are.
+
+Why a win can cost you rating
+Your score in a battle is your proportion of games won, not whether you won overall. A ranked battle is five games, so a 3–2 win counts as 0.6, not 1.
+
+Against a team 400 points below you, the prediction is about 4.5 games of the 5. Win 3–2 and you took 3, well short of what your rating claimed you would do, so rating moves to them even though you won the battle. At that gap even 4–1 costs you, and only a 5–0 sweep gains anything.
+
+The same rule is what makes playing upwards worth it. An underdog predicted to take half a game is already ahead of the prediction with one win, so a 1–4 loss gains rating.
+
+Examples
+Your rating	Opponent	Predicted	Result	Change
+1500	1500	2.5 of 5	3–2	+10
+1500	1500	2.5 of 5	5–0	+48
+1900	1500	4.5 of 5	3–2	-30
+1500	1900	0.5 of 5	2–3	+30
+Equal teams, won 3–2. The prediction is an even 2.5 games each, and you took half a game more than that, so +10 changes hands. A close battle between equals barely moves either of you.
+
+Equal teams, won 5–0. The same prediction, but there was nothing left to take. That is as far past an even prediction as a result can get, so you collect +48, the biggest swing two equal teams can produce.
+
+400 points ahead, won 3–2. Your rating predicted 4.5 games of the 5, and 3 is well under it. You won the battle and still paid 30 rating for it. The favourite is not being punished for winning; it is being charged for winning by less than it claimed it would.
+
+400 points behind, lost 2–3. The inverse of the row above. You were predicted to take 0.5 games, took 2, and +30 comes to you despite losing the battle.
+
+The formula
+Ratings are updated by Elo with K = 96, applied once per battle rather than per game. Against a team rated RB, a team rated RA has expected share 1 / (1 + 10(RB − RA) / 400). Its actual share is the fraction of the battle's games it won, with a draw counting as half. The rating changes by K times the difference, rounded, and the two teams' changes sum to zero.
+
+A battle is settled only when all of its games have finished, so a five-game series changes the rating once. Unranked battles do not affect ratings. The autoscrim draw is ranked, so those battles move your rating too, and they are most of what you play.
+
+Tiers
+Tier	Rating
+Fishing Boat	2800+
+Leviathan	2500–2799
+Orca	2200–2499
+Shark	1900–2199
+Swordfish	1600–1899
+Tunafish	1300–1599
+Shrimp	1000–1299
+Plankton	0–999
+
+Quickstart
+For beginners, we recommend using Python to write your bots. Make sure you have Python preinstalled on your machine.
+
+Install the toolkit
+The toolkit, unswbc, is a Python package. If you have uv, install it as a tool. Upgrade later with uv tool upgrade unswbc.
+
+Raw
+Copy Code
+uv tool install unswbc
+If you do not have uv, install it with pip instead. You need Python 3.11 or newer, and the command is then called the same way. Should pip refuse and say externally-managed-environment, as Debian, Ubuntu and Homebrew do, install uv and use the line above.
+
+Raw
+Copy Code
+pip install unswbc
+Check your machine
+Run unswbc on its own. It lists the commands and reports what it found here: a Python interpreter, the C and C++ compilers, and the replay viewer. Anything missing is named with the step that installs it.
+
+Raw
+Copy Code
+unswbc
+Create a bot
+unswbc init creates a bot project in Python, C or C++. A Python project consists of main.py (your bot), helper.py (the library that reads and writes the engine protocol) and bot.toml (the language and the list of files to ship). C and C++ projects contain helper.h and helper.c, or helper.hpp, in place of helper.py. Maps go into a maps/ folder beside the bot folder, which all your bots share.
+
+Python
+C
+C++
+Copy Code
+unswbc init python mybot
+After upgrading the toolkit later, unswbc maps adds any newly bundled maps to that folder.
+
+Run a match
+unswbc run takes a map and two bot projects, rebuilds both bots, plays the match and writes a .replay file. The two bots may be the same project. arena.map is an 11×11 map to start on.
+
+Raw
+Copy Code
+unswbc run maps/arena.map mybot mybot
+Open the replay
+If you use VS Code, Cursor or VSCodium, init has already installed the replay viewer, so clicking the .replay file plays the match. Install it by hand if your editor arrived later.
+
+Raw
+Copy Code
+unswbc vscode
+Otherwise open the visualiser and choose the file. Either way you see the whole board and every line your bots printed, neither of which a bot can see for itself.
+
+Log in
+Make an API key on your team page — it starts with bc_ — and hand it to the toolkit. unswbc auth status then names the team the key belongs to.
+
+Raw
+Copy Code
+unswbc auth set bc_...
+Submit
+unswbc submit zips the project and uploads it as a new version. -n names that version and -d records what changed. See Submitting via Website for what happens to the build afterwards.
+
+Raw
+Copy Code
+unswbc submit mybot
+Template Structure
+Python
+C
+C++
+Copy Code
+import helper as unswbc
+
+ct: unswbc.Controller
+game: unswbc.Game
+
+def execute_turn() -> None:
+    ct.make_move(unswbc.Direction.NORTH)
+
+def main() -> None:
+    global ct, game
+    ct, game = unswbc.init()
+
+    while unswbc.update(ct, game):
+        execute_turn()
+        unswbc.end_turn()
+
+if __name__ == "__main__":
+    main()
+The template provides you with a game loop. init() reads the initial setup information from the engine, and update() will read in information from a new turn (or false, if the game ends or dragon dies). You should make changes to the execute_turn() function, and end_turn() will finish the bot's turn. Advanced teams can choose to write their own interface with the engine (see interface docs).
+
+The starter bot shuffles the four directions from a generator seeded the same way every run, then steps onto the first neighbouring tile that is not blocked by kelp or a dragon. All three starters do this, so a Python bot and a C++ bot behave alike. Take a look through the rest of the docs to improve this simple bot!
+
+Next steps
+Be sure to test your bots on multiple maps! It may be useful to create your own maps to test how your bot reacts to specific situations or edge cases. The CLI page lists every command and its options.
+
+Standard library
+The judge runs your bot in a WebAssembly sandbox with no network, no child processes and no writable disk. Modules that only exist to reach one of those are not shipped at all, so they fail at import rather than at the call. Everything else is present. Timeouts covers what the sandbox charges you for.
+
+Versions
+Two things run your bot: the judge, and your own machine when you unswbc run. The judge is the one that scores you.
+
+Language	In the judge	On your machine
+Python	CPython 3.13, with NumPy 2.5.3	the first of python3, python, py -3 that runs
+C	Clang 20 as C17, against wasi-libc	the first of cc, gcc, clang, cl
+C++	Clang 20 as C++20, against libc++	the first of c++, g++, clang++, cl
+Both sides compile at -std=c17 or -std=c++20, and -O2. The judge adds -msimd128 and puts your zip's own directory on the include path. Set UNSWBC_PYTHON, CC or CXX to choose the tool a local run uses, and unswbc on its own reports what it found. The toolkit itself needs Python 3.11 or newer, whichever language your bot is in.
+
+A local run uses your interpreter, not the judge's, so a bot that relies on something added in 3.13 can pass in the judge and fail on your machine. bot.toml names the language as py, c or c++, and that is what the judge builds it as.
+
+Python
+CPython 3.13 and NumPy 2.5.3, and nothing else. Third-party packages cannot be installed; a pure-Python dependency has to be vendored into your zip. These modules import:
+
+Raw
+Copy Code
+__future__  abc  argparse  array  ast  atexit  base64  bdb  binascii  bisect  builtins
+calendar  cmath  cmd  code  codecs  codeop  collections  colorsys  compileall  configparser  contextlib
+contextvars  copy  copyreg  cProfile  csv  ctypes  dataclasses  datetime  decimal  difflib  dis  doctest
+encodings  enum  errno  faulthandler  fcntl  filecmp  fileinput  fnmatch  fractions  functools  gc  getopt
+getpass  gettext  glob  graphlib  hashlib  heapq  hmac  importlib  inspect  io  itertools  json  keyword
+linecache  locale  logging  marshal  math  mmap  modulefinder  netrc  numbers  opcode  operator  optparse  os
+pathlib  pdb  pickle  pickletools  pkgutil  platform  posix  posixpath  pprint  profile  pstats  pty  pwd
+py_compile  pyclbr  queue  quopri  random  re  reprlib  rlcompleter  runpy  sched  secrets  select
+selectors  shlex  shutil  signal  site  stat  statistics  string  stringprep  struct  symtable  sys  sysconfig
+tabnanny  tarfile  tempfile  termios  textwrap  time  timeit  token  tokenize  tomllib  trace  traceback
+tracemalloc  tty  types  typing  unicodedata  unittest  uuid  warnings  wave  weakref  zipapp  zipfile
+zipimport  zoneinfo
+Names starting with an underscore are omitted above but behave as they do in any CPython: _thread, _pyrepl, _collections_abc and the rest are all there.
+
+Not shipped
+Reason	Modules
+No network	socket, socketserver, ssl, http, urllib, xmlrpc, ftplib, smtplib, poplib, imaplib, telnetlib, wsgiref, ipaddress, email, cgi, cgitb, webbrowser
+One thread, one process	asyncio, multiprocessing, concurrent.futures
+Compression libraries not built	zlib, bz2, lzma, gzip
+Parsers and stores not built	xml (all of it), sqlite3, dbm, plistlib, mimetypes, mailbox, importlib.metadata
+No terminal, no display	curses, readline, tkinter, turtle
+Packaging and test tooling	ensurepip, venv, distutils, lib2to3, test, idlelib
+Present, but will not work
+These ship, and cannot do the thing you would reach for them for.
+
+Module	What happens
+threading	Thread.start() raises RuntimeError: can't start new thread. The lock and event types work, and a timed acquire returns at once, since the clock is virtual.
+subprocess	Popen raises OSError 58, ENOTSUP. So does os.fork.
+shelve	open fails, because dbm is not shipped.
+pydoc	Will not import at all: it reaches for urllib on the way in.
+zipfile and tarfile import, but without zlib only stored members read; anything deflated, gzipped or xz'd raises.
+
+C and C++
+Clang 20 against wasi-libc and libc++, as C17 or C++20. Every libc++ header is present except <generator>, and so is every POSIX header the sysroot carries, including <sys/socket.h>, <pthread.h> and <spawn.h>. Those compile and link; the calls behind them fail at runtime. socket() returns ENOTSUP, std::thread throws Resource temporarily unavailable, and std::system returns −1. There are no third-party libraries, so anything you need must be vendored as source.
+
+What both languages see
+Thing	In the sandbox
+Network	Every socket call returns ENOTSUP.
+Processes and threads	fork, exec, posix_spawn and thread creation are all denied.
+Filesystem	Read-only. You get your own files at /bot, which is the working directory, and the interpreter or sysroot. There is no writable /tmp.
+Environment	Five PYTHON* variables and TERM=dumb. getpid() is 1 and os.cpu_count() is 1.
+Time
+Nothing about time is disabled, but the clock is the judge's, not the machine's. It reads 2026-01-01T00:00:00Z when your dragon has spent nothing, and advances one nanosecond per CPU point spent, plus whatever you asked to sleep.
+
+That makes time.perf_counter and std::chrono::steady_clock budget meters: a turn's 100 million points read as 0.1 seconds, so the difference across a piece of your code is the points it cost, in nanoseconds. A sleep returns immediately and moves the clock by what you asked for, which is why timing across one is meaningless. Two runs of the same match give the same readings.
+
+Randomness
+Also the judge's. os.urandom, random, std::random_device and std::mt19937 seeded from it all draw on one stream per dragon per game, so a replayed match draws the same numbers. std::random_device::entropy() reports 0, which is honest. PYTHONHASHSEED is 0, so hash() and set and dict ordering are stable too. Seed your own generator if you want your dragons to differ from each other.
+
+Previous
+Timeouts
+
+Timeouts
+Local runs
+unswbc run runs bots as ordinary processes on your machine and places no limit on how much work a turn does. The only limit is a wall clock of 10 seconds per turn. A bot that reaches it, or that exits during a turn, delivers nothing for that turn, so its dragon dies, and the bot is restarted as a new process for the dragons it still controls. As a result, a local match says nothing about whether a bot fits within the judge's budget below.
+
+unswbc run --sandbox runs Python bots in the judge's sandbox instead, priced in CPU points exactly as the judge prices them. With -v it prints the points and memory each turn used. C and C++ bots cannot yet be sandboxed locally.
+
+Judge limits
+The judge runs bots in a WebAssembly sandbox and measures work in CPU points rather than time. Each instruction has a fixed price, so load on the judge cannot affect results.
+
+Limit	Value
+Points per dragon per turn	100 million
+Memory per dragon	48 MB
+Threads per dragon	1 (thread_spawn is denied)
+Backstop	1 s of CPU, 10 s wall; only catches a bot that evades the meter
+A turn that exhausts its points is stopped, delivers no reply, and the dragon dies that turn, so leave a margin. The first turn is not exempt: the interpreter and NumPy are preloaded, but your own imports and setup are charged. Spread heavy precomputation across turns or perform it lazily.
+
+A turn's budget runs from reading the round to the flush in end_turn(), and that is the figure -v reports. Work done after end_turn(), before the next round is read, is charged to the turn that follows it, so precomputing for the next turn there costs the same as doing it at the top of that turn.
+
+Instruction prices
+This is the whole price list. Anything not named in it costs 2 points.
+
+Instruction	Points
+Constants, local.get/set/tee, global.get/set, select, nop, drop, block, loop, end, else, unreachable	1
+Comparisons, integer and float	1
+Integer and float arithmetic: add, subtract, multiply, bitwise, shifts, rotates, clz, ctz, popcnt, abs, neg, ceil, floor, trunc, nearest, sqrt, min, max, copysign	1
+Conversions: wrap, extend, truncate, convert, promote, demote, reinterpret	1
+ref.null, ref.is_null, ref.func	1
+Loads and stores, of every width	2
+memory.size	2
+br, br_if, if, return	2
+Everything else, including every 128-bit SIMD instruction	2
+Division and remainder, integer and float	3
+br_table	3
+call	4
+call_indirect, call_ref, return_call, return_call_indirect, return_call_ref	6
+memory.copy, memory.fill, memory.init	10, plus 1 per 8 bytes
+table.get/set/size/copy/fill/init, data.drop, elem.drop	10
+memory.grow, table.grow	50
+Work the judge does for you is charged to the same meter.
+
+Call	Points
+A write to stdout or stderr	2,500,000, plus 4,000 per byte
+Drawing random bytes	40,000, plus 3 per byte
+Opening a file or looking a path up	40,000
+For reference, parsing one round in the Python helper costs about 10 million points, and a flood fill of a 32×32 map costs about 19 million in Python and about 0.3 million in C++.
+
+Output
+Each write costs 2.5 million points plus 4,000 per byte, and stderr is charged like stdout. The helpers flush once per turn, in end_turn(), and reading the next turn also flushes. A bot that flushes after every line pays 2.5 million points per line, so keep logging light and do not add flushes.
+
+The judge's stdout looks like a terminal (isatty returns true), so it is line buffered until something asks otherwise, and every line you print is then its own write. The C and C++ helpers ask otherwise: they call setvbuf for a full buffer in init, so a whole turn's output leaves in the one write that end_turn flushes. Ten log lines cost 2.5 million points that way, against 25 million a line at a time.
+
+So in C and C++, do not set std::unitbuf, do not call sync_with_stdio(false), which gives std::cout a buffer of its own outside the one the helper set, and do not call cin.tie(nullptr) unless you flush at ENDTURN yourself. Use std::clog rather than std::cerr for debugging output. Python needs none of this: its stdout is fully buffered already.
+
+Languages
+C and C++ are compiled with -O2 -msimd128 against the C standard library and libc++, with the zip's own directory on the include path. No other libraries are available, so any you need must be vendored as source. A SIMD instruction costs 2 points and executes as real SIMD, so 4 or 16 lanes of work cost about what two scalar instructions do. Python is CPython 3.13 with NumPy 2.5 and nothing else; pure-Python dependencies must be vendored. The sandbox drops the parts of both standard libraries that need a network, a second thread or a writable disk, which Standard library lists.
+
+Determinism
+Games are reproducible. Random numbers come from a generator seeded per dragon and per game, and the clock advances with points spent, so time.sleep costs no real time and timing your own code measures points.
+
+The budget is per turn, not per tile
+MOVE NNE covers three tiles with one decision, so a deeper search can commit to several steps at once, paying in segments rather than points.
+
+Execution order
+This page gives the engine loop in the order it runs. Most surprising replays come down to two facts: dragons act one at a time in id order, and a multi-step move is a sequence of separate moves.
+
+The round
+Pearls tick. Every tile's countdown decreases by one, top row to bottom, left to right. At zero the tile spawns a pearl if it is free, and draws a new countdown either way. See Pearl spawns.
+Each living dragon takes a turn, in ascending id order. A dragon that died earlier this round is skipped. A dragon created by a split this round is appended to the list and takes its turn later this round.
+The round ends. The game ends if a team has no dragons, or if this was round 500.
+One turn
+The dragon's sonar inbox is written to the bot's input and emptied.
+Defaults are set: action = suicide, sonar = none, indicator = none.
+The bot's output is read line by line until ENDTURN.
+The action is applied.
+Sonar is cast, if one was set and the dragon is alive.
+Raw
+Copy Code
+LOG heading for the pearl at 4,7
+DOT 4 7 0 255 0
+MOVE NNE
+SONAR 90210
+ENDTURN
+Commands
+MOVE, SPLIT, SONAR and INDICATOR each overwrite the previous value. The last one read takes effect, and none is applied until reading ends. LOG, DOT and LINE are applied immediately, in the order printed. A line that cannot be parsed is skipped, with an engine log entry, and does not change the action already set.
+
+Raw
+Copy Code
+MOVE N
+MOVE E
+ENDTURN
+That pair moves east.
+
+Applying a move
+
+
+
+R0
+Three steps east asked for. The third is blocked, so the dragon dies after two.
+For each step, in order:
+
+If this is not the first step, check that the dragon can pay for it. A dragon of length 2 cannot, and dies with no valid action.
+The dragon's facing is set to the step's direction. The destination is the tile across the edge now faced: kelp kills the dragon, a portal leads out of its partner edge, and otherwise the destination is the adjacent tile, wrapped.
+The destination is checked against the dragon's own body first, then against other dragons. Another dragon's head there dies first, then this dragon. Any other segment kills only this dragon.
+The head moves. A pearl on the destination is eaten. The tail advances unless a pearl was eaten. If this is not the first step, one further tail segment is removed.
+A death on any step discards the remaining steps and the turn's sonar. Steps already taken stand.
+
+The dragon's own tail
+
+
+
+R3
+Coiling inward until the only tile left is its own tail, which has not moved yet.
+The self-collision check in step 3 includes the tail and runs before the tail advances, so the tail's tile is blocked for that step. Within a multi-move, the second step is checked against the body as the first step left it, so a tile that is fatal as a first step may be safe as a second.
+
+Applying a split
+The conditions are checked before anything moves: child length at least 2, parent length at least 2, team below UNIT_LIMIT. Failing any of them kills the parent with no valid action. The child is the rear segments in reverse, appended to the live list with the next id, and takes its own turn later this round from a new process.
+
+Casting sonar
+After the action, if the dragon survived. The ray leaves the head along the new facing, through portals and around the wrap, and stops at kelp or at the first living dragon. The value is placed in that dragon's inbox and read at the start of its next turn, so a higher id receives it this round and a lower id next round.
+
+The death sequence
+The death is recorded with its reason.
+Every second segment of the body as it stands becomes a pearl: head, skip one, next. Pearl countdowns are not changed.
+The dragon is removed from the board.
+Its remaining steps and its sonar are discarded.
+In a head-on collision, the other dragon's sequence runs first, then this dragon's.
+
+When a turn ends
+A turn ends at the first of: the bot printing ENDTURN, the bot blocking to read its next turn, the bot exiting, or the bot reaching its limit (see Timeouts). In the first two cases the turn's output is delivered to the engine. In the last two nothing is delivered, the action stays at its default of suicide, and the bot is restarted as a new process with a fresh init block.
