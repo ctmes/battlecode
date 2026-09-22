@@ -153,8 +153,8 @@ def test_hand_example():
     assert encoder.PEARL_BASE + pearl_cell in fset
     enemy_cell = ((-2) + 3) * 7 + (0 + 3)
     assert encoder.ENEMY_HEAD_BASE + enemy_cell in fset
-    kelp_v_cell = (0 + 3) * encoder.EDGE_SPAN + (1 + 3)
-    assert encoder.EDGE_KELP_V_BASE + kelp_v_cell in fset
+    kelp_v_code = encoder.EDGE_CELLS + (0 + 3) * encoder.EDGE_SPAN + (1 + 3)  # vertical -> +EDGE_CELLS
+    assert encoder.EDGE_KELP_BASE + kelp_v_code in fset
     assert dense[0] == 5 / 64.0  # length
     print("ok: hand-picked example has exactly the expected pearl / enemy-head / kelp features")
 
