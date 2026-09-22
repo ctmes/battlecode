@@ -81,19 +81,25 @@ def parse_turn(block):
 # (sonar passes through no team filter) or be a stray value that happens to parse, so treat it as untrusted input,
 # not a fact: bounds-check before using it as a board index.
 #
+# The payload also carries the sighted enemy's own reported facing, not just its position: brain.py's local
+# one-step prediction (extrapolate a visible enemy's own facing by one step) already proved itself correct and
+# cheap; carrying facing lets a receiver who never saw the enemy at all run the exact same extrapolation, which is
+# the one thing local prediction structurally cannot do (see the "deep dive" plan notes -- two earlier position-only
+# payloads both measured as no help).
+#
 # Layout (MSB first): kind (2 bits, room for 3 more kinds later) | x (6 bits) | y (6 bits) | length bucket (4 bits,
-# min(length, 15)) | 14 bits unused. x/y are 6 bits because boards are at most 64 wide (Battlecode rules).
+# min(length, 15)) | facing (2 bits, N/E/S/W) | 16 bits unused. x/y are 6 bits because boards are at most 64 wide.
 SONAR_ENEMY = 0
 
 
-def pack_enemy_sonar(x, y, length):
-    """An enemy sighting: absolute (x, y) plus a coarse size hint, as one uint32 sonar payload."""
-    return (SONAR_ENEMY << 30) | ((x & 63) << 24) | ((y & 63) << 18) | (min(length, 15) << 14)
+def pack_enemy_sonar(x, y, length, facing):
+    """An enemy sighting: absolute (x, y), a coarse size hint, and its own facing, as one uint32 sonar payload."""
+    return (SONAR_ENEMY << 30) | ((x & 63) << 24) | ((y & 63) << 18) | (min(length, 15) << 14) | ((facing & 3) << 12)
 
 
 def unpack_sonar(value):
-    """-> (kind, x, y, length_bucket). kind is None (x=y=length_bucket=0) for a kind this module does not know."""
+    """-> (kind, x, y, length_bucket, facing). kind is None (all 0) for a kind this module does not know."""
     kind = value >> 30
     if kind != SONAR_ENEMY:
-        return None, 0, 0, 0
-    return kind, (value >> 24) & 63, (value >> 18) & 63, (value >> 14) & 15
+        return None, 0, 0, 0, 0
+    return kind, (value >> 24) & 63, (value >> 18) & 63, (value >> 14) & 15, (value >> 12) & 3

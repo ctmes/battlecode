@@ -14,7 +14,7 @@ import pathlib
 import random
 import sys
 import time
-from collections import namedtuple
+from collections import Counter, namedtuple
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "bot"))
@@ -26,8 +26,10 @@ from brain import Brain  # noqa: E402
 from unswbc.engine import EngineModule  # noqa: E402
 
 Job = namedtuple("Job", "map side mine opp")
-# score: 1 win / 0.5 draw / 0 loss for `mine`; the rest describes my team; cost is seconds of wall time
-Result = namedtuple("Result", "score deaths turns errors rounds my_len opp_len my_dragons opp_dragons cost")
+# score: 1 win / 0.5 draw / 0 loss for `mine`; the rest describes my team; cost is seconds of wall time.
+# causes: {arena.DEATH name: count} for this job's deaths -- aggregate win rate alone can be too noisy to tell
+# whether a change is doing what it's meant to (see the sonar work); the death-cause mix is the more direct signal.
+Result = namedtuple("Result", "score deaths turns errors rounds my_len opp_len my_dragons opp_dragons cost causes")
 
 _engine = None
 
@@ -78,10 +80,11 @@ def play_job(job):
     res, deaths, errors = arena.play(_engine, map_bytes(job.map), *((me, foe) if job.side == "A" else (foe, me)))
     a = job.side == "A"
     score = 0.5 if res.winner is None else float(res.winner == job.side)
-    return Result(score, sum(1 for n, *_ in deaths if n == "me"), me.turns, len(errors), res.rounds + 1,
+    causes = dict(Counter(arena.DEATH.get(reason, reason) for n, _, _, reason in deaths if n == "me"))
+    return Result(score, sum(causes.values()), me.turns, len(errors), res.rounds + 1,
                   res.a_length if a else res.b_length, res.b_length if a else res.a_length,
                   res.a_dragons if a else res.b_dragons, res.b_dragons if a else res.a_dragons,
-                  time.perf_counter() - t0)
+                  time.perf_counter() - t0, causes)
 
 
 class League:
@@ -105,13 +108,18 @@ class League:
 
 
 def summarize(results):
-    """Win rate (draw = half), death rate per 1,000 dragon-turns and totals for a list of Results."""
+    """Win rate (draw = half), death rate per 1,000 dragon-turns, death-cause mix and totals for a list of Results."""
     n = len(results)
     turns = sum(r.turns for r in results) or 1
+    causes = Counter()
+    for r in results:
+        causes.update(r.causes)
+    deaths = sum(causes.values())
     return {"games": n, "score": sum(r.score for r in results) / max(n, 1),
             "wins": sum(r.score == 1 for r in results), "draws": sum(r.score == 0.5 for r in results),
-            "deaths_per_k": 1000 * sum(r.deaths for r in results) / turns, "errors": sum(r.errors for r in results),
-            "cost": sum(r.cost for r in results)}
+            "deaths_per_k": 1000 * deaths / turns, "errors": sum(r.errors for r in results),
+            "cost": sum(r.cost for r in results), "causes": dict(causes),
+            "head_on_share": causes.get("head-on", 0) / deaths if deaths else 0.0}
 
 
 def wilson(score, n, z=1.96):

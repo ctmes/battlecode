@@ -64,11 +64,13 @@ def test_league_is_deterministic_and_side_symmetric():
     with League(3) as lg:
         first, second = lg.run(jobs), lg.run(jobs)
     assert [r[:9] for r in first] == [r[:9] for r in second], "league runs are not reproducible"
+    assert [r.causes for r in first] == [r.causes for r in second], "death-cause tallies are not reproducible"
     for i in range(0, len(jobs), 2):
         assert first[i].score + first[i + 1].score == 1, f"seats are not symmetric on {jobs[i].map}"
         assert first[i].errors == 0
     s = summarize(first)
     assert s["games"] == 6 and s["score"] == 0.5 and s["errors"] == 0, s
+    assert s["deaths_per_k"] == 1000 * sum(s["causes"].values()) / sum(r.turns for r in first), s
     print("ok  league games are reproducible and both seats see the same game")
 
 

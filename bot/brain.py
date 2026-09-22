@@ -5,8 +5,8 @@ Order of decisions each turn:
      unless the dragon is boxed in; then the least-bad option is taken.
   2. Among legal moves: reachable-area (trap) check by bitboard flood fill, pearl chasing, head-on risk.
   3. Optional split (off by default; thresholds are tunable parameters).
-  4. Optional sonar: broadcast the nearest visible enemy's position (proto.pack_enemy_sonar/unpack_sonar); a
-     received sighting gets a soft, distance-scaled avoidance nudge, ahead of the exact adjacency-only head risk.
+  4. Optional prediction, local and relayed: a visible (or sonar-reported) enemy head's own facing extrapolated
+     one step, penalized like head_risk if a candidate move lands on or next to it.
 
 Everything is plain Python ints / bitboards: on the judge a Python loop iteration costs thousands of CPU
 points, whereas big-int shifts are cheap (Points lab: 32x32 flood fill 2.0M points vs 46M for a list BFS).
@@ -72,15 +72,31 @@ DEFAULTS = {
     "deny": 0.0,               # bonus for a move that leaves a visible enemy head less room (area denial / herding)
     "deny_radius": 4,          # only enemy heads this close (Manhattan) are considered
     "deny_margin": 2,          # an enemy counts as enclosed when its region is smaller than its visible length + this
-    # Sonar (proto.pack_enemy_sonar/unpack_sonar): every dragon broadcasts its nearest visible enemy's position and
-    # size, and steers a little away from any tile close to a received sighting -- a soft, stale-tolerant early
-    # warning ahead of the exact, adjacency-only head_risk check, aimed at head-on collisions (the largest cause of
-    # death: see the evaluation notes). A first version fed sightings into the "voro" territory contest instead;
-    # a 0.5-16 weight sweep over 1,056 games found no measurable edge (47-55%, every CI crossing 50%), so this is a
-    # different mechanism, not a retuned version of that one. sonar_danger=0 also turns off sending (pointless with
-    # nobody tuned to listen). Untuned; see tools/tune.py SPACE and tools/tuned/ for whether it actually helps.
-    "sonar_danger": 0.0,
-    "sonar_danger_radius": 4,  # a reported sighting only matters within this many (Manhattan) tiles
+    # Prediction: a visible enemy head's own reported facing (free -- every part already reports it) extrapolated
+    # one step, penalized like head_risk if a candidate move lands on or next to it. A 10-500 weight sweep over
+    # 1,232 games found no benefit at any weight and real harm above ~250 (score down to 41-42%, CIs excluding 50%
+    # on the losing side); deaths/1000 turns (38.6-41.1) and the head-on share of deaths (59.6-61.1%) never moved
+    # from baseline (40.4, 60.7%) anywhere in the range, despite the extrapolation itself testing as exactly
+    # correct against 32k+ live sightings. A firing-rate check explains why: a candidate prediction exists on 44%
+    # of turns, but it's the deciding factor in only 1.5% of all turns -- the much larger existing terms (trap,
+    # pearl_here, head_risk) already determine the outcome the rest of the time, so even a real effect on those
+    # rare deciding turns gets diluted to noise in the aggregate. Also structural: local prediction only ever
+    # covers an enemy already in this dragon's own 7x7 window, which head_risk's exact check mostly already
+    # handles. Untuned as a mechanism, not just a weight; see tools/tune.py SPACE and tools/tuned/.
+    "predict": 0.0,
+    # Sonar-relayed prediction (proto.pack_enemy_sonar/unpack_sonar, carrying facing, not just position): a dragon
+    # broadcasts its nearest visible enemy's position, size AND facing, so a teammate who has never seen that enemy
+    # can run the exact same one-step extrapolation "predict" does above -- the one thing local prediction cannot
+    # structurally do, since it needs the enemy in this dragon's own vision. Tested alone (predict=0) over a 25x
+    # weight range (10-250, 880 games): still flat -- deaths/1000 turns moved by at most 0.4 (34.5-34.9) and the
+    # head-on share by at most 0.4pp (58.9-59.3%) across the whole range, score never clearing 50% either way. A
+    # firing-rate check found why: a decodable sighting exists on 24% of turns but changes the chosen move on only
+    # 0.7% of all turns -- sonar's lack of any addressing means most broadcasts reach a dragon they cannot help,
+    # or reach nobody. Two earlier, position-only payloads (fed into "voro" territory, then a distance penalty)
+    # also measured as no help; all three sonar designs and both prediction mechanisms are now documented negative
+    # results, not just unlucky weights. sonar_predict=0 also turns off sending (pointless with nobody listening).
+    # Untuned; see tools/tune.py SPACE and tools/tuned/.
+    "sonar_predict": 0.0,
     "budget_ns": 60_000_000,   # self-metering: skip optional work past this (points on the judge)
 }
 
@@ -321,6 +337,7 @@ class Brain:
         heads = {}  # cell -> (is_enemy, dragon id) for heads other than ours
         segs = {}  # dragon id -> visible segment count
         own_back = {}  # head-ward neighbour cell -> own segment cell (only needed to seed the body)
+        enemy_facing = {}  # enemy head cell -> its own reported facing (free: q[4] on every part, usually unread)
         me, team = self.id, self.team
         seed = not self.body
         for q in t.parts:
@@ -332,7 +349,10 @@ class Brain:
             segs[pid] = segs.get(pid, 0) + 1
             if q[5] == b"1":
                 if pid != me:
-                    heads[cell] = (q[0] != team, pid)
+                    enemy = q[0] != team
+                    heads[cell] = (enemy, pid)
+                    if enemy:
+                        enemy_facing[cell] = LETTERS.find(q[4])
             elif seed and pid == me:
                 f = LETTERS.find(q[4])
                 own_back[((y + DY[f]) % h_) * w_ + (x + DX[f]) % w_] = cell
@@ -361,9 +381,25 @@ class Brain:
             best = min(range(4), key=lambda d: (status[d], d != t.dir))
             return MOVES[best]
 
-        # sonar: broadcast the nearest visible enemy (cheap: no flood fill), and decode anything received this turn
-        sonar_msg, sonar_danger = None, []  # sonar_danger: [(x, y), ...] reported sightings, still worth avoiding
-        if p["sonar_danger"] > 0:
+        # prediction: a visible enemy head's own reported facing is a free, zero-cost, always-current guess at
+        # where it goes next -- unlike sonar, no protocol needed, and it targets exactly the gap head_risk's
+        # exact-adjacency check misses: a higher-id enemy hasn't moved yet this round, so head_risk is reacting to
+        # its stale pre-move position, not where it is about to end up (see the plan notes: this is believed to be
+        # a real share of head-on deaths, the largest cause by far).
+        predicted = []  # [(x, y), ...] guessed next cells of visible enemy heads
+        if p["predict"] > 0 and enemy_facing:
+            for hc, f in enemy_facing.items():
+                if f < 0:
+                    continue
+                ex, ey = hc % w_, hc // w_
+                predicted.append(((ex + DX[f]) % w_, (ey + DY[f]) % h_))
+        if self.debug:
+            self.dbg["predicted"] = list(predicted)
+
+        # sonar: broadcast the nearest visible enemy, own facing included (cheap: no flood fill), and decode
+        # anything received this turn into the same kind of one-step guess "predicted" above makes
+        sonar_msg, sonar_predicted = None, []  # sonar_predicted: [(x, y), ...] guessed cells from relayed sightings
+        if p["sonar_predict"] > 0:
             if heads:
                 best_e, best_dist = None, 1 << 30
                 for hc, (enemy, pid) in heads.items():
@@ -371,13 +407,15 @@ class Brain:
                         ex, ey = hc % w_, hc // w_
                         dist = min((ex - hx) % w_, (hx - ex) % w_) + min((ey - hy) % h_, (hy - ey) % h_)
                         if dist < best_dist:
-                            best_dist, best_e = dist, (ex, ey, segs.get(pid, 1))
+                            best_dist, best_e = dist, (ex, ey, segs.get(pid, 1), enemy_facing.get(hc, 0))
                 if best_e is not None:
                     sonar_msg = proto.pack_enemy_sonar(*best_e)
             for m in t.msgs:  # untrusted: could be an enemy's sonar, or a stray value that happens to decode
-                kind, mx, my, _ = proto.unpack_sonar(m)
+                kind, mx, my, _, mf = proto.unpack_sonar(m)
                 if kind == proto.SONAR_ENEMY and mx < w_ and my < h_:
-                    sonar_danger.append((mx, my))
+                    sonar_predicted.append(((mx + DX[mf]) % w_, (my + DY[mf]) % h_))
+        if self.debug:
+            self.dbg["sonar_predicted"] = list(sonar_predicted)
 
         if self.founder is None:
             self.founder = t.rnd == 0
@@ -467,10 +505,6 @@ class Brain:
                         s += p["deny"] * (short - base_short) / need_e
             if foe_heads and not self.over():
                 s += p["voro"] * self.territory(1 << tidx, foe_heads, free, p["voro_radius"])
-            for mx, my in sonar_danger:  # a reported sighting is stale, so only a soft, distance-scaled nudge
-                dist = min((mx - tx) % w_, (tx - mx) % w_) + min((my - ty) % h_, (ty - my) % h_)
-                if dist <= p["sonar_danger_radius"]:
-                    s -= p["sonar_danger"] * (p["sonar_danger_radius"] - dist) / p["sonar_danger_radius"]
             for ex, ey, before in sq:
                 after = self.safe_moves(ex, ey, occ, tidx)
                 if after < before:  # fewer exits (0 = boxed in: it dies next turn)
@@ -484,6 +518,12 @@ class Brain:
                         s -= p["head_risk_small"] if small else p["head_risk"]
                     else:
                         s -= p["team_head_risk"]
+            for px, py in predicted:  # a guess, not a fact: landing on or next to it is merely made less attractive
+                if (py == ty and (px - tx) % w_ in (1, w_ - 1)) or (px == tx and (py - ty) % h_ in (1, h_ - 1)):
+                    s -= p["predict"]
+            for px, py in sonar_predicted:  # same idea, relayed: reaches an enemy this dragon never saw itself
+                if (py == ty and (px - tx) % w_ in (1, w_ - 1)) or (px == tx and (py - ty) % h_ in (1, h_ - 1)):
+                    s -= p["sonar_predict"]
             if d == t.dir:
                 s += p["straight"]
             if s > best_s:
