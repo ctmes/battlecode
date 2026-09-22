@@ -26,45 +26,51 @@ WIN_C = [t % 7 for t in range(49)]
 OK, PORTAL, TRADE_ENEMY, TRADE_TEAM, DEAD = 0, 1, 2, 3, 4
 
 DEFAULTS = {
-    "pearl_here": 1000.0,   # stepping onto a pearl
-    "pearl_near": 20.0,     # per step closer to the nearest visible pearl
-    "pearl_k": 6,           # look-ahead distance (steps) of the pearl distance field
-    "trap": 3000.0,         # penalty scale when the reachable area is smaller than needed
-    "need_margin": 2,       # needed area = length + margin
-    "need_cap": 120,        # ... capped, so the flood fill can exit early
-    "area": 10.0,           # bonus when not trapped
-    "pessimistic": 1,       # trap check counts only tiles seen so far (unseen tiles may be kelp pockets)
-    "head_risk": 400.0,     # adjacent enemy head (we are the longer dragon: a trade hurts us)
-    "head_risk_small": 100.0,  # adjacent enemy head when we are much shorter (a trade helps us)
-    "trade_ratio": 0.5,     # we count as "much shorter" below this fraction of the enemy's visible length
-    "team_head_risk": 250.0,
-    "straight": 5.0,        # keep heading
-    # Arena sweeps (round-robin, 16 games per pair): earlier splitting, smaller children and a higher team cap all
-    # win; split_len 3-4 beat 6/8/12, child 2 beat 3/4, cap 64 >= 16 > 8 > 4. Splitting always ends at unit_limit.
-    "split_len": 4,         # children (dragons born by a split) split when length >= this
+    # Tuned 2026-09-22 by CMA-ES (tools/tune.py) over 25 of these parameters, in 2 rounds (the 2nd with a widened
+    # search box after the 1st pegged 3 parameters at their bound), then picked by a 5-way, 3160-game round-robin
+    # (tools/tournament.py) against DEFAULTS and 3 other tuned candidates on maps none of them were tuned or
+    # validated on: this candidate (the mean of run1's last 5 generations, tools/tuned/run1_avg5.json) scored 59.5%
+    # against the field and beat every other candidate head-to-head, despite 2 candidates from the wider search
+    # beating the fixed reference opponents individually by more -- a reminder that single-opponent win rate doesn't
+    # imply a round-robin win. Also beats these DEFAULTS 61-68% over 400+ held-out games. Parameters left out of
+    # tools/tune.py's SPACE (pessimistic, need_cap, squeeze, deny*, budget_ns) were not tuned and keep their old
+    # values and comments; squeeze/deny* are 0 because herding never worked (see the strategy notes).
+    "pearl_here": 2348.8051,   # stepping onto a pearl
+    "pearl_near": 64.2029,     # per step closer to the nearest visible pearl
+    "pearl_k": 7,              # look-ahead distance (steps) of the pearl distance field
+    "trap": 8763.9753,         # penalty scale when the reachable area is smaller than needed
+    "need_margin": 3,          # needed area = length + margin
+    "need_cap": 120,           # ... capped, so the flood fill can exit early
+    "area": 9.8743,            # bonus when not trapped
+    "pessimistic": 1,          # trap check counts only tiles seen so far (unseen tiles may be kelp pockets)
+    "head_risk": 553.4206,     # adjacent enemy head (we are the longer dragon: a trade hurts us)
+    "head_risk_small": 236.0887,  # adjacent enemy head when we are much shorter (a trade helps us)
+    "trade_ratio": 0.9463,     # we count as "much shorter" below this fraction of the enemy's visible length
+    "team_head_risk": 596.8384,
+    "straight": 30.3172,       # keep heading
+    "split_len": 3,            # children (dragons born by a split) split when length >= this
     "split_child": 2,
-    "split_units": 10 ** 6,  # ... and the team has fewer dragons than this (the engine's unit limit also applies)
+    "split_units": 57,         # ... and the team has fewer dragons than this (the engine's unit limit also applies)
     # Founders (alive at round 0) seed the swarm, then stop splitting so one dragon grows: the round-500 tiebreak is
     # the longest living dragon, and a swarm of length-4 dragons loses it.
-    "founder_split_len": 4,
-    "founder_units": 10 ** 6,  # founders split only while the team has fewer dragons than this
-    "grow_mod": 6,          # children with id % grow_mod == 0 never split: they grow (0 = every child swarms)
-    # Dynamic split conditions (all off by default): split only when the situation supports another dragon.
-    "tiles_per_unit": 0,    # team-size target = map tiles / this, at least 2 and at most the unit limit (0 = off)
-    "split_pearls": 0,      # ... and at least this many pearls are in view (food for the extra mouth)
-    "split_r_end": 350,     # ... and it is before this round (late children do not pay back; 300-400 tested)
-    "split_min_exits": 1,   # ... and the parent has at least this many safe moves (not cornered)
-    "dead_end": 120.0,      # penalty for stepping onto a cell with a single way on
-    "need_floor": 24,       # room a move must leave, at least (short dragons otherwise pass tiny pockets)
-    "squeeze": 0.0,         # bonus per safe move a nearby enemy head loses (herding towards walls and bodies)
-    # Tron-style territory: weight of (cells I reach first - cells enemy heads reach first). Kept small: in the arena it
-    # lowers my deaths (~-20% vs flood-fill-aware opponents) but does not measurably herd anyone into obstacles.
-    "voro": 3.0,
-    "voro_radius": 5,       # ... measured this many steps out
-    "deny": 0.0,            # bonus for a move that leaves a visible enemy head less room (area denial / herding)
-    "deny_radius": 4,       # only enemy heads this close (Manhattan) are considered
-    "deny_margin": 2,       # an enemy counts as enclosed when its region is smaller than its visible length + this
-    "budget_ns": 60_000_000,  # self-metering: skip optional work past this (points on the judge)
+    "founder_split_len": 3,
+    "founder_units": 49,       # founders split only while the team has fewer dragons than this
+    "grow_mod": 7,             # children with id % grow_mod == 0 never split: they grow (0 = every child swarms)
+    # Dynamic split conditions: split only when the situation supports another dragon.
+    "tiles_per_unit": 0,       # team-size target = map tiles / this, at least 2 and at most the unit limit (0 = off)
+    "split_pearls": 1,         # ... and at least this many pearls are in view (food for the extra mouth)
+    "split_r_end": 433,        # ... and it is before this round (late children do not pay back)
+    "split_min_exits": 1,      # ... and the parent has at least this many safe moves (not cornered)
+    "dead_end": 191.4698,      # penalty for stepping onto a cell with a single way on
+    "need_floor": 8,           # room a move must leave, at least (short dragons otherwise pass tiny pockets)
+    "squeeze": 0.0,            # bonus per safe move a nearby enemy head loses (herding towards walls and bodies)
+    # Tron-style territory: weight of (cells I reach first - cells enemy heads reach first).
+    "voro": 2.7837,
+    "voro_radius": 5,          # ... measured this many steps out
+    "deny": 0.0,               # bonus for a move that leaves a visible enemy head less room (area denial / herding)
+    "deny_radius": 4,          # only enemy heads this close (Manhattan) are considered
+    "deny_margin": 2,          # an enemy counts as enclosed when its region is smaller than its visible length + this
+    "budget_ns": 60_000_000,   # self-metering: skip optional work past this (points on the judge)
 }
 
 

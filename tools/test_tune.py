@@ -90,6 +90,37 @@ def test_run_and_resume():
     print("ok  a tuning run writes its state and resumes where it stopped")
 
 
+def test_resume_keeps_the_original_run_settings():
+    """`run --name X --resume` with nothing else set must reuse X's population, map count, opponents, etc. -- not
+    argparse's own defaults -- since SepCMA's learning rates are derived from the population size at construction
+    and never round-trip through the saved state, so a size mismatch would silently start a different search."""
+    name, path = "_smoke2", ROOT / "tools" / "tuned" / "_smoke2.json"
+    blank = {f: None for f in tune.RUN_DEFAULTS}
+    first = argparse.Namespace(name=name, resume=False, workers=3,
+                                **{**blank, "generations": 2, "pop": 6, "maps": 1, "max_side": 16, "seed": 2000,
+                                   "sigma": 0.15, "vs": "old", "params": "pearl_near,straight", "no_bundled": True})
+    try:
+        tune.run(first)
+        before = json.loads(path.read_text())
+        assert before["args"]["pop"] == 6 and before["args"]["maps"] == 1 and before["args"]["vs"] == "old"
+
+        bare = argparse.Namespace(name=name, resume=True, workers=None, **{**blank, "generations": 3})
+        tune.run(bare)
+        after = json.loads(path.read_text())
+        for key in ("pop", "maps", "max_side", "seed", "sigma", "vs", "params", "no_bundled"):
+            assert after["args"][key] == before["args"][key], f"bare --resume changed {key}: " \
+                f"{before['args'][key]!r} -> {after['args'][key]!r}"
+        assert after["args"]["generations"] == 3 and len(after["history"]) == 3
+        assert after["history"][:2] == before["history"], "a population-size mismatch would desync the CMA-ES state"
+
+        override = argparse.Namespace(name=name, resume=True, workers=None, **{**blank, "generations": 4, "pop": 6})
+        tune.run(override)  # an explicit --pop equal to the original is a no-op; nothing here checks a genuine change
+        assert json.loads(path.read_text())["args"]["pop"] == 6
+    finally:
+        path.unlink(missing_ok=True)
+    print("ok  a bare --resume keeps the original run's population, maps and opponents")
+
+
 def run():
     test_encoding()
     test_parse_vs()
@@ -97,6 +128,7 @@ def run():
     test_wilson()
     test_league_is_deterministic_and_side_symmetric()
     test_run_and_resume()
+    test_resume_keeps_the_original_run_settings()
 
 
 if __name__ == "__main__":

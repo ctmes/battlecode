@@ -30,10 +30,16 @@ MAPS = ROOT / "maps"
 # name: (low, high, scale). "log" spreads a parameter over orders of magnitude, "int" rounds. Left out on purpose:
 # squeeze / deny* (herding did not work, see the strategy notes), pessimistic, need_cap and budget_ns (not behaviour).
 SPACE = {
-    "pearl_here": (200, 3000, "log"), "pearl_near": (2, 100, "log"), "pearl_k": (2, 10, "int"),
-    "trap": (300, 12000, "log"), "need_margin": (0, 8, "int"), "area": (0, 60, "lin"),
+    # pearl_near, trap and straight were widened after run1 (see tuned/run1.json): its final mean pegged pearl_near
+    # at 99% of (2, 100) and trap and straight exactly at the top of (300, 12000) and (0, 40) -- the optimizer wanted
+    # to go further. The rest of the "at a bound" values in that run (split_len/split_child/founder_split_len at
+    # their floor, split_min_exits=1, tiles_per_unit=0, split_pearls=0) are floors the game or want_split() already
+    # impose regardless of SPACE (e.g. split_child's minimum of 2 is the engine's own minimum split length), so
+    # widening them further would not change behaviour.
+    "pearl_here": (200, 3000, "log"), "pearl_near": (2, 400, "log"), "pearl_k": (2, 10, "int"),
+    "trap": (300, 40000, "log"), "need_margin": (0, 8, "int"), "area": (0, 60, "lin"),
     "head_risk": (0, 1500, "lin"), "head_risk_small": (0, 600, "lin"), "trade_ratio": (0.2, 1.2, "lin"),
-    "team_head_risk": (0, 800, "lin"), "straight": (0, 40, "lin"),
+    "team_head_risk": (0, 800, "lin"), "straight": (0, 120, "lin"),
     "split_len": (3, 12, "int"), "split_child": (2, 4, "int"), "founder_split_len": (3, 12, "int"),
     "grow_mod": (0, 12, "int"), "split_r_end": (100, 500, "int"), "split_min_exits": (1, 3, "int"),
     "tiles_per_unit": (0, 150, "int"), "split_pearls": (0, 4, "int"), "split_units": (4, 64, "int"),
@@ -186,11 +192,22 @@ def fitness(per_opp, vs):
     return sum(w * summarize(per_opp[name])["score"] for name, w in vs) / total
 
 
+RUN_DEFAULTS = {"generations": 20, "pop": 16, "maps": 10, "max_side": 32, "seed": 1000, "sigma": 0.15,
+                "vs": "defaults:2,old:2", "params": "", "start": "", "no_bundled": False}
+
+
 def run(args):
-    vs = parse_vs(args.vs)
     path = TUNED / f"{args.name}.json"
     TUNED.mkdir(exist_ok=True)
-    saved = json.loads(path.read_text()) if args.resume else None
+    saved = json.loads(path.read_text()) if args.resume and path.exists() else None
+    # Every setting that shapes the CMA-ES state or the evaluation (population size above all: SepCMA's weights
+    # and learning rates are derived from it, and only m/sigma/C/ps/pc/gen round-trip through the saved state) must
+    # match the original run to continue it rather than silently start a different search. Anything left unset on
+    # the command line (still None) falls back to the resumed run's own settings, then to RUN_DEFAULTS.
+    for key, fallback in RUN_DEFAULTS.items():
+        if getattr(args, key) is None:
+            setattr(args, key, (saved["args"][key] if saved else fallback))
+    vs = parse_vs(args.vs)
     names = saved["names"] if saved else (args.params.split(",") if args.params else list(SPACE))
     start = json.loads(pathlib.Path(args.start).read_text())["params"] if args.start else {}
     es = SepCMA(encode(start, names), args.sigma, args.pop)
@@ -266,19 +283,21 @@ def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
     r = sub.add_parser("run")
+    # All of these default to None, not RUN_DEFAULTS' values: on --resume, None means "keep the original run's
+    # setting" (see run()); only an explicit flag overrides a resumed run. A fresh run falls back to RUN_DEFAULTS.
     r.add_argument("--name", required=True)
-    r.add_argument("--generations", type=int, default=20)
-    r.add_argument("--pop", type=int, default=16)
-    r.add_argument("--maps", type=int, default=10, help="fresh generated maps per generation")
-    r.add_argument("--max-side", type=int, default=32)
-    r.add_argument("--seed", type=int, default=1000, help="first map seed; validation uses 100000 up")
-    r.add_argument("--sigma", type=float, default=0.15, help="initial step size in the unit box")
-    r.add_argument("--vs", default="defaults:2,old:2", help="opponents and weights; a .json path adds a past result")
-    r.add_argument("--params", default="", help="comma list of parameters to tune (default: all of SPACE)")
-    r.add_argument("--start", default="", help="tuned .json to start from (default: brain.DEFAULTS)")
-    r.add_argument("--no-bundled", action="store_true")
+    r.add_argument("--generations", type=int, default=None)
+    r.add_argument("--pop", type=int, default=None)
+    r.add_argument("--maps", type=int, default=None, help="fresh generated maps per generation")
+    r.add_argument("--max-side", type=int, default=None)
+    r.add_argument("--seed", type=int, default=None, help="first map seed; validation uses 100000 up")
+    r.add_argument("--sigma", type=float, default=None, help="initial step size in the unit box")
+    r.add_argument("--vs", default=None, help="opponents and weights; a .json path adds a past result")
+    r.add_argument("--params", default=None, help="comma list of parameters to tune (default: all of SPACE)")
+    r.add_argument("--start", default=None, help="tuned .json to start from (default: brain.DEFAULTS)")
+    r.add_argument("--no-bundled", action="store_true", default=None)
     r.add_argument("--resume", action="store_true")
-    r.add_argument("--workers", type=int, default=None)
+    r.add_argument("--workers", type=int, default=None, help="always auto-detected when omitted, even on --resume")
     a = sub.add_parser("average", help="average the last few generation means of a run into NAME_avgK.json")
     a.add_argument("name")
     a.add_argument("--last", type=int, default=5)
