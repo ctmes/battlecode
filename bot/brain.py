@@ -48,17 +48,19 @@ DEFAULTS = {
     # the longest living dragon, and a swarm of length-4 dragons loses it.
     "founder_split_len": 4,
     "founder_units": 10 ** 6,  # founders split only while the team has fewer dragons than this
-    "grow_mod": 0,          # children with id % grow_mod == 0 never split: they grow (0 = every child swarms)
+    "grow_mod": 6,          # children with id % grow_mod == 0 never split: they grow (0 = every child swarms)
     # Dynamic split conditions (all off by default): split only when the situation supports another dragon.
     "tiles_per_unit": 0,    # team-size target = map tiles / this, at least 2 and at most the unit limit (0 = off)
     "split_pearls": 0,      # ... and at least this many pearls are in view (food for the extra mouth)
-    "split_r_end": 10 ** 9,  # ... and it is before this round (late children do not pay back)
+    "split_r_end": 350,     # ... and it is before this round (late children do not pay back; 300-400 tested)
     "split_min_exits": 1,   # ... and the parent has at least this many safe moves (not cornered)
-    "dead_end": 0.0,        # penalty for stepping onto a cell with a single way on
-    "need_floor": 0,        # room a move must leave, at least (short dragons otherwise pass tiny pockets)
+    "dead_end": 120.0,      # penalty for stepping onto a cell with a single way on
+    "need_floor": 24,       # room a move must leave, at least (short dragons otherwise pass tiny pockets)
     "squeeze": 0.0,         # bonus per safe move a nearby enemy head loses (herding towards walls and bodies)
-    "voro": 0.0,            # weight of (cells I reach first - cells enemy heads reach first), Tron-style territory
-    "voro_radius": 8,       # ... measured this many steps out
+    # Tron-style territory: weight of (cells I reach first - cells enemy heads reach first). Kept small: in the arena it
+    # lowers my deaths (~-20% vs flood-fill-aware opponents) but does not measurably herd anyone into obstacles.
+    "voro": 3.0,
+    "voro_radius": 5,       # ... measured this many steps out
     "deny": 0.0,            # bonus for a move that leaves a visible enemy head less room (area denial / herding)
     "deny_radius": 4,       # only enemy heads this close (Manhattan) are considered
     "deny_margin": 2,       # an enemy counts as enclosed when its region is smaller than its visible length + this
