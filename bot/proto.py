@@ -70,3 +70,30 @@ def parse_turn(block):
     e = j + 50 + m
     t.edges = ls[e:e + 15]
     return t
+
+
+# ---------------------------------------------------------------------- sonar wire format (our own convention)
+# Sonar (see the docs) is a straight ray cast from the head after the turn's move, in whatever direction the dragon
+# ends up facing; it stops at kelp or the first dragon part -- teammate or enemy -- and delivers one raw uint32 to
+# whoever it hits. There is no addressing and no sender identity, so a payload only helps if it is self-contained:
+# every dragon on the map shares the same absolute coordinates, so packing an absolute (x, y) is interpretable by
+# any receiver regardless of where the message came from or who sent it. A received value may come from an enemy
+# (sonar passes through no team filter) or be a stray value that happens to parse, so treat it as untrusted input,
+# not a fact: bounds-check before using it as a board index.
+#
+# Layout (MSB first): kind (2 bits, room for 3 more kinds later) | x (6 bits) | y (6 bits) | length bucket (4 bits,
+# min(length, 15)) | 14 bits unused. x/y are 6 bits because boards are at most 64 wide (Battlecode rules).
+SONAR_ENEMY = 0
+
+
+def pack_enemy_sonar(x, y, length):
+    """An enemy sighting: absolute (x, y) plus a coarse size hint, as one uint32 sonar payload."""
+    return (SONAR_ENEMY << 30) | ((x & 63) << 24) | ((y & 63) << 18) | (min(length, 15) << 14)
+
+
+def unpack_sonar(value):
+    """-> (kind, x, y, length_bucket). kind is None (x=y=length_bucket=0) for a kind this module does not know."""
+    kind = value >> 30
+    if kind != SONAR_ENEMY:
+        return None, 0, 0, 0
+    return kind, (value >> 24) & 63, (value >> 18) & 63, (value >> 14) & 15

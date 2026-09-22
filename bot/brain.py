@@ -5,6 +5,8 @@ Order of decisions each turn:
      unless the dragon is boxed in; then the least-bad option is taken.
   2. Among legal moves: reachable-area (trap) check by bitboard flood fill, pearl chasing, head-on risk.
   3. Optional split (off by default; thresholds are tunable parameters).
+  4. Optional sonar: broadcast the nearest visible enemy's position (proto.pack_enemy_sonar/unpack_sonar); a
+     received sighting gets a soft, distance-scaled avoidance nudge, ahead of the exact adjacency-only head risk.
 
 Everything is plain Python ints / bitboards: on the judge a Python loop iteration costs thousands of CPU
 points, whereas big-int shifts are cheap (Points lab: 32x32 flood fill 2.0M points vs 46M for a list BFS).
@@ -70,6 +72,15 @@ DEFAULTS = {
     "deny": 0.0,               # bonus for a move that leaves a visible enemy head less room (area denial / herding)
     "deny_radius": 4,          # only enemy heads this close (Manhattan) are considered
     "deny_margin": 2,          # an enemy counts as enclosed when its region is smaller than its visible length + this
+    # Sonar (proto.pack_enemy_sonar/unpack_sonar): every dragon broadcasts its nearest visible enemy's position and
+    # size, and steers a little away from any tile close to a received sighting -- a soft, stale-tolerant early
+    # warning ahead of the exact, adjacency-only head_risk check, aimed at head-on collisions (the largest cause of
+    # death: see the evaluation notes). A first version fed sightings into the "voro" territory contest instead;
+    # a 0.5-16 weight sweep over 1,056 games found no measurable edge (47-55%, every CI crossing 50%), so this is a
+    # different mechanism, not a retuned version of that one. sonar_danger=0 also turns off sending (pointless with
+    # nobody tuned to listen). Untuned; see tools/tune.py SPACE and tools/tuned/ for whether it actually helps.
+    "sonar_danger": 0.0,
+    "sonar_danger_radius": 4,  # a reported sighting only matters within this many (Manhattan) tiles
     "budget_ns": 60_000_000,   # self-metering: skip optional work past this (points on the judge)
 }
 
@@ -350,12 +361,32 @@ class Brain:
             best = min(range(4), key=lambda d: (status[d], d != t.dir))
             return MOVES[best]
 
+        # sonar: broadcast the nearest visible enemy (cheap: no flood fill), and decode anything received this turn
+        sonar_msg, sonar_danger = None, []  # sonar_danger: [(x, y), ...] reported sightings, still worth avoiding
+        if p["sonar_danger"] > 0:
+            if heads:
+                best_e, best_dist = None, 1 << 30
+                for hc, (enemy, pid) in heads.items():
+                    if enemy:
+                        ex, ey = hc % w_, hc // w_
+                        dist = min((ex - hx) % w_, (hx - ex) % w_) + min((ey - hy) % h_, (hy - ey) % h_)
+                        if dist < best_dist:
+                            best_dist, best_e = dist, (ex, ey, segs.get(pid, 1))
+                if best_e is not None:
+                    sonar_msg = proto.pack_enemy_sonar(*best_e)
+            for m in t.msgs:  # untrusted: could be an enemy's sonar, or a stray value that happens to decode
+                kind, mx, my, _ = proto.unpack_sonar(m)
+                if kind == proto.SONAR_ENEMY and mx < w_ and my < h_:
+                    sonar_danger.append((mx, my))
+
         if self.founder is None:
             self.founder = t.rnd == 0
         if self.want_split(t, heads, len(ok)):
-            return b"SPLIT %d\n" % p["split_child"]
+            action = b"SPLIT %d\n" % p["split_child"]
+            return action + b"SONAR %d\n" % sonar_msg if sonar_msg is not None else action
         if len(ok) == 1 or self.over():
-            return MOVES[ok[0]]
+            action = MOVES[ok[0]]
+            return action + b"SONAR %d\n" % sonar_msg if sonar_msg is not None else action
 
         # pearls in view
         x0 = (hx - 3) % w_
@@ -436,6 +467,10 @@ class Brain:
                         s += p["deny"] * (short - base_short) / need_e
             if foe_heads and not self.over():
                 s += p["voro"] * self.territory(1 << tidx, foe_heads, free, p["voro_radius"])
+            for mx, my in sonar_danger:  # a reported sighting is stale, so only a soft, distance-scaled nudge
+                dist = min((mx - tx) % w_, (tx - mx) % w_) + min((my - ty) % h_, (ty - my) % h_)
+                if dist <= p["sonar_danger_radius"]:
+                    s -= p["sonar_danger"] * (p["sonar_danger_radius"] - dist) / p["sonar_danger_radius"]
             for ex, ey, before in sq:
                 after = self.safe_moves(ex, ey, occ, tidx)
                 if after < before:  # fewer exits (0 = boxed in: it dies next turn)
@@ -453,7 +488,8 @@ class Brain:
                 s += p["straight"]
             if s > best_s:
                 best_d, best_s = d, s
-        return MOVES[best_d]
+        action = MOVES[best_d]
+        return action + b"SONAR %d\n" % sonar_msg if sonar_msg is not None else action
 
     # ------------------------------------------------------------------ fallback
     def fallback(self, block):
