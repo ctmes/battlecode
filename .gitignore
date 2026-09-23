@@ -4,3 +4,4 @@ __pycache__/
 maps/gen/
 tools/bc/*.npz
 tools/ppo*/
+tools/evolved/
