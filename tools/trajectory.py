@@ -4,7 +4,6 @@ update later -- the last piece of stage 4's environment before the learning algo
 
 Reward, per the plan's "Reward" section:
   step shaping = (length this turn - length last turn) / GROWTH_SCALE - STEP_COST
-                 (growth == a pearl eaten; STEP_COST is a small per-turn cost so idling isn't free)
   death        = -(length at death) / DEATH_SCALE, added to that dragon's last step
   terminal     = +-1 / 0 (win/draw/loss), added to every surviving teammate's last step, plus a small bonus from
                  the team's OWN longest-living dragon and total length at game end (correlates with what the
@@ -16,6 +15,20 @@ not its longest dragon's -- checked empirically, since neither field is document
 tracked here from each dragon's own last observed length instead of trusting a MatchResult field for it.
 Not included (deferred): credit for causing a specific enemy's death -- on_death gives no clean per-dragon
 attribution (a head-on kills both sides; a trap has no "who caused it" signal at all).
+
+STEP_COST=0, on purpose, after a real failure: a first PPO run (tools/train_ppo.py) with STEP_COST=1/256 collapsed
+within a few iterations -- episode lengths fell ~23x and win rate vs Brain went from 42% to ~0%, because a per-turn
+cost accumulates *unboundedly* over a game that can run 500 rounds, while death is a bounded one-time cost and the
+terminal outcome is capped at +-1: for any dragon not growing roughly every 32 turns (break-even at
+STEP_COST*GROWTH_SCALE), simply existing longer made the total return *worse* than dying immediately, so the
+policy learned to suicide rather than try to win (confirmed: the resulting checkpoint scored 3% vs an untrained
+random policy and 1% vs Brain, down from BC's 72%/31%). The original justification ("so idling isn't free") does
+not actually hold at STEP_COST=0 either: a non-growing turn nets 0 reward, not positive reward, so there was never
+a real free-stalling incentive to guard against. Left in as a knob (not deleted) in case a *bounded* anti-stalling
+term is wanted later -- e.g. capped to the first K turns, or scaled by 1/expected_episode_length -- but any nonzero
+value needs to be re-validated against an actual training run, not just against the reward statistics of an
+untrained policy (which is all it was checked against before, and looked "sane" only because that policy's episodes
+happened to be short).
 """
 import argparse
 import concurrent.futures
@@ -33,7 +46,7 @@ from policy import Policy, random_weights  # noqa: E402
 from unswbc.engine import EngineModule  # noqa: E402
 
 GROWTH_SCALE = 8.0     # length units per point of shaping reward for eating a pearl
-STEP_COST = 1 / 256    # small per-turn cost so a policy can't stall for free shaping reward
+STEP_COST = 0.0        # see the module docstring: a nonzero value here caused a real training collapse
 DEATH_SCALE = 64.0     # matches encoder.py's own length normalisation
 TIEBREAK_SCALE = 0.1   # weight of the longest-dragon + total-length terms, relative to the +-1 terminal outcome
 
@@ -59,7 +72,14 @@ class TrajPlayer:
     def reply(self, did, block):
         d = self.policies[did].decide(block)
         prev = self.last_len.get(did, d["length"])
-        shaped = (d["length"] - prev) / GROWTH_SCALE - STEP_COST
+        # max(0, ...): length can only drop from a deliberate split (verified: no other mechanic shrinks a living
+        # dragon), so a decrease is a strategic choice, not a wasted turn -- it should not cost shaping reward on
+        # top of already giving up that length. Splitting's true payoff (a second dragon that can also grow, the
+        # team-length tiebreak bonus) can arrive hundreds of turns later, far beyond GAE's ~10-20-step effective
+        # credit horizon (gamma=0.99, lambda=0.95); penalizing the immediate length drop here fought directly
+        # against that payoff and (measured, tools/_diag_splitrate.py) drove split rate down 4.1% -> 1.2% over a
+        # 25-iteration PPO run, shrinking the team and the win rate alongside it.
+        shaped = max(0.0, d["length"] - prev) / GROWTH_SCALE - STEP_COST
         self.last_len[did] = d["length"]
         self.steps[did].append(Step(d["idx"], d["dense"], d["move_i"], d["move_logp"],
                                      d["split_i"], d["split_logp"], shaped, False))
@@ -73,9 +93,14 @@ class TrajPlayer:
             steps[-1] = last._replace(reward=last.reward - self.last_len.get(did, 0) / DEATH_SCALE, done=True)
 
     def finish(self, terminal_bonus):
-        """Adds the shared terminal reward to every dragon still alive at game end, and marks those steps done."""
-        for did in self.alive:
-            steps = self.steps[did]
+        """Adds the shared terminal reward to EVERY dragon that ever played for this team, not just ones still
+        alive at game end -- a dragon that died earlier still needs credit/blame for how the game actually
+        turned out. A real bug: iterating only self.alive here let a dragon "dodge" its team's eventual loss by
+        dying before the game ended -- confirmed by measurement, dying early averaged ~-0.05 reward vs ~-0.4 for
+        surviving to see a likely loss, a strong incentive to suicide with nothing to do with STEP_COST (which a
+        first, wrong fix attempt zeroed out without resolving the actual collapse). Each already-dead dragon's
+        last step already has die()'s death penalty on it; this adds the terminal bonus on top, same as always."""
+        for did, steps in self.steps.items():
             if steps:
                 last = steps[-1]
                 steps[-1] = last._replace(reward=last.reward + terminal_bonus, done=True)

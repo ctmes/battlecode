@@ -56,7 +56,7 @@ def class_weights(labels, n_classes, device, power=1.0):
 
 def step(net, batch, split_w=None, move_w=None):
     flat_idx, offsets, dense, move, split = batch
-    move_logits, split_logits = net(flat_idx, offsets, dense)
+    move_logits, split_logits, _ = net(flat_idx, offsets, dense)  # BC has no return targets: the value head is untrained here
     split_loss = F.cross_entropy(split_logits, split, weight=split_w)
     move_mask = move >= 0
     if move_mask.any():

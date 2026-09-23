@@ -54,6 +54,43 @@ def _legal(t, w, h):
     return tuple(not kelp[d] and ((t.hx + DX[d]) % w, (t.hy + DY[d]) % h) not in occ for d in range(4))
 
 
+def choose(move_logits, split_logits, t, rng, width, height, unit_limit):
+    """The masking/sampling logic shared by Policy.decide() and tools/ppo_policy.py's PPOPolicy.decide() (which
+    needs a 3rd, value output from forward() -- factored out here so the two don't duplicate this, the trickiest
+    part of the module, see the class docstring). Returns (action, move_i, move_logp, split_i, split_logp); split
+    options are masked *before* sampling so split_i always matches what happens (an infeasible sampled split would
+    otherwise silently fall back to a move without the recorded action reflecting that). move_i/move_logp are None
+    on a turn that splits: the move head was never acted on that turn."""
+    d0 = t.dir if t.dir >= 0 else 0
+    legal = _legal(t, width, height)
+    rel_abs = (d0, (d0 + 3) % 4, (d0 + 1) % 4)  # forward, left, right -> absolute N/E/S/W
+    options = [i for i in range(3) if legal[rel_abs[i]]]
+    if options:
+        mp = _softmax(move_logits[options])
+        oi = int(rng.choice(len(options), p=mp))
+        move_i, move_logp, choice = options[oi], float(np.log(mp[oi])), rel_abs[options[oi]]
+    else:  # boxed in on all 3 non-back directions: the back, else whatever isn't kelp; no move head sample
+        choice = next((d for d in range(4) if legal[d]), d0)
+        move_i = move_logp = None
+
+    eligible = [True]  # index 0 ("don't split") is always available
+    children = [0]
+    for frac in SPLIT_FRACS:
+        ok = t.units < unit_limit and t.length >= 4
+        child = max(2, min(round(t.length * frac), t.length - 2)) if ok else 0
+        ok = ok and t.length - child >= 2
+        eligible.append(ok)
+        children.append(child)
+    mask = np.where(eligible, 0.0, -1e30)
+    sp = _softmax(split_logits + mask)
+    split_i = int(rng.choice(len(sp), p=sp))
+    split_logp = float(np.log(sp[split_i]))
+
+    if split_i > 0:
+        return b"SPLIT %d\n" % children[split_i], None, None, split_i, split_logp
+    return MOVES[choice], move_i, move_logp, split_i, split_logp
+
+
 class Policy:
     def __init__(self, dragon_id, team, width, height, unit_limit, weights, seed=0):
         self.id, self.team = dragon_id, team
@@ -77,43 +114,12 @@ class Policy:
     def decide(self, block):
         """Everything a trajectory step needs: the action bytes, the (idx, dense) features it was chosen from,
         and each sampled head's index + log-prob under the distribution actually sampled from (so the log-prob
-        matches what PPO's importance ratio needs later). Split options are masked *before* sampling so the
-        recorded split_i is always exactly what happens -- unlike a "sample then validate" approach, which could
-        record "chose to split" for a turn where a move happened instead because splitting was infeasible.
-        move_i/move_logp are None on a turn that splits: the move head was never acted on that turn."""
+        matches what PPO's importance ratio needs later). See `choose()` for the masking/sampling rules."""
         t = proto.parse_turn(block)
         idx, dense = encoder.encode(t, self.team, self.id, self.W, self.H, self.limit)
         move_logits, split_logits = self.forward(idx, dense)
-
-        d0 = t.dir if t.dir >= 0 else 0
-        legal = _legal(t, self.W, self.H)
-        rel_abs = (d0, (d0 + 3) % 4, (d0 + 1) % 4)  # forward, left, right -> absolute N/E/S/W
-        options = [i for i in range(3) if legal[rel_abs[i]]]
-        if options:
-            mp = _softmax(move_logits[options])
-            oi = int(self.rng.choice(len(options), p=mp))
-            move_i, move_logp, choice = options[oi], float(np.log(mp[oi])), rel_abs[options[oi]]
-        else:  # boxed in on all 3 non-back directions: the back, else whatever isn't kelp; no move head sample
-            choice = next((d for d in range(4) if legal[d]), d0)
-            move_i = move_logp = None
-
-        eligible = [True]  # index 0 ("don't split") is always available
-        children = [0]
-        for frac in SPLIT_FRACS:
-            ok = t.units < self.limit and t.length >= 4
-            child = max(2, min(round(t.length * frac), t.length - 2)) if ok else 0
-            ok = ok and t.length - child >= 2
-            eligible.append(ok)
-            children.append(child)
-        mask = np.where(eligible, 0.0, -1e30)
-        sp = _softmax(split_logits + mask)
-        split_i = int(self.rng.choice(len(sp), p=sp))
-        split_logp = float(np.log(sp[split_i]))
-
-        if split_i > 0:
-            action, move_i, move_logp = b"SPLIT %d\n" % children[split_i], None, None
-        else:
-            action = MOVES[choice]
+        action, move_i, move_logp, split_i, split_logp = choose(
+            move_logits, split_logits, t, self.rng, self.W, self.H, self.limit)
         return {"action": action, "idx": idx, "dense": dense, "length": t.length, "round": t.rnd,
                 "move_i": move_i, "move_logp": move_logp, "split_i": split_i, "split_logp": split_logp}
 

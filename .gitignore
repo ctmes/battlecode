@@ -2,3 +2,5 @@ __pycache__/
 .unswbc-build/
 *.replay
 maps/gen/
+tools/bc/*.npz
+tools/ppo*/

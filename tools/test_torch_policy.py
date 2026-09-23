@@ -31,7 +31,7 @@ def test_export_matches_numpy_forward():
 
         flat, offsets, dense_t = torch_policy.batch_to_tensors([idx], [dense])
         with torch.no_grad():
-            t_move, t_split = net(flat, offsets, dense_t)
+            t_move, t_split, _ = net(flat, offsets, dense_t)
         t_move, t_split = t_move[0].numpy(), t_split[0].numpy()
 
         assert np.allclose(np_move, t_move, atol=1e-4), f"trial {trial}: move logits differ\n{np_move}\n{t_move}"
@@ -50,6 +50,26 @@ def test_roundtrip_import_export():
     print("ok: export -> import -> export round-trips exactly")
 
 
+def test_value_head_roundtrips_and_missing_is_graceful():
+    torch.manual_seed(4)
+    net = torch_policy.PolicyNet()
+    full = torch_policy.export_numpy(net)
+    assert "wv" in full and "bv" in full
+    assert full["wv"].shape == (np_policy.H2, 1)
+    assert full["bv"].shape == (1,)
+
+    net2 = torch_policy.import_numpy(full)
+    reexported = torch_policy.export_numpy(net2)
+    assert np.allclose(full["wv"], reexported["wv"], atol=1e-6)
+    assert np.allclose(full["bv"], reexported["bv"], atol=1e-6)
+
+    bc_style = {k: v for k, v in full.items() if k not in ("wv", "bv")}  # simulates tools/bc/bc.npz: no critic
+    net3 = torch_policy.import_numpy(bc_style)  # must not raise
+    exported3 = torch_policy.export_numpy(net3)
+    assert exported3["wv"].shape == full["wv"].shape  # random-initialised, not copied from nowhere
+    print("ok: value head exports/imports correctly, and importing a BC-era dict without one doesn't crash")
+
+
 def test_random_weights_import_matches_numpy_shapes():
     weights = np_policy.random_weights(3)
     net = torch_policy.import_numpy(weights)
@@ -63,4 +83,5 @@ def test_random_weights_import_matches_numpy_shapes():
 if __name__ == "__main__":
     test_export_matches_numpy_forward()
     test_roundtrip_import_export()
+    test_value_head_roundtrips_and_missing_is_graceful()
     test_random_weights_import_matches_numpy_shapes()

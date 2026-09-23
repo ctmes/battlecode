@@ -10,6 +10,14 @@ the single shared bias (its .bias is exactly b1), so there is only ever one firs
 version. torch's nn.Linear.weight is (out_features, in_features); the numpy dict's convention is (in, out) (see
 bot/policy.py's `layer()`), so export/import transpose every Linear weight -- EmbeddingBag.weight needs no
 transpose, its shape (vocab, H1) already matches numpy's "w1" directly.
+
+A `value_head` (h2 -> 1) shares the same trunk as the two action heads: a standard shared-parameter actor-critic,
+needed once PPO (not BC) starts, for GAE. It sees the same per-dragon egocentric features as the actor -- the
+plan's more accurate option (a critic over "the union of the team's views") needs a custom simulator to assemble
+a full-team state and is explicitly deferred there ("revisit if value learning is the bottleneck"); this is the
+simpler v1. A BC-era checkpoint (tools/bc/bc.npz) has no "wv"/"bv" -- import_numpy random-initialises just that
+head rather than failing, so PPO can bootstrap the actor from BC without retraining it with a value head from
+scratch.
 """
 import pathlib
 import sys
@@ -34,11 +42,12 @@ class PolicyNet(nn.Module):
         self.layer2 = nn.Linear(h1, h2, bias=True)
         self.move_head = nn.Linear(h2, N_MOVE, bias=True)
         self.split_head = nn.Linear(h2, N_SPLIT, bias=True)
+        self.value_head = nn.Linear(h2, 1, bias=True)
 
     def forward(self, flat_idx, offsets, dense):
         h1 = torch.relu(self.embed(flat_idx, offsets) + self.dense(dense))
         h2 = torch.relu(self.layer2(h1))
-        return self.move_head(h2), self.split_head(h2)
+        return self.move_head(h2), self.split_head(h2), self.value_head(h2).squeeze(-1)
 
 
 def export_numpy(net):
@@ -55,12 +64,15 @@ def export_numpy(net):
             "w2": a(net.layer2.weight).T.copy(), "b2": a(net.layer2.bias),
             "wm": a(net.move_head.weight).T.copy(), "bm": a(net.move_head.bias),
             "ws": a(net.split_head.weight).T.copy(), "bs": a(net.split_head.bias),
+            "wv": a(net.value_head.weight).T.copy(), "bv": a(net.value_head.bias),
         }
 
 
 def import_numpy(weights, device="cpu"):
     """The reverse of export_numpy: load a numpy weight dict (e.g. from random_weights(), or a BC checkpoint) into
-    a fresh PolicyNet -- used to resume/fine-tune (PPO) from a BC-trained policy."""
+    a fresh PolicyNet -- used to resume/fine-tune (PPO) from a BC-trained policy. "wv"/"bv" (the value head) are
+    optional: a BC-era checkpoint has no critic, so a missing value head is left at PolicyNet's fresh random init
+    rather than treated as an error."""
     vocab, h1 = weights["w1"].shape
     dense_size = weights["wd"].shape[0]
     h2 = weights["w2"].shape[1]
@@ -75,6 +87,9 @@ def import_numpy(weights, device="cpu"):
         net.move_head.bias.copy_(torch.from_numpy(np.ascontiguousarray(weights["bm"])))
         net.split_head.weight.copy_(torch.from_numpy(np.ascontiguousarray(weights["ws"].T)))
         net.split_head.bias.copy_(torch.from_numpy(np.ascontiguousarray(weights["bs"])))
+        if "wv" in weights and "bv" in weights:
+            net.value_head.weight.copy_(torch.from_numpy(np.ascontiguousarray(weights["wv"].T)))
+            net.value_head.bias.copy_(torch.from_numpy(np.ascontiguousarray(weights["bv"])))
     return net.to(device)
 
 
