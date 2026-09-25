@@ -102,8 +102,8 @@ def random_world(rng, n_pearls=10, n_edges=20, n_parts=6):
     return pearls, cds, edges, parts
 
 
-def encode_world(dir_, pearls, cds, edges, parts):
-    block = render_block(dir_, pearls, cds, edges, parts)
+def encode_world(dir_, pearls, cds, edges, parts, msgs=()):
+    block = render_block(dir_, pearls, cds, edges, parts, msgs=msgs)
     t = proto.parse_turn(block)
     return encoder.encode(t, b"A", 1, W, H, 4)
 
@@ -159,8 +159,37 @@ def test_hand_example():
     print("ok: hand-picked example has exactly the expected pearl / enemy-head / kelp features")
 
 
+def test_sonar_decode_known_message():
+    # dir_=1 (East, not North) deliberately, so this exercises the real _rot rotation, not the k=0 no-op.
+    msg = proto.pack_enemy_sonar((HX + 5) % W, (HY - 2) % H, 7, proto.LETTERS.find(b"E"))
+    idx, dense = encode_world(1, set(), {}, {}, [], msgs=[msg])
+    has_report, dx_n, dy_n, size_n, facing_n = dense[4:9]
+    assert has_report == 1.0
+    # (dx, dy) = (5, -2) rotated one quarter-turn N->E is (-2, -5) -- proto.DX/DY's own convention (see _rot).
+    assert abs(dx_n - (-2 / W)) < 1e-9 and abs(dy_n - (-5 / H)) < 1e-9, (dx_n, dy_n)
+    assert abs(size_n - 7 / 15) < 1e-9
+    assert facing_n == 0.0  # reported facing (E) equals our own heading (E) -> "straight ahead" = 0
+    print("ok: a decoded sonar message produces the expected heading-relative dense features")
+
+
+def test_sonar_decode_absent_when_no_message():
+    idx, dense = encode_world(0, set(), {}, {}, [], msgs=[])
+    assert dense[4:9] == [0.0, 0.0, 0.0, 0.0, 0.0]
+    print("ok: no sonar message this turn -> the whole decoded-sonar dense block is zero")
+
+
+def test_sonar_decode_ignores_undecodable_message():
+    garbage = (3 << 30) | 12345  # kind=3: proto.unpack_sonar only recognises SONAR_ENEMY (0), returns kind=None
+    idx, dense = encode_world(0, set(), {}, {}, [], msgs=[garbage])
+    assert dense[4:9] == [0.0, 0.0, 0.0, 0.0, 0.0]
+    print("ok: an undecodable sonar message reads as no signal, not a crash or garbage feature")
+
+
 if __name__ == "__main__":
     test_rotation_invariance()
     test_bounds_and_uniqueness()
     test_dir_minus_one_no_crash()
     test_hand_example()
+    test_sonar_decode_known_message()
+    test_sonar_decode_absent_when_no_message()
+    test_sonar_decode_ignores_undecodable_message()

@@ -11,7 +11,7 @@ import sys
 import numpy as np
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from evolve import ACTOR_KEYS, NumpySepCMA, flatten, initial_c, unflatten  # noqa: E402
+from evolve import ACTOR_KEYS, NumpySepCMA, flatten, initial_c, parse_vs, unflatten  # noqa: E402
 
 
 def close(a, b, tol=1e-9):
@@ -73,8 +73,16 @@ def test_sep_cma_state_round_trip():
     print("ok: NumpySepCMA.arrays()/scalars() -> load() round-trips m, C, ps, pc, sigma, gen exactly")
 
 
+def test_parse_vs():
+    assert parse_vs("brain") == [("brain", 1.0)]
+    assert parse_vs("brain:2,splitter:1") == [("brain", 2.0), ("splitter", 1.0)]
+    assert parse_vs("brain,splitter") == [("brain", 1.0), ("splitter", 1.0)]
+    print("ok: parse_vs handles bare names, weighted names, and mixes of both")
+
+
 if __name__ == "__main__":
     test_flatten_unflatten_round_trip()
     test_initial_c_matches_layer_variance()
     test_sep_cma_moves_toward_higher_fitness()
     test_sep_cma_state_round_trip()
+    test_parse_vs()

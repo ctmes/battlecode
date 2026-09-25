@@ -56,6 +56,7 @@ import encoder  # noqa: E402
 import mapgen  # noqa: E402
 from brain import Brain  # noqa: E402
 from league import wilson  # noqa: E402  (generic, not Brain-specific -- see its docstring)
+from opponents import OPPONENTS  # noqa: E402
 from policy import Policy, random_weights  # noqa: E402
 from unswbc.engine import EngineModule  # noqa: E402
 
@@ -179,20 +180,25 @@ def _pool_init(pop_bytes, keys, shapes):
     _keys, _shapes = keys, shapes
 
 
-def _play_one(candidate_idx, map_bytes, side, opp_cls, seed):
+def _play_one(candidate_idx, map_bytes, side, opp_factory, seed):
+    """opp_factory(seed) -> a team-level object with spawn(did, init)/reply(did, block) -- the same interface
+    tools/opponents.py's Player base class and tools/arena.py's BrainPlayer already use throughout this project
+    (one object manages every dragon on that side, not one instance per dragon), so a sparring bot's own
+    constructor (`OPPONENTS[name]`) can be used as opp_factory directly with no adapter needed."""
     weights = unflatten(_population[candidate_idx], _keys, _shapes)
-    owner = {}
+    opp = opp_factory(seed)
+    mine = {}
 
     def bot_spawn(did, init):
         team = next(line for line in init.split(b"\n") if line.startswith(b"TEAM")).split()[1]
         if team == side.encode():
-            owner[did] = Policy.from_init(init, weights, seed=seed * 1000 + did)
+            mine[did] = Policy.from_init(init, weights, seed=seed * 1000 + did)
         else:
-            owner[did] = opp_cls(init)
+            opp.spawn(did, init)
 
     def bot_reply(did, block):
         try:
-            return owner[did].act(block)
+            return mine[did].act(block) if did in mine else opp.reply(did, block)
         except Exception:  # noqa: BLE001 - a crash shouldn't wedge the whole generation
             return b""
 
@@ -201,33 +207,62 @@ def _play_one(candidate_idx, map_bytes, side, opp_cls, seed):
     return 0.5 if res.winner is None else float(res.winner == side)
 
 
-class _BrainAdapter:
-    """Wraps Brain so opp_cls(init) -> object-with-.act(block), same calling convention as _RandomAdapter."""
+class _BrainOpponent:
+    def __init__(self, seed):
+        self.brains = {}
 
-    def __init__(self, init):
-        self._b = Brain.from_init(init)
+    def spawn(self, did, init):
+        self.brains[did] = Brain.from_init(init)
 
-    def act(self, block):
-        return self._b.act(block)
+    def reply(self, did, block):
+        return self.brains[did].act(block)
 
 
-class _RandomAdapter:
+class _RandomOpponent:
     """An untrained Policy opponent for validate()'s sanity-floor check, matching eval_bc.py's RandomPlayer."""
 
     _weights = None
 
-    def __init__(self, init):
-        if _RandomAdapter._weights is None:
-            _RandomAdapter._weights = random_weights(0, encoder.VOCAB, encoder.DENSE_SIZE)
-        self._p = Policy.from_init(init, _RandomAdapter._weights, seed=0)
+    def __init__(self, seed):
+        if _RandomOpponent._weights is None:
+            _RandomOpponent._weights = random_weights(0, encoder.VOCAB, encoder.DENSE_SIZE)
+        self.seed = seed
+        self.policies = {}
 
-    def act(self, block):
-        return self._p.act(block)
+    def spawn(self, did, init):
+        self.policies[did] = Policy.from_init(init, _RandomOpponent._weights, seed=self.seed * 1000 + did)
+
+    def reply(self, did, block):
+        return self.policies[did].act(block)
+
+
+# "brain" and "random" are handled here (not registered in tools/opponents.py's OPPONENTS, which is sparring
+# bots only); any other name is looked up there directly, since its Player subclasses already match opp_factory's
+# spawn/reply interface exactly.
+def _opponent_factory(name):
+    if name == "brain":
+        return _BrainOpponent
+    if name == "random":
+        return _RandomOpponent
+    return OPPONENTS[name]
+
+
+def parse_vs(text):
+    """'brain:2,splitter:1' -> [('brain', 2.0), ('splitter', 1.0)] -- same format as tools/tune.py's parse_vs,
+    for the same reason: a weighted mix of training opponents, not just one."""
+    out = []
+    for item in filter(None, text.split(",")):
+        name, sep, w = item.rpartition(":")
+        try:
+            out.append((name, float(w)) if sep and name else (item, 1.0))
+        except ValueError:
+            out.append((item, 1.0))
+    return out
 
 
 def _play_job(job):
-    candidate_idx, map_bytes, side, seed = job
-    score = _play_one(candidate_idx, map_bytes, side, _BrainAdapter, seed)
+    candidate_idx, map_bytes, side, opp_name, seed = job
+    score = _play_one(candidate_idx, map_bytes, side, _opponent_factory(opp_name), seed)
     return candidate_idx, score
 
 
@@ -236,15 +271,19 @@ def _validate_job(job):
     ProcessPoolExecutor block would NOT be picklable and crash the pool immediately, since local functions
     can't cross a process boundary."""
     kind, label, map_bytes, side, seed = job
-    opp_cls = _RandomAdapter if kind == "random" else _BrainAdapter
-    score = _play_one(0, map_bytes, side, opp_cls, seed)
+    score = _play_one(0, map_bytes, side, _opponent_factory(kind), seed)
     return kind, label, score
 
 
-def play_population(pop_flat, keys, shapes, maps, generation, workers):
-    """Every candidate in pop_flat plays every map in `maps` on both sides vs Brain, sharing both the maps AND
-    the policy's rng seed per (generation, map, side) slot across all candidates (common random numbers -- see
-    module docstring). Returns a (len(pop_flat),) array of mean scores."""
+def play_population(pop_flat, keys, shapes, maps, generation, vs, workers):
+    """Every candidate in pop_flat plays every map in `maps` on both sides vs an opponent drawn from `vs`
+    (a parse_vs()-style weighted list), sharing the maps, the opponent choice, AND the policy's rng seed per
+    (generation, map, side) slot across all candidates (common random numbers -- see module docstring): the
+    *same* opponent on a given slot for every candidate, so a weaker candidate can't get lucky with an easier
+    draw. Returns a (len(pop_flat),) array of mean scores."""
+    names = [n for n, _ in vs]
+    probs = np.array([w for _, w in vs], dtype=np.float64)
+    probs /= probs.sum()
     jobs = []
     for map_i, spec in enumerate(maps):
         data = mapgen.generate(*spec).dumps().encode() if isinstance(spec, tuple) else pathlib.Path(spec).read_bytes()
@@ -254,8 +293,9 @@ def play_population(pop_flat, keys, shapes, maps, generation, workers):
             # within-run correctness bug (the salt is stable for the run's whole lifetime), but it would break
             # exact reproducibility of a resumed run, which this project's other seeding deliberately preserves.
             seed = (generation * 1_000_003 + map_i * 2 + side_i) & 0x7FFFFFFF
+            opp_name = names[0] if len(names) == 1 else names[np.random.default_rng(seed).choice(len(names), p=probs)]
             for c in range(len(pop_flat)):
-                jobs.append((c, data, side, seed))
+                jobs.append((c, data, side, opp_name, seed))
     workers = workers or max(1, (os.cpu_count() or 2) - 2)
     scores = [[] for _ in pop_flat]
     with concurrent.futures.ProcessPoolExecutor(workers, initializer=_pool_init,
@@ -275,7 +315,7 @@ def bundled(max_side):
 
 
 RUN_DEFAULTS = {"generations": 40, "pop": 24, "maps": 10, "max_side": 32, "seed": 1000, "sigma": 0.05,
-                 "start": "", "no_bundled": False}
+                 "start": "", "no_bundled": False, "vs": "brain"}
 
 
 def run(args):
@@ -304,8 +344,9 @@ def run(args):
         history = saved_meta["history"]
 
     anchors = list(bundled(args.max_side)) if not args.no_bundled else []
+    vs = parse_vs(args.vs)
     print(f"evolving {len(x0):,} parameters, population {args.pop}, {args.maps} generated + {len(anchors)} bundled "
-          f"maps x 2 sides = {(args.maps + len(anchors)) * 2} games per candidate per generation", flush=True)
+          f"maps x 2 sides = {(args.maps + len(anchors)) * 2} games per candidate per generation, vs {vs}", flush=True)
 
     while es.gen < args.generations:
         t0 = time.perf_counter()
@@ -314,7 +355,7 @@ def run(args):
         rng = np.random.default_rng(args.seed + g)
         points = es.ask(rng)
         pop_flat = list(points) + [es.m]  # the mean itself rides along, last, for its own tracked score
-        scores = play_population(pop_flat, keys, shapes, maps, g, args.workers)
+        scores = play_population(pop_flat, keys, shapes, maps, g, vs, args.workers)
         es.tell(scores[:-1])
 
         history.append({"gen": g, "best": float(scores[:-1].max()), "avg": float(scores[:-1].mean()),
@@ -322,7 +363,7 @@ def run(args):
         h = history[-1]
         dt = time.perf_counter() - t0
         games = len(pop_flat) * (args.maps + len(anchors)) * 2
-        print(f"gen {g:3d}  best {h['best']:.3f}  avg {h['avg']:.3f}  mean_vs_brain {h['mean_score']:.3f}  "
+        print(f"gen {g:3d}  best {h['best']:.3f}  avg {h['avg']:.3f}  mean_score {h['mean_score']:.3f}  "
               f"sigma {es.sigma:.4f}  {dt:.0f}s ({games / dt:.1f} games/s)", flush=True)
 
         weights = unflatten(es.m, keys, shapes)
@@ -380,6 +421,9 @@ def main():
     r.add_argument("--seed", type=int, default=None)
     r.add_argument("--sigma", type=float, default=None, help="initial per-dimension step size multiplier")
     r.add_argument("--start", default=None, help="a BC/PPO/evolved .npz to start from (default: fresh random_weights)")
+    r.add_argument("--vs", default=None,
+                    help="weighted training opponent mix, e.g. 'brain:2,splitter:1' -- names are 'brain' or any "
+                         "tools/opponents.py sparring bot (default: brain only)")
     r.add_argument("--no-bundled", action="store_true", default=None)
     r.add_argument("--resume", action="store_true")
     r.add_argument("--workers", type=int, default=None)

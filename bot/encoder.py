@@ -42,14 +42,26 @@ active count stays small: no pearl, no countdown yet known (-1), no wall/portal,
 VOCAB is the total, computed from the sizes above rather than hardcoded twice. Real-game sampling (two full arena
 games, 29k turns) gave 50-105 active features per turn -- within the plan's ~100-200 estimate.
 
-Dense scalars (fixed order, always present): length/64, units/limit, round/500, min(len(msgs), 8)/8, first sonar
-value/65536 (0 if none). Sonar is not decoded here: no wire protocol has been designed yet (see the plan's
-unknowns), so this is a placeholder signal, not a feature.
+Dense scalars (fixed order, always present): length/64, units/limit, round/500, min(len(msgs), 8)/8, then a
+5-scalar decoded-sonar block (has_report, dx, dy, size, facing -- see below). Only the *first* message this turn
+is decoded (matching this module's existing "skip a fact for its default state" philosophy -- multiple sonar
+hits in one turn are rare and the policy already gets a fresh read next turn); an undecodable message (wrong
+`kind`, or `proto.unpack_sonar` not recognising it -- untrusted input, could be an enemy's own sonar or a stray
+value, see that module) reports as "no signal" rather than raising, same as "no message at all".
+
+The sonar payload carries an ABSOLUTE (x, y) (see proto.py's wire-format docstring: no per-dragon addressing, so
+a self-contained absolute position is the only kind every receiver can use regardless of who sent it or where).
+Unlike every other position in this module, a sonar-reported enemy can be arbitrarily far away -- not window-
+bounded -- so it cannot reuse the window's 49-cell sparse encoding (that assumes a +-3 offset); it becomes 2
+normalized DENSE scalars instead, via the general wrapped-distance formula (not the window's "+3, %, -3"
+shortcut, which only works for offsets already known to be small) then the same heading rotation (`_rot`) the
+rest of this module uses -- cheap even at runtime here since it is called at most once per turn, not once per
+window cell like the baked tables below exist to avoid.
 
 Not yet included (deferred, see the plan): remembered-map features (kelp/portals/countdowns seen on earlier turns
-but outside the current window) and a decoded sonar payload.
+but outside the current window).
 """
-from proto import DOT7, DOT8
+from proto import DOT7, DOT8, SONAR_ENEMY, unpack_sonar
 
 WINDOW = 49
 CD_BUCKETS = 6
@@ -67,7 +79,7 @@ EDGE_KELP_BASE = ENEMY_BODY_BASE + WINDOW
 EDGE_PORTAL_BASE = EDGE_KELP_BASE + 2 * EDGE_CELLS
 VOCAB = EDGE_PORTAL_BASE + 2 * EDGE_CELLS
 
-DENSE_SIZE = 5
+DENSE_SIZE = 9  # length, units, round, msg-count (unchanged) + has_report, dx, dy, size, facing (decoded sonar)
 
 
 def _rot(dx, dy, k):
@@ -203,11 +215,25 @@ def encode(t, team, my_id, width, height, unit_limit):
                 idx.add((EDGE_KELP_BASE if tok == b"w" else EDGE_PORTAL_BASE) + row[c])
 
     msgs = t.msgs
+    has_report = dx_n = dy_n = size_n = facing_n = 0.0
+    if msgs:
+        kind, mx, my, size_bucket, facing = unpack_sonar(msgs[0])
+        if kind == SONAR_ENEMY:
+            # General wrapped-distance formula, not the window's "+3, %, -3" shortcut: a sonar-reported enemy is
+            # not window-bounded, so its offset can be up to +-width/2, not just +-3 -- see module docstring.
+            dx = ((mx - t.hx + width // 2) % width) - width // 2
+            dy = ((my - t.hy + height // 2) % height) - height // 2
+            ldx, ldy = _rot(dx, dy, dir_) if dir_ else (dx, dy)
+            has_report = 1.0
+            dx_n, dy_n = ldx / width, ldy / height
+            size_n = size_bucket / 15.0
+            facing_n = ((facing - dir_) % 4) / 4.0  # heading-relative, matching this module's own convention
+
     dense = [
         t.length / 64.0,
         t.units / unit_limit if unit_limit else 0.0,
         t.rnd / 500.0,
         min(len(msgs), 8) / 8.0,
-        (msgs[0] % 65536) / 65536.0 if msgs else 0.0,
+        has_report, dx_n, dy_n, size_n, facing_n,
     ]
     return list(idx), dense

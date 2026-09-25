@@ -21,7 +21,7 @@ import numpy as np
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1] / "bot"))
 import encoder  # noqa: E402
 import proto  # noqa: E402
-from policy import choose  # noqa: E402
+from policy import choose, sonar_report  # noqa: E402
 
 
 class PPOPolicy:
@@ -47,11 +47,18 @@ class PPOPolicy:
         return h2 @ w["wm"] + w["bm"], h2 @ w["ws"] + w["bs"], value
 
     def decide(self, block):
+        """See bot/policy.py's Policy.decide() -- same action (including the deterministic sonar line, see
+        sonar_report()), plus a value estimate. Kept in lockstep with Policy.decide() by
+        tools/test_ppo_policy.py::test_decide_matches_policy_choose (self-play rollouts must actually exercise
+        real sonar traffic, or the encoder's sonar-decode features never see a non-zero input during training)."""
         t = proto.parse_turn(block)
         idx, dense = encoder.encode(t, self.team, self.id, self.W, self.H, self.limit)
         move_logits, split_logits, value = self.forward(idx, dense)
         action, move_i, move_logp, split_i, split_logp = choose(
             move_logits, split_logits, t, self.rng, self.W, self.H, self.limit)
+        sonar_msg = sonar_report(t, self.team, self.W, self.H)
+        if sonar_msg is not None:
+            action = action + b"SONAR %d\n" % sonar_msg
         return {"action": action, "idx": idx, "dense": dense, "length": t.length, "round": t.rnd,
                 "move_i": move_i, "move_logp": move_logp, "split_i": split_i, "split_logp": split_logp,
                 "value": value}
