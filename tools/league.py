@@ -1,8 +1,10 @@
 """Parallel matches: brain parameter sets against opponents on many maps, on both sides.
 
 A map is a tuple (mapgen seed, min side, max side) or the path of a .map file. An opponent is ("brain", params) for
-another brain or ("bot", name) for a sparring bot from tools/opponents.py. Games are deterministic, so one game per
-(map, side) is all there is to learn from a pairing; more samples need more maps.
+another brain, ("bot", name) for a sparring bot from tools/opponents.py, or ("frozen", dir_path) for a frozen bot/
+snapshot (e.g. manual-heuristics/, see frozen_brain.py) whose code and params are pinned regardless of what
+bot/brain.py currently contains. Games are deterministic, so one game per (map, side) is all there is to learn from
+a pairing; more samples need more maps.
 
     with League() as lg:
         results = lg.run([Job(map, side, my_params, opponent), ...])
@@ -20,6 +22,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "bot"))
 sys.path.insert(0, str(ROOT / "tools"))
 import arena  # noqa: E402
+import frozen_brain  # noqa: E402
 import mapgen  # noqa: E402
 import opponents  # noqa: E402
 from brain import Brain  # noqa: E402
@@ -67,9 +70,27 @@ class CountingPlayer(arena.BrainPlayer):
         return super().reply(did, block)
 
 
+class FrozenBrainPlayer:
+    """Like arena.BrainPlayer, but backed by a Brain class loaded from a frozen snapshot rather than the live
+    bot/brain.py import, so it plays exactly the code (not just the parameters) of whatever was pinned."""
+
+    def __init__(self, name, brain_cls, params=None):
+        self.name, self.brain_cls, self.params, self.brains = name, brain_cls, params, {}
+
+    def spawn(self, did, init):
+        self.brains[did] = self.brain_cls.from_init(init, self.params)
+
+    def reply(self, did, block):
+        return self.brains[did].act(block)
+
+
 def _opponent(spec, seed):
     if spec[0] == "brain":
         return arena.BrainPlayer("opp", spec[1] or None)
+    if spec[0] == "frozen":
+        dir_path, params = spec[1]
+        brain_cls, _ = frozen_brain.load(dir_path)
+        return FrozenBrainPlayer("opp", brain_cls, params or None)
     return opponents.OPPONENTS[spec[1]](seed=seed)
 
 

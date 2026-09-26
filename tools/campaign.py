@@ -19,7 +19,11 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 PY = str(ROOT / ".venv" / "Scripts" / "python.exe")
 TUNED = ROOT / "tools" / "tuned"
 LOG = TUNED / "campaign.log"
-VS = "defaults:2,old:1,grower_brain:2"
+VS = "defaults:2,old:1,grower_brain:2"  # session 1's benchmark (already running under this; kept for reference)
+# Sessions 2+: broadened 2026-09-27 to add policy (the previously-shipped trained bot, ~8x Brain's dragon count
+# -- session 1's grower_brain never tests being this outnumbered) and manual_heuristics (a prior from-scratch
+# submission, a genuinely different design rather than a brain.py variant).
+VS2 = "defaults:2,old:1,grower_brain:2,policy:2,manual_heuristics:1"
 
 S1_PARAMS = ("grow_mod,founder_units,split_units,tiles_per_unit,split_r_end,grow_care_len,grow_care_mult,"
              "grow_care_margin,split_len_max,explore,split_mate_radius,split_mate_cap,split_food_ratio")
@@ -187,7 +191,7 @@ def main():
     (TUNED / "s1_avg8.json").write_text(s1.read_text())
     run_until("sprint_run1", 20, args.workers,
               fresh_args=["--generations", "20", "--pop", "12", "--maps", "6", "--max-side", "64",
-                          "--vs", VS, "--params", S2_PARAMS, "--start", str(s1)])
+                          "--vs", VS2, "--params", S2_PARAMS, "--start", str(s1)])
     s2 = average("sprint_run1", 6)
     (TUNED / "s2_avg8.json").write_text(s2.read_text())
     validate(s2, games=400, workers=args.workers)
@@ -202,11 +206,12 @@ def main():
     # Session 4: grand unified re-tune, everything together, seeded from sessions 1-3 combined.
     run_until("grand_run1", 30, args.workers,
               fresh_args=["--generations", "30", "--pop", "16", "--maps", "8", "--max-side", "64",
-                          "--vs", VS, "--params", S4_PARAMS, "--start", str(start4)])
+                          "--vs", VS2, "--params", S4_PARAMS, "--start", str(start4)])
     s4 = average("grand_run1", 8)
 
     # Session 5: validation, round robin against what shipped before, and vs. the old trained Policy.
-    validate(s4, games=400, vs="defaults,old,grower_brain,splitter,chaser", workers=args.workers)
+    validate(s4, games=400, vs="defaults,old,grower_brain,splitter,chaser,policy,manual_heuristics",
+              workers=args.workers)
     candidates = {
         "defaults": {},
         "grow_care_only (shipped v3)": json.loads((TUNED / "grow_care_run1_avg8.json").read_text())["params"],

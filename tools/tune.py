@@ -76,6 +76,13 @@ OPPONENTS = {
     # grows: this is what reproduces the real loss (more total length and dragons, still loses the round-500
     # longest-living-dragon tiebreak) that plain "defaults"/"old" self-play does not reliably exercise.
     "grower_brain": ("brain", {"founder_units": 10, "split_units": 10, "split_r_end": 150, "grow_mod": 0}),
+    # The previously-shipped trained Policy (bot/weights.bin) and a previous from-scratch submission
+    # (manual-heuristics/): both registered in tools/opponents.py since they need their own isolated code/weight
+    # loading, not just a params dict. Added 2026-09-27 so tuning accounts for being heavily outnumbered (Policy
+    # fields ~8x the dragons) and for a genuinely different heuristic design (manual-heuristics), not just
+    # variations on the current brain.py.
+    "policy": ("bot", "policy"),
+    "manual_heuristics": ("bot", "manual_heuristics"),
 }
 
 

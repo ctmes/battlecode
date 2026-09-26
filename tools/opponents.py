@@ -240,6 +240,65 @@ class Splitter(Chaser):
         return super().act(dragon, t)
 
 
+def _load_snapshot_brain(dirpath):
+    """Loads a self-contained past submission's own brain.py + proto.py in isolation, so it plays exactly as it
+    shipped (its own wire format, its own DEFAULTS) rather than accidentally picking up bot/'s current proto.py
+    through Python's normal `import proto` module-cache lookup. Returns the snapshot's Brain class."""
+    import importlib.util
+
+    dirpath = pathlib.Path(dirpath)
+    unique = f"_snapshot_{abs(hash(str(dirpath)))}"
+    proto_spec = importlib.util.spec_from_file_location(f"{unique}_proto", dirpath / "proto.py")
+    proto_mod = importlib.util.module_from_spec(proto_spec)
+    sys.modules[f"{unique}_proto"] = proto_mod
+    proto_spec.loader.exec_module(proto_mod)
+    # brain.py does a plain `import proto`; point that name at the snapshot's own proto.py just while brain.py's
+    # module body runs, then put whatever was there back so nothing else in this process is affected.
+    prior = sys.modules.get("proto")
+    sys.modules["proto"] = proto_mod
+    try:
+        brain_spec = importlib.util.spec_from_file_location(f"{unique}_brain", dirpath / "brain.py")
+        brain_mod = importlib.util.module_from_spec(brain_spec)
+        sys.modules[f"{unique}_brain"] = brain_mod
+        brain_spec.loader.exec_module(brain_mod)
+    finally:
+        if prior is not None:
+            sys.modules["proto"] = prior
+        else:
+            del sys.modules["proto"]
+    return brain_mod.Brain
+
+
+class SnapshotBrainPlayer:
+    """Wraps a past submission's own Brain class (see _load_snapshot_brain) behind the arena/league Player
+    interface (spawn/reply), so an old snapshot can be used as an opponent exactly like any sparring bot."""
+
+    name = "?"
+    _brain_cls = None  # set per-subclass by snapshot_opponent()
+
+    def __init__(self, seed=0, name=None):
+        self.name = name or self.name
+        self.dragons = {}
+
+    def spawn(self, did, init):
+        self.dragons[did] = self._brain_cls.from_init(init)
+
+    def reply(self, did, block):
+        try:
+            return self.dragons[did].act(block)
+        except Exception:  # noqa: BLE001
+            return b""
+
+
+def snapshot_opponent(register_name, dirpath):
+    """Registers a past submission's brain.py (at `dirpath`) as an opponent under `register_name`, playing
+    exactly as it shipped -- own DEFAULTS, own wire format, isolated from bot/'s current brain.py/proto.py."""
+    cls = type(f"Snapshot_{register_name}", (SnapshotBrainPlayer,),
+                {"name": register_name, "_brain_cls": _load_snapshot_brain(dirpath)})
+    OPPONENTS[register_name] = cls
+    return cls
+
+
 @register
 class Grower(Chaser):
     """A chaser that splits in half early on, same as Splitter, but caps at a handful of dragons and stops
@@ -256,3 +315,59 @@ class Grower(Chaser):
         if t.length >= self.split_at and t.units < min(dragon.limit, self.cap) and t.rnd < self.split_deadline:
             return b"SPLIT %d\n" % (t.length // 2)
         return super().act(dragon, t)
+
+
+_MANUAL_HEURISTICS = pathlib.Path(__file__).resolve().parents[1] / "manual-heuristics"
+if _MANUAL_HEURISTICS.is_dir():
+    snapshot_opponent("manual_heuristics", _MANUAL_HEURISTICS)
+
+
+def _load_policy_weights():
+    """Same flat frombuffer + reshape bot/main.py used before the 2026-09-27 switch to Brain (see
+    tools/eval_vs_policy.py) -- the real, previously-shipped trained weights, not a re-derived stand-in."""
+    import numpy as np
+    import encoder as _encoder
+    from policy import H1, H2, N_MOVE, SPLIT_FRACS
+
+    shapes = [
+        ("b1", (H1,)), ("b2", (H2,)), ("bm", (N_MOVE,)), ("bs", (len(SPLIT_FRACS) + 1,)),
+        ("w1", (_encoder.VOCAB, H1)), ("w2", (H1, H2)), ("wd", (_encoder.DENSE_SIZE, H1)),
+        ("wm", (H2, N_MOVE)), ("ws", (H2, len(SPLIT_FRACS) + 1)),
+    ]
+    raw = (pathlib.Path(__file__).resolve().parents[1] / "bot" / "weights.bin").read_bytes()
+    flat = np.frombuffer(raw, dtype=np.float32)
+    out, i = {}, 0
+    for name, shape in shapes:
+        n = int(np.prod(shape))
+        out[name] = flat[i:i + n].reshape(shape)
+        i += n
+    return out
+
+
+_POLICY_WEIGHTS = None
+
+
+@register
+class PolicyOpponent(Player):
+    """The previously-shipped trained Policy (bot/policy.py + bot/weights.bin) as a sparring opponent, so tuning
+    accounts for being heavily outnumbered (it typically fields ~8x the dragons Brain does), not just the
+    disciplined-low-population case `grower` covers."""
+
+    name = "policy"
+
+    def __init__(self, seed=0, name=None):
+        super().__init__(seed, name)
+        global _POLICY_WEIGHTS
+        if _POLICY_WEIGHTS is None:
+            _POLICY_WEIGHTS = _load_policy_weights()
+        from policy import Policy as _Policy
+        self._Policy = _Policy
+
+    def spawn(self, did, init):
+        self.dragons[did] = self._Policy.from_init(init, _POLICY_WEIGHTS, seed=self.seed * 1000 + did)
+
+    def reply(self, did, block):
+        try:
+            return self.dragons[did].act(block)
+        except Exception:  # noqa: BLE001
+            return b""
