@@ -88,7 +88,7 @@ def parse_turn(block):
 # payloads both measured as no help).
 #
 # Layout (MSB first): kind (2 bits, room for 3 more kinds later) | x (6 bits) | y (6 bits) | length bucket (4 bits,
-# min(length, 15)) | facing (2 bits, N/E/S/W) | 16 bits unused. x/y are 6 bits because boards are at most 64 wide.
+# min(length, 15)) | facing (2 bits, N/E/S/W) | 12 bits unused. x/y are 6 bits because boards are at most 64 wide.
 SONAR_ENEMY = 0
 
 

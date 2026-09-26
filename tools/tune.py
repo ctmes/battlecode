@@ -248,7 +248,13 @@ def average(args):
     """The final mean of a noisy run is one draw; the mean of the last few generation means is steadier."""
     saved = json.loads((TUNED / f"{args.name}.json").read_text())
     names = saved["names"]
-    rows = [encode(h["mean_params"], names) for h in saved["history"]][-(args.last - 1):] + [encode(saved["params"], names)]
+    history = saved["history"]
+    # k=0 (--last 1) must mean "just the final mean", not "the whole history": history[-(0):] is history[0:], the
+    # WHOLE list, not an empty slice -- Python has no negative zero, so a bare -(args.last - 1) silently averaged
+    # over every generation ever run whenever --last was 1 (untested edge case; found by inspection, not a failure).
+    k = max(args.last - 1, 0)
+    tail = history[len(history) - k:] if k else []
+    rows = [encode(h["mean_params"], names) for h in tail] + [encode(saved["params"], names)]
     mean = [sum(col) / len(rows) for col in zip(*rows)]
     out = TUNED / f"{args.name}_avg{args.last}.json"
     out.write_text(json.dumps({"names": names, "params": changed(decode(mean, names)),

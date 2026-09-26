@@ -123,6 +123,31 @@ def test_resume_keeps_the_original_run_settings():
     print("ok  a bare --resume keeps the original run's population, maps and opponents")
 
 
+def test_average_last_one_uses_only_the_final_mean():
+    """Regression test: history[-(args.last - 1):] used to silently average over the WHOLE history whenever
+    --last was 1, because Python has no negative zero (-(1 - 1) == 0, and list[0:] is the entire list, not an
+    empty slice) -- found by inspection, not a failing run, since average() had no test at all before this."""
+    name = "_smoke_avg"
+    path = ROOT / "tools" / "tuned" / f"{name}.json"
+    out_path = ROOT / "tools" / "tuned" / f"{name}_avg1.json"
+    names = ["pearl_near", "straight"]
+    saved = {
+        "names": names,
+        "params": {"pearl_near": 50.0, "straight": 10.0},
+        # wildly different from params, so a buggy average (pulling in the whole history) is obviously wrong
+        "history": [{"mean_params": {"pearl_near": 999.0, "straight": 999.0}}] * 5,
+    }
+    path.write_text(json.dumps(saved))
+    try:
+        tune.average(argparse.Namespace(name=name, last=1))
+        got = json.loads(out_path.read_text())["params"]
+        assert abs(got["pearl_near"] - 50.0) < 1 and abs(got["straight"] - 10.0) < 1, got
+    finally:
+        path.unlink(missing_ok=True)
+        out_path.unlink(missing_ok=True)
+    print("ok  --last 1 uses only the final mean, not the whole history")
+
+
 def run():
     test_encoding()
     test_parse_vs()
@@ -131,6 +156,7 @@ def run():
     test_league_is_deterministic_and_side_symmetric()
     test_run_and_resume()
     test_resume_keeps_the_original_run_settings()
+    test_average_last_one_uses_only_the_final_mean()
 
 
 if __name__ == "__main__":

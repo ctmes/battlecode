@@ -97,6 +97,13 @@ DEFAULTS = {
     # results, not just unlucky weights. sonar_predict=0 also turns off sending (pointless with nobody listening).
     # Untuned; see tools/tune.py SPACE and tools/tuned/.
     "sonar_predict": 0.0,
+    # Once a dragon's own length reaches grow_care_len, it plays more cautiously: trap/dead-end/head-on
+    # penalties are multiplied by grow_care_mult and need_margin gets grow_care_margin added, so a dragon that
+    # is already a real investment (whether a surviving founder or a grow_mod-designated grower) protects that
+    # length instead of taking the same risks a short, disposable swarm dragon would. 0 = off (old behaviour).
+    "grow_care_len": 0,
+    "grow_care_mult": 1.0,
+    "grow_care_margin": 0,
     "budget_ns": 60_000_000,   # self-metering: skip optional work past this (points on the judge)
 }
 
@@ -440,7 +447,12 @@ class Brain:
         kk = p["pearl_k"]
         if pm and not self.over():
             lay = self.layers(pm, free, kk)
-        need = min(max(length + p["need_margin"], p["need_floor"]), p["need_cap"])
+        care = 1.0
+        margin = p["need_margin"]
+        if p["grow_care_len"] > 0 and length >= p["grow_care_len"]:
+            care = p["grow_care_mult"]
+            margin += p["grow_care_margin"]
+        need = min(max(length + margin, p["need_floor"]), p["need_cap"])
         tail = self.tail
         free_trap = free & self.seen if p["pessimistic"] else free
 
@@ -493,11 +505,11 @@ class Brain:
                     fr |= 1 << tail  # the tail cell is vacated by this move
                 area = self.flood(fr, tidx, need)
                 if area < need:
-                    s -= p["trap"] * (need - area) / need
+                    s -= p["trap"] * care * (need - area) / need
                 else:
                     s += p["area"]
                 if p["dead_end"] and self.exits(tidx, tx, ty, (d + 2) % 4, free) < 2:
-                    s -= p["dead_end"]
+                    s -= p["dead_end"] * care
                 for hc, need_e, base_short in foes:  # herding: leave visible enemies less room than they need
                     left = self.flood((free ^ (1 << tidx)) | (1 << hc), hc, need_e)
                     short = need_e - left if left < need_e else 0
@@ -515,9 +527,9 @@ class Brain:
                 if (ey == ty and (ex - tx) % w_ in (1, w_ - 1)) or (ex == tx and (ey - ty) % h_ in (1, h_ - 1)):
                     if enemy:
                         small = length < segs.get(pid, 1) * p["trade_ratio"]
-                        s -= p["head_risk_small"] if small else p["head_risk"]
+                        s -= p["head_risk_small"] if small else p["head_risk"] * care
                     else:
-                        s -= p["team_head_risk"]
+                        s -= p["team_head_risk"] * care
             for px, py in predicted:  # a guess, not a fact: landing on or next to it is merely made less attractive
                 if (py == ty and (px - tx) % w_ in (1, w_ - 1)) or (px == tx and (py - ty) % h_ in (1, h_ - 1)):
                     s -= p["predict"]
@@ -533,18 +545,24 @@ class Brain:
 
     # ------------------------------------------------------------------ fallback
     def fallback(self, block):
-        """Independent of learned state: first move that is not immediate death, preferring the heading."""
+        """Independent of learned state: first move that is not immediate death, preferring the heading.
+        Portal edges (see decide()'s PORTAL status / module docstring) skip the occupancy check entirely -- a
+        portal step does not land on the physically-adjacent tile, so that tile's occupancy is irrelevant, not
+        "safe" or "unsafe" (this was a bug here: the occupancy check ran unconditionally, so an unrelated body on
+        that irrelevant tile could wrongly rule out a portal move that decide()'s own legality check would allow)."""
         try:
             t = proto.parse_turn(block)
             occ = {(int(q[2]), int(q[3])) for q in t.parts}
             ed = t.edges
             vt = ed[11].split()
-            kelp = (ed[3].split()[3] == b"w", vt[4] == b"w", ed[4].split()[3] == b"w", vt[3] == b"w")
+            tok = (ed[3].split()[3], vt[4], ed[4].split()[3], vt[3])
+            kelp = tuple(x == b"w" for x in tok)
+            portal = tuple(x != b"." and x != b"w" for x in tok)
             order = [t.dir] + [d for d in range(4) if d != t.dir] if t.dir >= 0 else range(4)
             for d in order:
                 if kelp[d]:
                     continue
-                if ((t.hx + DX[d]) % self.W, (t.hy + DY[d]) % self.H) in occ:
+                if not portal[d] and ((t.hx + DX[d]) % self.W, (t.hy + DY[d]) % self.H) in occ:
                     continue
                 return MOVES[d]
         except Exception:  # noqa: BLE001
