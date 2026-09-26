@@ -87,15 +87,9 @@ def parse_turn(block):
 # the one thing local prediction structurally cannot do (see the "deep dive" plan notes -- two earlier position-only
 # payloads both measured as no help).
 #
-# Layout (MSB first): kind (2 bits, room for 1 more kind later) | x (6 bits) | y (6 bits) | ... | x/y are 6 bits
-# because boards are at most 64 wide, and both kinds below share this coordinate layout.
-#   SONAR_ENEMY:   length bucket (4 bits, min(length, 15)) | facing (2 bits, N/E/S/W) | 12 bits unused.
-#   SONAR_TERRAIN: vertical (1 bit: 0 = the tile's north edge i.e. brain.py's kh/ph, 1 = its west edge i.e.
-#                  kv/pv) | portal (1 bit: 0 = kelp, 1 = portal) | 14 bits unused. A relayed *fact*, not a
-#                  sighting: terrain never goes stale the way an enemy position does, so unlike SONAR_ENEMY this
-#                  is worth sending even with nobody obviously listening -- see brain.py's sonar_terrain.
+# Layout (MSB first): kind (2 bits, room for 3 more kinds later) | x (6 bits) | y (6 bits) | length bucket (4 bits,
+# min(length, 15)) | facing (2 bits, N/E/S/W) | 16 bits unused. x/y are 6 bits because boards are at most 64 wide.
 SONAR_ENEMY = 0
-SONAR_TERRAIN = 1
 
 
 def pack_enemy_sonar(x, y, length, facing):
@@ -103,19 +97,9 @@ def pack_enemy_sonar(x, y, length, facing):
     return (SONAR_ENEMY << 30) | ((x & 63) << 24) | ((y & 63) << 18) | (min(length, 15) << 14) | ((facing & 3) << 12)
 
 
-def pack_terrain_sonar(x, y, vertical, portal):
-    """A learned edge: tile (x, y)'s north edge (vertical=0) or west edge (vertical=1) is kelp or a portal."""
-    return (SONAR_TERRAIN << 30) | ((x & 63) << 24) | ((y & 63) << 18) | ((vertical & 1) << 17) | ((portal & 1) << 16)
-
-
 def unpack_sonar(value):
-    """-> (kind, x, y, extra1, extra2). kind is None (all 0) for a kind this module does not know.
-    SONAR_ENEMY: extra1/extra2 = length bucket (0-15), facing (0-3).
-    SONAR_TERRAIN: extra1/extra2 = vertical (0 = north edge, 1 = west edge), portal (0 = kelp, 1 = portal)."""
+    """-> (kind, x, y, length_bucket, facing). kind is None (all 0) for a kind this module does not know."""
     kind = value >> 30
-    x, y = (value >> 24) & 63, (value >> 18) & 63
-    if kind == SONAR_ENEMY:
-        return kind, x, y, (value >> 14) & 15, (value >> 12) & 3
-    if kind == SONAR_TERRAIN:
-        return kind, x, y, (value >> 17) & 1, (value >> 16) & 1
-    return None, 0, 0, 0, 0
+    if kind != SONAR_ENEMY:
+        return None, 0, 0, 0, 0
+    return kind, (value >> 24) & 63, (value >> 18) & 63, (value >> 14) & 15, (value >> 12) & 3

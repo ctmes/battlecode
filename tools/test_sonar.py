@@ -28,10 +28,17 @@ def test_pack_unpack_roundtrip():
         kind, ux, uy, ulen, uf = proto.unpack_sonar(v)
         assert (kind, ux, uy, ulen, uf) == (proto.SONAR_ENEMY, x, y, min(length, 15), facing), \
             f"({x},{y},{length},{facing}) -> {v} -> {(kind, ux, uy, ulen, uf)}"
-    for kind_bits in (1, 2, 3):  # any kind but ours must come back unrecognised, not misread as an enemy sighting
+    for _ in range(2000):
+        x, y, vertical, portal = rng.randrange(64), rng.randrange(64), rng.randrange(2), rng.randrange(2)
+        v = proto.pack_terrain_sonar(x, y, vertical, portal)
+        assert 0 <= v <= 0xFFFFFFFF, f"payload {v} is not a uint32"
+        kind, ux, uy, uv, up = proto.unpack_sonar(v)
+        assert (kind, ux, uy, uv, up) == (proto.SONAR_TERRAIN, x, y, vertical, portal), \
+            f"({x},{y},{vertical},{portal}) -> {v} -> {(kind, ux, uy, uv, up)}"
+    for kind_bits in (2, 3):  # any kind but ours must come back unrecognised, not misread as an enemy/terrain fact
         v = (kind_bits << 30) | 0x3FFFFFFF
         assert proto.unpack_sonar(v) == (None, 0, 0, 0, 0), f"kind {kind_bits} was not rejected"
-    print("ok  sonar payloads round-trip exactly, including facing, and unknown kinds come back unrecognised")
+    print("ok  sonar payloads round-trip exactly (enemy and terrain), and unknown kinds come back unrecognised")
 
 
 def test_off_by_default_is_a_no_op():

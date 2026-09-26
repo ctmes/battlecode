@@ -52,6 +52,17 @@ SPACE = {
     # Local crowding/food gate on splitting (see want_split): refuses to split into a spot already thick with
     # teammates, or short on pearls per nearby mouth, instead of only a flat team-size cap. 0 is off for both.
     "split_mate_radius": (0, 6, "int"), "split_mate_cap": (1, 6, "int"), "split_food_ratio": (0, 3, "lin"),
+    # A length ceiling on splitting: the existing split_len/founder_split_len are floors (minimum length to be
+    # split-eligible), never a ceiling, so nothing previously stopped an already-long dragon splitting itself
+    # away the instant local conditions allowed. 0 = off (old behaviour, no ceiling).
+    "split_len_max": (0, 60, "int"),
+    # Explore: with no pearl signal nearby, reward a move onto never-seen ground instead of only "straight"
+    # (which can loop a dragon back through already-searched-empty space). 0 = off.
+    "explore": (0, 200, "lin"),
+    # Sprint: cover up to this many tiles in one turn (costing length) instead of always 1. 1 = off.
+    "sprint_max": (1, 3, "int"),
+    # Sonar (terrain): relay a known kelp/portal edge instead of an enemy sighting. 0 = off.
+    "sonar_terrain": (0, 150, "lin"),
 }
 # The brain as it was before the dead-end / room-floor / grower / territory work (git HEAD~ of brain.py's DEFAULTS).
 OLD = {"grow_mod": 0, "split_r_end": 10 ** 9, "dead_end": 0.0, "need_floor": 0, "voro": 0.0, "voro_radius": 8}

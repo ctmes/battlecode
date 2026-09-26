@@ -23,17 +23,6 @@ DOT7, DOT8 = proto.DOT7, proto.DOT8
 MOVES = (b"MOVE N\n", b"MOVE E\n", b"MOVE S\n", b"MOVE W\n")
 WIN_R = [t // 7 for t in range(49)]
 WIN_C = [t % 7 for t in range(49)]
-# Per direction N,E,S,W (matching the `kelp`/`port` tuples in decide()): the (tile, vertical) an edge in that
-# direction is stored under, in the same terms learn_edges()/kh/kv/ph/pv already use (a kh/kv bit at a tile means
-# kelp on that tile's own north/west edge) -- so a relayed edge lands on the exact bit a receiver's own vision
-# would have set. E and S look one tile over because that neighbour "owns" the shared edge in this convention.
-TERRAIN_EDGE_TILE = (
-    lambda hx, hy, w_, h_: (hx, hy),                  # N: this tile's own north edge
-    lambda hx, hy, w_, h_: ((hx + 1) % w_, hy),        # E: the east neighbour's west edge
-    lambda hx, hy, w_, h_: (hx, (hy + 1) % h_),        # S: the south neighbour's north edge
-    lambda hx, hy, w_, h_: (hx, hy),                  # W: this tile's own west edge
-)
-TERRAIN_EDGE_VERTICAL = (0, 1, 0, 1)
 
 # legality classes, best first
 OK, PORTAL, TRADE_ENEMY, TRADE_TEAM, DEAD = 0, 1, 2, 3, 4
@@ -51,16 +40,6 @@ DEFAULTS = {
     "pearl_here": 2348.8051,   # stepping onto a pearl
     "pearl_near": 64.2029,     # per step closer to the nearest visible pearl
     "pearl_k": 7,              # look-ahead distance (steps) of the pearl distance field
-    "explore": 0.0,            # bonus for a move onto a tile never inside this dragon's own vision before, only
-                                # scored with no pearl signal at all nearby (0 = off): otherwise "straight" is the
-                                # only directional preference, which can loop a dragon back through searched-empty
-                                # ground instead of pushing into new territory. Untuned.
-    # Sprinting: MOVE with a direction letter repeated `steps` times covers `steps` tiles in one turn instead of
-    # 1, costing `steps - 1` body segments (the engine's own rule -- see the "Sprinting" rules section). 1 = off
-    # (never sprint). Unlike the RL policy, which only legality-checks a sprint's first step, want_sprint below
-    # walks the whole path with the same kh/kv/ph/pv edges a plain move already uses, so a sprint here is exactly
-    # as safe as a plain move, never a blind gamble on steps 2-3. Untuned.
-    "sprint_max": 1,
     "trap": 8763.9753,         # penalty scale when the reachable area is smaller than needed
     "need_margin": 3,          # needed area = length + margin
     "need_cap": 120,           # ... capped, so the flood fill can exit early
@@ -72,8 +51,6 @@ DEFAULTS = {
     "team_head_risk": 596.8384,
     "straight": 30.3172,       # keep heading
     "split_len": 3,            # children (dragons born by a split) split when length >= this
-    "split_len_max": 0,        # ... but never once length reaches this (0 = off): a floor alone never stops an
-                                # already-long dragon splitting itself away just because room/pearls/cap allow it
     "split_child": 2,
     "split_units": 57,         # ... and the team has fewer dragons than this (the engine's unit limit also applies)
     # Founders (alive at round 0) seed the swarm, then stop splitting so one dragon grows: the round-500 tiebreak is
@@ -86,14 +63,6 @@ DEFAULTS = {
     "split_pearls": 1,         # ... and at least this many pearls are in view (food for the extra mouth)
     "split_r_end": 433,        # ... and it is before this round (late children do not pay back)
     "split_min_exits": 1,      # ... and the parent has at least this many safe moves (not cornered)
-    # Local crowding/food, as an alternative to a flat team-size cap and pearl count that cannot tell a dragon
-    # splitting into open space from one splitting into a knot of its own teammates (a big source of other-body
-    # deaths in a large swarm). Both 0 = off (old behaviour): nearby teammates use `heads`, already built every
-    # turn for head-risk scoring, so this costs nothing extra.
-    "split_mate_radius": 0,    # Manhattan radius to count visible teammate heads in (0 = the check is off)
-    "split_mate_cap": 2,       # refuse to split if this many teammates are already within split_mate_radius
-    "split_food_ratio": 0.0,   # if > 0, require pearls-in-view >= this * (nearby teammates + 1), instead of
-                                # the flat split_pearls count above
     "dead_end": 191.4698,      # penalty for stepping onto a cell with a single way on
     "need_floor": 8,           # room a move must leave, at least (short dragons otherwise pass tiny pockets)
     "squeeze": 0.0,            # bonus per safe move a nearby enemy head loses (herding towards walls and bodies)
@@ -128,26 +97,6 @@ DEFAULTS = {
     # results, not just unlucky weights. sonar_predict=0 also turns off sending (pointless with nobody listening).
     # Untuned; see tools/tune.py SPACE and tools/tuned/.
     "sonar_predict": 0.0,
-    # Sonar (terrain): relay one of the current tile's own known kelp/portal edges instead of an enemy sighting.
-    # A fact, not a sighting, so it never goes stale the way sonar_predict's payload does -- worth trying because
-    # a top-of-leaderboard opponent's replay showed far heavier sonar use than the (negative-result) enemy-relay
-    # weight sweep above ever tested for. 0 = off: no sending, and received terrain messages are ignored (not
-    # decoded at all, so a teammate using this costs nothing extra for one that has it off). Untuned.
-    "sonar_terrain": 0.0,
-    # Once a dragon's own length reaches grow_care_len, it plays more cautiously: trap/dead-end/head-on
-    # penalties are multiplied by grow_care_mult and need_margin gets grow_care_margin added, so a dragon that
-    # is already a real investment (whether a surviving founder or a grow_mod-designated grower) protects that
-    # length instead of taking the same risks a short, disposable swarm dragon would. Tuned 2026-09-26 by CMA-ES
-    # (tools/tune.py, --params grow_care_len,grow_care_mult,grow_care_margin, 14 generations, averaged over the
-    # last 8 generation means: tools/tuned/grow_care_run1_avg8.json) against defaults/old/grower_brain (a
-    # disciplined opponent that splits a little early then stops and just grows -- built to reproduce the
-    # round-500 longest-living-dragon tiebreak loss). Validated on held-out maps/seeds: 92.0% [88.4%, 94.6%] vs
-    # grower_brain (was a loss before this), 50.0% [44.4%, 55.6%] vs plain defaults (no regression, but not a
-    # general win either -- this only activates once a dragon is already fairly long, so it is a narrow fix for
-    # the tiebreak weakness, not a strict replacement for DEFAULTS the way the rest of these values are).
-    "grow_care_len": 1,
-    "grow_care_mult": 1.9346,
-    "grow_care_margin": 1,
     "budget_ns": 60_000_000,   # self-metering: skip optional work past this (points on the judge)
 }
 
@@ -310,73 +259,22 @@ class Brain:
         self.tail = body[length - 1] if len(body) >= length else None
 
     # ------------------------------------------------------------------ decision helpers
-    def nearby_mates(self, heads, hx, hy, w_, h_, radius):
-        """Visible teammate heads (not self, not enemy) within Manhattan `radius` -- free: `heads` is already
-        built every turn for head-risk scoring, so this is just a count over a handful of entries."""
-        n = 0
-        for hc, (enemy, pid) in heads.items():
-            if enemy:
-                continue
-            ex, ey = hc % w_, hc // w_
-            if min((ex - hx) % w_, (hx - ex) % w_) + min((ey - hy) % h_, (hy - ey) % h_) <= radius:
-                n += 1
-        return n
-
-    def want_split(self, t, heads, n_ok, hx, hy, w_, h_):
+    def want_split(self, t, heads, n_ok):
         """Splitting means standing still this turn and giving up length, so it needs a reason."""
         p = self.p
         length = t.length
         child = p["split_child"]
         if child < 2 or length - child < 2 or t.units >= self.limit or t.rnd >= p["split_r_end"]:
             return False
-        if p["split_len_max"] > 0 and length >= p["split_len_max"]:
-            return False  # already a real investment: a length floor alone never stops a big dragon from
-            # splitting itself away the instant local conditions (pearls, room, no cap yet) allow it
         if n_ok < p["split_min_exits"] or any(e for e, _ in heads.values()):
             return False  # cornered, or an enemy head is in view
-        # Local crowding/food: a flat pearl count and team-size cap don't know whether this particular spot
-        # already has teammates piling into it (the source of most other-body deaths in a big swarm) or has
-        # enough food nearby to feed one more mouth. Both are opt-in (0 = old behaviour, unaffected).
-        mates = None
-        if p["split_mate_radius"] > 0:
-            mates = self.nearby_mates(heads, hx, hy, w_, h_, p["split_mate_radius"])
-            if mates >= p["split_mate_cap"]:
-                return False  # already crowded here: split somewhere else, or not at all
         if self.founder:  # founders seed the swarm, then grow
             return length >= p["founder_split_len"] and t.units < min(p["founder_units"], self.target)
         if p["grow_mod"] > 0 and self.id % p["grow_mod"] == 0:
             return False  # a designated grower
         if length < p["split_len"] or t.units >= min(p["split_units"], self.target):
             return False
-        pearls = t.flags.count(b"1")
-        if p["split_food_ratio"] > 0:
-            if mates is None:
-                mates = self.nearby_mates(heads, hx, hy, w_, h_, p["split_mate_radius"] or 3)
-            return pearls >= p["split_food_ratio"] * (mates + 1)
-        return pearls >= p["split_pearls"]
-
-    def sprint_end(self, hx, hy, d, steps, occ, w_, h_):
-        """Final cell of a `steps`-tile straight sprint in direction d, if every edge and cell along the way is
-        clear (no kelp, no portal -- unlike a single plain move a sprint's far end is never checked by the engine
-        beyond legality, so treating a portal as a wall here, same as elsewhere, is the only safe choice -- and
-        no dragon part). None if any step is blocked."""
-        kh, kv, ph, pv = self.kh, self.kv, self.ph, self.pv
-        x, y = hx, hy
-        for _ in range(steps):
-            nx, ny = (x + DX[d]) % w_, (y + DY[d]) % h_
-            idx = ny * w_ + nx
-            if d == 0:
-                blocked = (kh >> (y * w_ + x)) & 1 or (ph >> (y * w_ + x)) & 1
-            elif d == 1:
-                blocked = (kv >> idx) & 1 or (pv >> idx) & 1
-            elif d == 2:
-                blocked = (kh >> idx) & 1 or (ph >> idx) & 1
-            else:
-                blocked = (kv >> (y * w_ + x)) & 1 or (pv >> (y * w_ + x)) & 1
-            if blocked or (occ >> idx) & 1:
-                return None
-            x, y = nx, ny
-        return y * w_ + x
+        return t.flags.count(b"1") >= p["split_pearls"]
 
     def exits(self, tidx, tx, ty, back, free):
         """Free, passable neighbours of cell (tx, ty), not counting the way back."""
@@ -519,38 +417,9 @@ class Brain:
         if self.debug:
             self.dbg["sonar_predicted"] = list(sonar_predicted)
 
-        # sonar (terrain): unlike an enemy sighting, a learned kelp/portal edge never goes stale, so it is worth
-        # relaying even with nobody obviously listening -- the payoff is a teammate (often a freshly split child
-        # with none of this dragon's accumulated map memory) learning it for free instead of finding out by
-        # stepping on it. Sends one of the current tile's own known edges (zero extra cost: `kelp`/`port` above
-        # are already computed for this turn's legality check); merges any received fact straight into kh/kv/ph/pv,
-        # exactly as learn_edges() would have, so it improves this dragon's own legality/trap checks immediately.
-        if p["sonar_terrain"] > 0:
-            if sonar_msg is None:
-                for d in range(4):
-                    if kelp[d] or port[d]:
-                        tx_, ty_ = TERRAIN_EDGE_TILE[d](hx, hy, w_, h_)
-                        sonar_msg = proto.pack_terrain_sonar(tx_, ty_, TERRAIN_EDGE_VERTICAL[d], 1 if port[d] else 0)
-                        break
-            learned = False
-            for m in t.msgs:
-                kind, mx, my, vertical, portal = proto.unpack_sonar(m)
-                if kind == proto.SONAR_TERRAIN and mx < w_ and my < h_:
-                    bit = 1 << (my * w_ + mx)
-                    if portal:
-                        self.pv |= bit if vertical else 0
-                        self.ph |= bit if not vertical else 0
-                    else:
-                        self.kv |= bit if vertical else 0
-                        self.kh |= bit if not vertical else 0
-                    learned = True
-            if learned:
-                self.okh = self.full ^ (self.kh | self.ph)
-                self.okv = self.full ^ (self.kv | self.pv)
-
         if self.founder is None:
             self.founder = t.rnd == 0
-        if self.want_split(t, heads, len(ok), hx, hy, w_, h_):
+        if self.want_split(t, heads, len(ok)):
             action = b"SPLIT %d\n" % p["split_child"]
             return action + b"SONAR %d\n" % sonar_msg if sonar_msg is not None else action
         if len(ok) == 1 or self.over():
@@ -571,12 +440,7 @@ class Brain:
         kk = p["pearl_k"]
         if pm and not self.over():
             lay = self.layers(pm, free, kk)
-        care = 1.0
-        margin = p["need_margin"]
-        if p["grow_care_len"] > 0 and length >= p["grow_care_len"]:
-            care = p["grow_care_mult"]
-            margin += p["grow_care_margin"]
-        need = min(max(length + margin, p["need_floor"]), p["need_cap"])
+        need = min(max(length + p["need_margin"], p["need_floor"]), p["need_cap"])
         tail = self.tail
         free_trap = free & self.seen if p["pessimistic"] else free
 
@@ -623,23 +487,17 @@ class Brain:
                     if (lay[i] >> tidx) & 1:
                         s += p["pearl_near"] * (kk + 1 - i)
                         break
-            elif p["explore"] > 0 and not (self.seen >> tidx) & 1:
-                # no pearl signal at all nearby: with nothing else pulling a direction, "straight" alone lets a
-                # dragon loop back through ground it has already searched empty. Reward pushing into unseen
-                # territory instead -- spreads the swarm outward (more board claimed sooner) rather than pulling
-                # everyone toward one shared point, which would just trade circling for a new collision magnet.
-                s += p["explore"]
             if not self.over():
                 fr = free_trap | (1 << tidx)
                 if tail is not None and not on_pearl:
                     fr |= 1 << tail  # the tail cell is vacated by this move
                 area = self.flood(fr, tidx, need)
                 if area < need:
-                    s -= p["trap"] * care * (need - area) / need
+                    s -= p["trap"] * (need - area) / need
                 else:
                     s += p["area"]
                 if p["dead_end"] and self.exits(tidx, tx, ty, (d + 2) % 4, free) < 2:
-                    s -= p["dead_end"] * care
+                    s -= p["dead_end"]
                 for hc, need_e, base_short in foes:  # herding: leave visible enemies less room than they need
                     left = self.flood((free ^ (1 << tidx)) | (1 << hc), hc, need_e)
                     short = need_e - left if left < need_e else 0
@@ -657,9 +515,9 @@ class Brain:
                 if (ey == ty and (ex - tx) % w_ in (1, w_ - 1)) or (ex == tx and (ey - ty) % h_ in (1, h_ - 1)):
                     if enemy:
                         small = length < segs.get(pid, 1) * p["trade_ratio"]
-                        s -= p["head_risk_small"] if small else p["head_risk"] * care
+                        s -= p["head_risk_small"] if small else p["head_risk"]
                     else:
-                        s -= p["team_head_risk"] * care
+                        s -= p["team_head_risk"]
             for px, py in predicted:  # a guess, not a fact: landing on or next to it is merely made less attractive
                 if (py == ty and (px - tx) % w_ in (1, w_ - 1)) or (px == tx and (py - ty) % h_ in (1, h_ - 1)):
                     s -= p["predict"]
@@ -671,76 +529,22 @@ class Brain:
             if s > best_s:
                 best_d, best_s = d, s
         action = MOVES[best_d]
-
-        # sprint: try covering 2-3 tiles this turn instead of 1, in any of the same legal-first-step directions.
-        # Scored on the same core terms as a plain move (pearl value, trap room at the length left after paying
-        # the sprint cost, dead end, head risk) so it only wins when it is genuinely better, not just faster --
-        # the path is fully walked by sprint_end above, so this is never a blind gamble past the first tile.
-        if p["sprint_max"] > 1 and not self.over():
-            for d in ok:
-                for steps in range(2, p["sprint_max"] + 1):
-                    eff_len = length - (steps - 1)
-                    if eff_len < 2:
-                        break
-                    tidx = self.sprint_end(hx, hy, d, steps, occ, w_, h_)
-                    if tidx is None:
-                        break  # further steps in this direction are blocked too
-                    tx = (hx + DX[d] * steps) % w_
-                    ty = (hy + DY[d] * steps) % h_
-                    s = 0.0
-                    on_pearl = (pm >> tidx) & 1
-                    if on_pearl:
-                        s += p["pearl_here"]
-                    elif lay is not None:
-                        for i in range(1, len(lay)):
-                            if (lay[i] >> tidx) & 1:
-                                s += p["pearl_near"] * (kk + 1 - i)
-                                break
-                    need_s = min(max(eff_len + margin, p["need_floor"]), p["need_cap"])
-                    area = self.flood(free_trap | (1 << tidx), tidx, need_s)
-                    if area < need_s:
-                        s -= p["trap"] * care * (need_s - area) / need_s
-                    else:
-                        s += p["area"]
-                    if p["dead_end"] and self.exits(tidx, tx, ty, (d + 2) % 4, free) < 2:
-                        s -= p["dead_end"] * care
-                    for hc, (enemy, pid) in heads.items():
-                        ex, ey = hc % w_, hc // w_
-                        if (ey == ty and (ex - tx) % w_ in (1, w_ - 1)) or \
-                                (ex == tx and (ey - ty) % h_ in (1, h_ - 1)):
-                            if enemy:
-                                small = length < segs.get(pid, 1) * p["trade_ratio"]
-                                s -= p["head_risk_small"] if small else p["head_risk"] * care
-                            else:
-                                s -= p["team_head_risk"] * care
-                    if d == t.dir:
-                        s += p["straight"]
-                    if s > best_s:
-                        best_s = s
-                        action = b"MOVE " + LETTERS[d:d + 1] * steps + b"\n"
-
         return action + b"SONAR %d\n" % sonar_msg if sonar_msg is not None else action
 
     # ------------------------------------------------------------------ fallback
     def fallback(self, block):
-        """Independent of learned state: first move that is not immediate death, preferring the heading.
-        Portal edges (see decide()'s PORTAL status / module docstring) skip the occupancy check entirely -- a
-        portal step does not land on the physically-adjacent tile, so that tile's occupancy is irrelevant, not
-        "safe" or "unsafe" (this was a bug here: the occupancy check ran unconditionally, so an unrelated body on
-        that irrelevant tile could wrongly rule out a portal move that decide()'s own legality check would allow)."""
+        """Independent of learned state: first move that is not immediate death, preferring the heading."""
         try:
             t = proto.parse_turn(block)
             occ = {(int(q[2]), int(q[3])) for q in t.parts}
             ed = t.edges
             vt = ed[11].split()
-            tok = (ed[3].split()[3], vt[4], ed[4].split()[3], vt[3])
-            kelp = tuple(x == b"w" for x in tok)
-            portal = tuple(x != b"." and x != b"w" for x in tok)
+            kelp = (ed[3].split()[3] == b"w", vt[4] == b"w", ed[4].split()[3] == b"w", vt[3] == b"w")
             order = [t.dir] + [d for d in range(4) if d != t.dir] if t.dir >= 0 else range(4)
             for d in order:
                 if kelp[d]:
                     continue
-                if not portal[d] and ((t.hx + DX[d]) % self.W, (t.hy + DY[d]) % self.H) in occ:
+                if ((t.hx + DX[d]) % self.W, (t.hy + DY[d]) % self.H) in occ:
                     continue
                 return MOVES[d]
         except Exception:  # noqa: BLE001

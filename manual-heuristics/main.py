@@ -1,9 +1,4 @@
-"""Sea-dragon bot entry point: a thin turn loop around proto.py (I/O) and brain.py (decisions).
-
-Runs the heuristic Brain (bot/brain.py), not the trained Policy (bot/policy.py) -- switched 2026-09-27: Brain is
-what all the split/length-tiebreak/terrain-sonar tuning this project has done actually affects, and Policy's
-weights.bin never ran any of it. Deterministic given the same game state (no seeding needed).
-"""
+"""Sea-dragon bot entry point: a thin turn loop around proto.py (I/O) and brain.py (decisions)."""
 import sys
 
 import proto

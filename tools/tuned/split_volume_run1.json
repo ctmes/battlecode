@@ -1,0 +1,226 @@
+{
+ "names": [
+  "grow_mod",
+  "founder_units",
+  "split_units",
+  "tiles_per_unit",
+  "split_r_end",
+  "grow_care_len",
+  "grow_care_mult",
+  "grow_care_margin"
+ ],
+ "params": {
+  "grow_mod": 10,
+  "founder_units": 64,
+  "split_units": 54,
+  "split_r_end": 442,
+  "grow_care_len": 3,
+  "grow_care_mult": 2.2258
+ },
+ "state": {
+  "m": [
+   0.8634268232065634,
+   1.0,
+   0.8407563644271211,
+   0.0,
+   0.8561029142551014,
+   0.2185277419713236,
+   0.4085976175364555,
+   0.10482304947671095
+  ],
+  "sigma": 0.1498918343420659,
+  "C": [
+   1.54412111626045,
+   1.0528459512953434,
+   0.8361696919127589,
+   0.952510402145789,
+   0.7082443250186496,
+   1.0582548619013754,
+   0.46141648432182963,
+   0.5585068539546479
+  ],
+  "ps": [
+   0.7375229837106763,
+   1.6353288509784047,
+   -1.045990514573298,
+   -1.5314563922653266,
+   1.1481542363223138,
+   0.5876862616148049,
+   0.3155218741245953,
+   -1.2825615600747509
+  ],
+  "pc": [
+   0.985795192807227,
+   1.343198005406007,
+   -0.9399407146906575,
+   -1.4152868802547507,
+   0.8828694955228741,
+   0.585625382433014,
+   0.20825009210338236,
+   -0.9382510142110679
+  ],
+  "gen": 7
+ },
+ "history": [
+  {
+   "gen": 0,
+   "best": 0.6928571428571428,
+   "avg": 0.5954081632653061,
+   "mean": 0.6571428571428571,
+   "sigma": 0.14288426423631437,
+   "mean_params": {},
+   "mean_vs": {
+    "defaults": 0.5,
+    "old": 0.571,
+    "grower_brain": 0.857
+   },
+   "mean_deaths_per_k": 32.78,
+   "errors": 0
+  },
+  {
+   "gen": 1,
+   "best": 0.75,
+   "avg": 0.6301020408163265,
+   "mean": 0.6785714285714286,
+   "sigma": 0.14533363775500865,
+   "mean_params": {
+    "grow_mod": 8,
+    "founder_units": 55,
+    "split_units": 58,
+    "split_r_end": 406,
+    "grow_care_len": 0,
+    "grow_care_mult": 2.199
+   },
+   "mean_vs": {
+    "defaults": 0.429,
+    "old": 0.607,
+    "grower_brain": 0.964
+   },
+   "mean_deaths_per_k": 13.76,
+   "errors": 0
+  },
+  {
+   "gen": 2,
+   "best": 0.7214285714285714,
+   "avg": 0.6387755102040816,
+   "mean": 0.6785714285714286,
+   "sigma": 0.13341699251564298,
+   "mean_params": {
+    "grow_mod": 10,
+    "founder_units": 55,
+    "split_units": 54,
+    "split_r_end": 393,
+    "grow_care_mult": 2.3357
+   },
+   "mean_vs": {
+    "defaults": 0.571,
+    "old": 0.607,
+    "grower_brain": 0.821
+   },
+   "mean_deaths_per_k": 18.64,
+   "errors": 0
+  },
+  {
+   "gen": 3,
+   "best": 0.7928571428571429,
+   "avg": 0.639795918367347,
+   "mean": 0.6714285714285714,
+   "sigma": 0.13419317319364382,
+   "mean_params": {
+    "founder_units": 56,
+    "split_units": 60,
+    "split_r_end": 444,
+    "grow_care_mult": 2.2896
+   },
+   "mean_vs": {
+    "defaults": 0.429,
+    "old": 0.786,
+    "grower_brain": 0.857
+   },
+   "mean_deaths_per_k": 17.87,
+   "errors": 0
+  },
+  {
+   "gen": 4,
+   "best": 0.7285714285714285,
+   "avg": 0.6290816326530612,
+   "mean": 0.7,
+   "sigma": 0.1321552152239981,
+   "mean_params": {
+    "grow_mod": 9,
+    "founder_units": 57,
+    "split_units": 61,
+    "split_r_end": 414,
+    "grow_care_len": 3,
+    "grow_care_mult": 2.2788
+   },
+   "mean_vs": {
+    "defaults": 0.536,
+    "old": 0.643,
+    "grower_brain": 0.893
+   },
+   "mean_deaths_per_k": 20.51,
+   "errors": 0
+  },
+  {
+   "gen": 5,
+   "best": 0.7714285714285715,
+   "avg": 0.6464285714285714,
+   "mean": 0.6928571428571428,
+   "sigma": 0.14374511070467952,
+   "mean_params": {
+    "grow_mod": 10,
+    "founder_units": 55,
+    "split_units": 62,
+    "split_r_end": 392,
+    "grow_care_len": 3,
+    "grow_care_mult": 2.1233
+   },
+   "mean_vs": {
+    "defaults": 0.571,
+    "old": 0.607,
+    "grower_brain": 0.857
+   },
+   "mean_deaths_per_k": 14.74,
+   "errors": 0
+  },
+  {
+   "gen": 6,
+   "best": 0.7071428571428571,
+   "avg": 0.6204081632653062,
+   "mean": 0.6571428571428571,
+   "sigma": 0.1498918343420659,
+   "mean_params": {
+    "grow_mod": 11,
+    "founder_units": 64,
+    "split_units": 59,
+    "split_r_end": 408,
+    "grow_care_len": 3,
+    "grow_care_mult": 2.1186
+   },
+   "mean_vs": {
+    "defaults": 0.571,
+    "old": 0.643,
+    "grower_brain": 0.75
+   },
+   "mean_deaths_per_k": 14.82,
+   "errors": 0
+  }
+ ],
+ "args": {
+  "cmd": "run",
+  "name": "split_volume_run1",
+  "generations": 25,
+  "pop": 14,
+  "maps": 6,
+  "max_side": 64,
+  "seed": 1000,
+  "sigma": 0.15,
+  "vs": "defaults:2,old:1,grower_brain:2",
+  "params": "grow_mod,founder_units,split_units,tiles_per_unit,split_r_end,grow_care_len,grow_care_mult,grow_care_margin",
+  "start": "",
+  "no_bundled": false,
+  "resume": false,
+  "workers": 8
+ }
+}
