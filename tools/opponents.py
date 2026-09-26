@@ -238,3 +238,21 @@ class Splitter(Chaser):
         if t.length >= self.split_at and t.units < min(dragon.limit, self.cap):
             return b"SPLIT %d\n" % (t.length // 2)
         return super().act(dragon, t)
+
+
+@register
+class Grower(Chaser):
+    """A chaser that splits in half early on, same as Splitter, but caps at a handful of dragons and stops
+    splitting well before the round-500 tiebreak. The rest of the game is unopposed pearl-chasing, so
+    whatever it has left grows long and safely -- a proxy for opponents that beat a big swarm on the
+    longest-living-dragon tiebreak despite ending with far fewer units and less total length."""
+
+    name = "grower"
+    split_at = 6  # length at which to split (both halves are then at least 3 long)
+    cap = 10  # ... while the team has fewer dragons than this
+    split_deadline = 150  # ... and only before this round; after it, only chases pearls and stays alive
+
+    def act(self, dragon, t):
+        if t.length >= self.split_at and t.units < min(dragon.limit, self.cap) and t.rnd < self.split_deadline:
+            return b"SPLIT %d\n" % (t.length // 2)
+        return super().act(dragon, t)

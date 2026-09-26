@@ -12,7 +12,7 @@ import proto  # noqa: E402
 from unswbc.engine import EngineModule  # noqa: E402
 
 MAPS = sorted((ROOT / "maps").glob("*.map"))
-SAFE = ("safe_random", "chaser", "rammer", "hugger", "splitter")  # the bots that only ever pick clean moves
+SAFE = ("safe_random", "chaser", "rammer", "hugger", "splitter", "grower")  # bots that only ever pick clean moves
 
 
 class Watch:
@@ -103,10 +103,21 @@ def test_splitter_splits(engine):
     print(f"ok  the splitter split into {len(me.dragons)} dragons on big_empty")
 
 
+def test_grower_caps_lower_than_splitter(engine):
+    """Same simultaneous-turn engine lets both bots overshoot their nominal cap (many dragons can pass the
+    same-round units check before it updates), so compare against the splitter rather than a hard number."""
+    data = next(mp for mp in MAPS if mp.stem == "big_empty").read_bytes()
+    _, grower, _, _ = next(both_sides(engine, data, "grower", "chaser"))
+    _, splitter, _, _ = next(both_sides(engine, data, "splitter", "chaser"))
+    assert 1 < len(grower.dragons) < len(splitter.dragons), \
+        f"expected grower ({len(grower.dragons)}) to split into fewer dragons than splitter ({len(splitter.dragons)})"
+    print(f"ok  the grower capped at {len(grower.dragons)} dragons, well under the splitter's {len(splitter.dragons)}")
+
+
 def run():
     engine = EngineModule()
     for test in (test_valid_actions, test_safe_bots_never_step_into_known_death, test_deterministic_and_seeded,
-                 test_dummy_always_loses, test_splitter_splits):
+                 test_dummy_always_loses, test_splitter_splits, test_grower_caps_lower_than_splitter):
         test(engine)
 
 
