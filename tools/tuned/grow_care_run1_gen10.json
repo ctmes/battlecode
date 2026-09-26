@@ -1,0 +1,230 @@
+{
+ "names": [
+  "grow_care_len",
+  "grow_care_mult",
+  "grow_care_margin"
+ ],
+ "params": {
+  "grow_care_len": 2,
+  "grow_care_mult": 1.8414,
+  "grow_care_margin": 1
+ },
+ "state": {
+  "m": [
+   0.14697977297236522,
+   0.28045163560922765,
+   0.09806481259966296
+  ],
+  "sigma": 0.09971205285598338,
+  "C": [
+   0.5654494054364548,
+   0.44532289979619477,
+   0.8292667048258491
+  ],
+  "ps": [
+   0.6489390359719287,
+   -0.7034658282758612,
+   1.663577200411697
+  ],
+  "pc": [
+   0.6089660288609036,
+   -0.5337859639406106,
+   1.2618358464126591
+  ],
+  "gen": 10
+ },
+ "history": [
+  {
+   "gen": 0,
+   "best": 0.8071428571428572,
+   "avg": 0.7142857142857143,
+   "mean": 0.7142857142857142,
+   "sigma": 0.15277514545337598,
+   "mean_params": {},
+   "mean_vs": {
+    "defaults": 0.5,
+    "old": 0.857,
+    "grower_brain": 0.857
+   },
+   "mean_deaths_per_k": 33.81,
+   "errors": 0
+  },
+  {
+   "gen": 1,
+   "best": 0.7571428571428571,
+   "avg": 0.6988095238095239,
+   "mean": 0.7,
+   "sigma": 0.16936510277695974,
+   "mean_params": {
+    "grow_care_mult": 1.455
+   },
+   "mean_vs": {
+    "defaults": 0.5,
+    "old": 0.714,
+    "grower_brain": 0.893
+   },
+   "mean_deaths_per_k": 14.18,
+   "errors": 0
+  },
+  {
+   "gen": 2,
+   "best": 0.7714285714285715,
+   "avg": 0.7136904761904761,
+   "mean": 0.7,
+   "sigma": 0.16814752272613262,
+   "mean_params": {
+    "grow_care_mult": 1.8136
+   },
+   "mean_vs": {
+    "defaults": 0.5,
+    "old": 0.714,
+    "grower_brain": 0.893
+   },
+   "mean_deaths_per_k": 20.07,
+   "errors": 0
+  },
+  {
+   "gen": 3,
+   "best": 0.7714285714285715,
+   "avg": 0.7208333333333333,
+   "mean": 0.7785714285714286,
+   "sigma": 0.15952943420765872,
+   "mean_params": {
+    "grow_care_len": 2,
+    "grow_care_mult": 1.8318
+   },
+   "mean_vs": {
+    "defaults": 0.607,
+    "old": 0.893,
+    "grower_brain": 0.893
+   },
+   "mean_deaths_per_k": 17.54,
+   "errors": 0
+  },
+  {
+   "gen": 4,
+   "best": 0.7214285714285714,
+   "avg": 0.6851190476190476,
+   "mean": 0.7285714285714285,
+   "sigma": 0.14137699275452018,
+   "mean_params": {
+    "grow_care_len": 2,
+    "grow_care_mult": 2.0735
+   },
+   "mean_vs": {
+    "defaults": 0.571,
+    "old": 0.643,
+    "grower_brain": 0.929
+   },
+   "mean_deaths_per_k": 20.53,
+   "errors": 0
+  },
+  {
+   "gen": 5,
+   "best": 0.7857142857142858,
+   "avg": 0.7273809523809525,
+   "mean": 0.7428571428571429,
+   "sigma": 0.11443697770622671,
+   "mean_params": {
+    "grow_care_len": 2,
+    "grow_care_mult": 1.8294
+   },
+   "mean_vs": {
+    "defaults": 0.5,
+    "old": 0.857,
+    "grower_brain": 0.929
+   },
+   "mean_deaths_per_k": 13.96,
+   "errors": 0
+  },
+  {
+   "gen": 6,
+   "best": 0.7571428571428571,
+   "avg": 0.705952380952381,
+   "mean": 0.7,
+   "sigma": 0.12133226967551068,
+   "mean_params": {
+    "grow_care_len": 2,
+    "grow_care_mult": 1.9785
+   },
+   "mean_vs": {
+    "defaults": 0.536,
+    "old": 0.714,
+    "grower_brain": 0.857
+   },
+   "mean_deaths_per_k": 15.45,
+   "errors": 0
+  },
+  {
+   "gen": 7,
+   "best": 0.7642857142857142,
+   "avg": 0.7119047619047619,
+   "mean": 0.7857142857142858,
+   "sigma": 0.1012406230408082,
+   "mean_params": {
+    "grow_care_len": 1,
+    "grow_care_mult": 1.9898,
+    "grow_care_margin": 1
+   },
+   "mean_vs": {
+    "defaults": 0.679,
+    "old": 0.714,
+    "grower_brain": 0.929
+   },
+   "mean_deaths_per_k": 25.12,
+   "errors": 0
+  },
+  {
+   "gen": 8,
+   "best": 0.7714285714285715,
+   "avg": 0.7023809523809524,
+   "mean": 0.7,
+   "sigma": 0.09332047053313841,
+   "mean_params": {
+    "grow_care_len": 2,
+    "grow_care_mult": 1.972
+   },
+   "mean_vs": {
+    "defaults": 0.5,
+    "old": 0.714,
+    "grower_brain": 0.893
+   },
+   "mean_deaths_per_k": 33.04,
+   "errors": 0
+  },
+  {
+   "gen": 9,
+   "best": 0.7571428571428572,
+   "avg": 0.7214285714285714,
+   "mean": 0.6785714285714286,
+   "sigma": 0.09971205285598338,
+   "mean_params": {
+    "grow_care_len": 1,
+    "grow_care_mult": 1.8989
+   },
+   "mean_vs": {
+    "defaults": 0.429,
+    "old": 0.75,
+    "grower_brain": 0.893
+   },
+   "mean_deaths_per_k": 11.31,
+   "errors": 0
+  }
+ ],
+ "args": {
+  "cmd": "run",
+  "name": "grow_care_run1",
+  "generations": 30,
+  "pop": 12,
+  "maps": 6,
+  "max_side": 64,
+  "seed": 1000,
+  "sigma": 0.15,
+  "vs": "defaults:2,old:1,grower_brain:2",
+  "params": "grow_care_len,grow_care_mult,grow_care_margin",
+  "start": "",
+  "no_bundled": false,
+  "resume": true,
+  "workers": 13
+ }
+}

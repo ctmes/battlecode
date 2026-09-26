@@ -1,0 +1,175 @@
+{
+ "names": [
+  "grow_care_len",
+  "grow_care_mult",
+  "grow_care_margin"
+ ],
+ "params": {
+  "grow_care_len": 1,
+  "grow_care_mult": 1.9898,
+  "grow_care_margin": 1
+ },
+ "state": {
+  "m": [
+   0.09147171895921959,
+   0.32992418325187883,
+   0.10070610073474875
+  ],
+  "sigma": 0.12133226967551068,
+  "C": [
+   0.5707635719778742,
+   0.7236508843791035,
+   0.7971529346651871
+  ],
+  "ps": [
+   -0.8508002597912908,
+   0.2760463943953552,
+   1.6553818648676217
+  ],
+  "pc": [
+   -0.7716212570693397,
+   0.26682613257284665,
+   1.2688108117138208
+  ],
+  "gen": 7
+ },
+ "history": [
+  {
+   "gen": 0,
+   "best": 0.8071428571428572,
+   "avg": 0.7142857142857143,
+   "mean": 0.7142857142857142,
+   "sigma": 0.15277514545337598,
+   "mean_params": {},
+   "mean_vs": {
+    "defaults": 0.5,
+    "old": 0.857,
+    "grower_brain": 0.857
+   },
+   "mean_deaths_per_k": 33.81,
+   "errors": 0
+  },
+  {
+   "gen": 1,
+   "best": 0.7571428571428571,
+   "avg": 0.6988095238095239,
+   "mean": 0.7,
+   "sigma": 0.16936510277695974,
+   "mean_params": {
+    "grow_care_mult": 1.455
+   },
+   "mean_vs": {
+    "defaults": 0.5,
+    "old": 0.714,
+    "grower_brain": 0.893
+   },
+   "mean_deaths_per_k": 14.18,
+   "errors": 0
+  },
+  {
+   "gen": 2,
+   "best": 0.7714285714285715,
+   "avg": 0.7136904761904761,
+   "mean": 0.7,
+   "sigma": 0.16814752272613262,
+   "mean_params": {
+    "grow_care_mult": 1.8136
+   },
+   "mean_vs": {
+    "defaults": 0.5,
+    "old": 0.714,
+    "grower_brain": 0.893
+   },
+   "mean_deaths_per_k": 20.07,
+   "errors": 0
+  },
+  {
+   "gen": 3,
+   "best": 0.7714285714285715,
+   "avg": 0.7208333333333333,
+   "mean": 0.7785714285714286,
+   "sigma": 0.15952943420765872,
+   "mean_params": {
+    "grow_care_len": 2,
+    "grow_care_mult": 1.8318
+   },
+   "mean_vs": {
+    "defaults": 0.607,
+    "old": 0.893,
+    "grower_brain": 0.893
+   },
+   "mean_deaths_per_k": 17.54,
+   "errors": 0
+  },
+  {
+   "gen": 4,
+   "best": 0.7214285714285714,
+   "avg": 0.6851190476190476,
+   "mean": 0.7285714285714285,
+   "sigma": 0.14137699275452018,
+   "mean_params": {
+    "grow_care_len": 2,
+    "grow_care_mult": 2.0735
+   },
+   "mean_vs": {
+    "defaults": 0.571,
+    "old": 0.643,
+    "grower_brain": 0.929
+   },
+   "mean_deaths_per_k": 20.53,
+   "errors": 0
+  },
+  {
+   "gen": 5,
+   "best": 0.7857142857142858,
+   "avg": 0.7273809523809525,
+   "mean": 0.7428571428571429,
+   "sigma": 0.11443697770622671,
+   "mean_params": {
+    "grow_care_len": 2,
+    "grow_care_mult": 1.8294
+   },
+   "mean_vs": {
+    "defaults": 0.5,
+    "old": 0.857,
+    "grower_brain": 0.929
+   },
+   "mean_deaths_per_k": 13.96,
+   "errors": 0
+  },
+  {
+   "gen": 6,
+   "best": 0.7571428571428571,
+   "avg": 0.705952380952381,
+   "mean": 0.7,
+   "sigma": 0.12133226967551068,
+   "mean_params": {
+    "grow_care_len": 2,
+    "grow_care_mult": 1.9785
+   },
+   "mean_vs": {
+    "defaults": 0.536,
+    "old": 0.714,
+    "grower_brain": 0.857
+   },
+   "mean_deaths_per_k": 15.45,
+   "errors": 0
+  }
+ ],
+ "args": {
+  "cmd": "run",
+  "name": "grow_care_run1",
+  "generations": 30,
+  "pop": 12,
+  "maps": 6,
+  "max_side": 64,
+  "seed": 1000,
+  "sigma": 0.15,
+  "vs": "defaults:2,old:1,grower_brain:2",
+  "params": "grow_care_len,grow_care_mult,grow_care_margin",
+  "start": "",
+  "no_bundled": false,
+  "resume": true,
+  "workers": null
+ }
+}

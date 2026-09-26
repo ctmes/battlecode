@@ -1,0 +1,13 @@
+{
+ "names": [
+  "grow_care_len",
+  "grow_care_mult",
+  "grow_care_margin"
+ ],
+ "params": {
+  "grow_care_len": 1,
+  "grow_care_mult": 1.9346,
+  "grow_care_margin": 1
+ },
+ "source": "mean of the last 8 means of grow_care_run1"
+}

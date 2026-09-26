@@ -45,6 +45,13 @@ SPACE = {
     "tiles_per_unit": (0, 150, "int"), "split_pearls": (0, 4, "int"), "split_units": (4, 64, "int"),
     "founder_units": (2, 64, "int"), "dead_end": (0, 400, "lin"), "need_floor": (0, 60, "int"),
     "voro": (0, 12, "lin"), "voro_radius": (2, 9, "int"),
+    # Added for the length-tiebreak weakness (a dragon that is already long plays more cautiously instead of
+    # risking the investment): 0 / 1.0 / 0 are all no-ops, so the optimizer can tune this back off if it doesn't
+    # help. See tools/tuned/ for grow_care-only runs (--params grow_care_len,grow_care_mult,grow_care_margin).
+    "grow_care_len": (0, 15, "int"), "grow_care_mult": (1.0, 4.0, "lin"), "grow_care_margin": (0, 6, "int"),
+    # Local crowding/food gate on splitting (see want_split): refuses to split into a spot already thick with
+    # teammates, or short on pearls per nearby mouth, instead of only a flat team-size cap. 0 is off for both.
+    "split_mate_radius": (0, 6, "int"), "split_mate_cap": (1, 6, "int"), "split_food_ratio": (0, 3, "lin"),
 }
 # The brain as it was before the dead-end / room-floor / grower / territory work (git HEAD~ of brain.py's DEFAULTS).
 OLD = {"grow_mod": 0, "split_r_end": 10 ** 9, "dead_end": 0.0, "need_floor": 0, "voro": 0.0, "voro_radius": 8}
@@ -54,6 +61,10 @@ OPPONENTS = {
     "slow": ("brain", {"split_len": 8, "founder_split_len": 8}),
     "splitter": ("bot", "splitter"),
     "chaser": ("bot", "chaser"),
+    # A disciplined opponent that splits a little early, then stops well before round 500 and just survives and
+    # grows: this is what reproduces the real loss (more total length and dragons, still loses the round-500
+    # longest-living-dragon tiebreak) that plain "defaults"/"old" self-play does not reliably exercise.
+    "grower_brain": ("brain", {"founder_units": 10, "split_units": 10, "split_r_end": 150, "grow_mod": 0}),
 }
 
 

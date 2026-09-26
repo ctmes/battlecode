@@ -63,6 +63,14 @@ DEFAULTS = {
     "split_pearls": 1,         # ... and at least this many pearls are in view (food for the extra mouth)
     "split_r_end": 433,        # ... and it is before this round (late children do not pay back)
     "split_min_exits": 1,      # ... and the parent has at least this many safe moves (not cornered)
+    # Local crowding/food, as an alternative to a flat team-size cap and pearl count that cannot tell a dragon
+    # splitting into open space from one splitting into a knot of its own teammates (a big source of other-body
+    # deaths in a large swarm). Both 0 = off (old behaviour): nearby teammates use `heads`, already built every
+    # turn for head-risk scoring, so this costs nothing extra.
+    "split_mate_radius": 0,    # Manhattan radius to count visible teammate heads in (0 = the check is off)
+    "split_mate_cap": 2,       # refuse to split if this many teammates are already within split_mate_radius
+    "split_food_ratio": 0.0,   # if > 0, require pearls-in-view >= this * (nearby teammates + 1), instead of
+                                # the flat split_pearls count above
     "dead_end": 191.4698,      # penalty for stepping onto a cell with a single way on
     "need_floor": 8,           # room a move must leave, at least (short dragons otherwise pass tiny pockets)
     "squeeze": 0.0,            # bonus per safe move a nearby enemy head loses (herding towards walls and bodies)
@@ -100,10 +108,17 @@ DEFAULTS = {
     # Once a dragon's own length reaches grow_care_len, it plays more cautiously: trap/dead-end/head-on
     # penalties are multiplied by grow_care_mult and need_margin gets grow_care_margin added, so a dragon that
     # is already a real investment (whether a surviving founder or a grow_mod-designated grower) protects that
-    # length instead of taking the same risks a short, disposable swarm dragon would. 0 = off (old behaviour).
-    "grow_care_len": 0,
-    "grow_care_mult": 1.0,
-    "grow_care_margin": 0,
+    # length instead of taking the same risks a short, disposable swarm dragon would. Tuned 2026-09-26 by CMA-ES
+    # (tools/tune.py, --params grow_care_len,grow_care_mult,grow_care_margin, 14 generations, averaged over the
+    # last 8 generation means: tools/tuned/grow_care_run1_avg8.json) against defaults/old/grower_brain (a
+    # disciplined opponent that splits a little early then stops and just grows -- built to reproduce the
+    # round-500 longest-living-dragon tiebreak loss). Validated on held-out maps/seeds: 92.0% [88.4%, 94.6%] vs
+    # grower_brain (was a loss before this), 50.0% [44.4%, 55.6%] vs plain defaults (no regression, but not a
+    # general win either -- this only activates once a dragon is already fairly long, so it is a narrow fix for
+    # the tiebreak weakness, not a strict replacement for DEFAULTS the way the rest of these values are).
+    "grow_care_len": 1,
+    "grow_care_mult": 1.9346,
+    "grow_care_margin": 1,
     "budget_ns": 60_000_000,   # self-metering: skip optional work past this (points on the judge)
 }
 
@@ -266,7 +281,19 @@ class Brain:
         self.tail = body[length - 1] if len(body) >= length else None
 
     # ------------------------------------------------------------------ decision helpers
-    def want_split(self, t, heads, n_ok):
+    def nearby_mates(self, heads, hx, hy, w_, h_, radius):
+        """Visible teammate heads (not self, not enemy) within Manhattan `radius` -- free: `heads` is already
+        built every turn for head-risk scoring, so this is just a count over a handful of entries."""
+        n = 0
+        for hc, (enemy, pid) in heads.items():
+            if enemy:
+                continue
+            ex, ey = hc % w_, hc // w_
+            if min((ex - hx) % w_, (hx - ex) % w_) + min((ey - hy) % h_, (hy - ey) % h_) <= radius:
+                n += 1
+        return n
+
+    def want_split(self, t, heads, n_ok, hx, hy, w_, h_):
         """Splitting means standing still this turn and giving up length, so it needs a reason."""
         p = self.p
         length = t.length
@@ -275,13 +302,26 @@ class Brain:
             return False
         if n_ok < p["split_min_exits"] or any(e for e, _ in heads.values()):
             return False  # cornered, or an enemy head is in view
+        # Local crowding/food: a flat pearl count and team-size cap don't know whether this particular spot
+        # already has teammates piling into it (the source of most other-body deaths in a big swarm) or has
+        # enough food nearby to feed one more mouth. Both are opt-in (0 = old behaviour, unaffected).
+        mates = None
+        if p["split_mate_radius"] > 0:
+            mates = self.nearby_mates(heads, hx, hy, w_, h_, p["split_mate_radius"])
+            if mates >= p["split_mate_cap"]:
+                return False  # already crowded here: split somewhere else, or not at all
         if self.founder:  # founders seed the swarm, then grow
             return length >= p["founder_split_len"] and t.units < min(p["founder_units"], self.target)
         if p["grow_mod"] > 0 and self.id % p["grow_mod"] == 0:
             return False  # a designated grower
         if length < p["split_len"] or t.units >= min(p["split_units"], self.target):
             return False
-        return t.flags.count(b"1") >= p["split_pearls"]
+        pearls = t.flags.count(b"1")
+        if p["split_food_ratio"] > 0:
+            if mates is None:
+                mates = self.nearby_mates(heads, hx, hy, w_, h_, p["split_mate_radius"] or 3)
+            return pearls >= p["split_food_ratio"] * (mates + 1)
+        return pearls >= p["split_pearls"]
 
     def exits(self, tidx, tx, ty, back, free):
         """Free, passable neighbours of cell (tx, ty), not counting the way back."""
@@ -426,7 +466,7 @@ class Brain:
 
         if self.founder is None:
             self.founder = t.rnd == 0
-        if self.want_split(t, heads, len(ok)):
+        if self.want_split(t, heads, len(ok), hx, hy, w_, h_):
             action = b"SPLIT %d\n" % p["split_child"]
             return action + b"SONAR %d\n" % sonar_msg if sonar_msg is not None else action
         if len(ok) == 1 or self.over():
