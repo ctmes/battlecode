@@ -63,12 +63,22 @@ def _softmax(x):
 
 
 def _legal(t, w, h):
-    """Per absolute direction N,E,S,W: no kelp on the step and no dragon segment (any team) on the landing tile."""
+    """Per absolute direction N,E,S,W: no kelp on the step. For a normal edge, also no dragon segment (any team)
+    on the landing tile -- but a portal edge (any token that's neither '.' nor 'w', see proto.py's wire-format
+    docstring) does NOT land there: "a portal leads out of its partner edge" (rules), and its far side is
+    invisible until stepped through (rules' Vision section: vision does not extend past a portal), so the
+    physically-adjacent tile's occupancy is simply irrelevant to a portal step and is not checked -- checking it
+    anyway (an earlier bug here) meant an unrelated body sitting on that tile could wrongly mask out a perfectly
+    fine portal move. This matches brain.py's own model: a portal step is legal whenever the edge isn't kelp,
+    full stop -- the far side's real safety is unknowable from here, not "assumed clear"."""
     ed = t.edges
     vt = ed[11].split()
-    kelp = (ed[3].split()[3] == b"w", vt[4] == b"w", ed[4].split()[3] == b"w", vt[3] == b"w")
+    tok = (ed[3].split()[3], vt[4], ed[4].split()[3], vt[3])
+    kelp = tuple(x == b"w" for x in tok)
+    portal = tuple(x != b"." and x != b"w" for x in tok)
     occ = {(int(q[2]), int(q[3])) for q in t.parts}
-    return tuple(not kelp[d] and ((t.hx + DX[d]) % w, (t.hy + DY[d]) % h) not in occ for d in range(4))
+    return tuple(not kelp[d] and (portal[d] or ((t.hx + DX[d]) % w, (t.hy + DY[d]) % h) not in occ)
+                 for d in range(4))
 
 
 def choose(move_logits, split_logits, t, rng, width, height, unit_limit):

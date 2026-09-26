@@ -144,6 +144,45 @@ def test_move_i_0_to_2_matches_the_pre_sprint_single_step_head():
     print("ok: move indices 0-2 reproduce the pre-sprint head's single-step actions exactly")
 
 
+def test_portal_landing_tile_occupancy_is_not_checked():
+    # East edge (head's own) is a portal (token "7" -- any non-'.', non-'w' string, see proto.py): stepping
+    # through it does NOT land on the physically-adjacent tile east of the head, it exits the portal's OTHER,
+    # invisible side (rules: "a portal leads out of its partner edge"). A dragon body sitting on that irrelevant
+    # adjacent tile must not mask the direction out -- the bug this guards: _legal() used to occupancy-check
+    # that unrelated tile for a portal edge exactly like a normal step.
+    edges = {(1, 0, "v"): "7"}
+    parts = [("B", 2, 1, 0, "N", 0)]  # unrelated body segment on the (irrelevant) physically-adjacent tile
+    t = _turn(length=6, edges=edges, parts=parts)
+    move_logits = np.full(9, -1000.0)
+    move_logits[2] = 1000.0  # length index 0, rel_dir index 2 (right = absolute E when facing N)
+    action, move_i, _, split_i, _ = _forced_move(move_logits, t)
+    assert move_i == 2 and split_i == 0 and action == b"MOVE E\n", (action, move_i, split_i)
+    print("ok: a portal edge is legal even when the physically-adjacent (but irrelevant) landing tile is occupied")
+
+
+def test_portal_edge_does_not_mask_out_normal_kelp_check():
+    # Sanity check the fix is additive, not a regression: a KELP edge (not a portal) with an occupied adjacent
+    # tile stays exactly as restrictive as before -- kelp still blocks outright, and a normal (non-portal, non-
+    # kelp) edge with an occupied landing tile is still masked out.
+    edges = {(1, 0, "v"): "w"}  # kelp, not a portal
+    parts = [("B", 2, 1, 0, "N", 0)]
+    t = _turn(length=6, edges=edges, parts=parts)
+    move_logits = np.full(9, -1000.0)
+    move_logits[2] = 1000.0  # would be East, but kelp must exclude it regardless
+    move_logits[1] = 500.0  # left = W: the fallback winner
+    action, move_i, _, split_i, _ = _forced_move(move_logits, t)
+    assert move_i == 1 and split_i == 0 and action == b"MOVE W\n", (action, move_i, split_i)
+
+    parts2 = [("B", 2, 1, 0, "N", 0)]  # same occupied tile, but now a plain (non-portal, non-kelp) empty edge
+    t2 = _turn(length=6, edges={}, parts=parts2)
+    move_logits2 = np.full(9, -1000.0)
+    move_logits2[2] = 1000.0
+    move_logits2[1] = 500.0
+    action2, move_i2, _, split_i2, _ = _forced_move(move_logits2, t2)
+    assert move_i2 == 1 and split_i2 == 0 and action2 == b"MOVE W\n", (action2, move_i2, split_i2)
+    print("ok: kelp still blocks outright, and a normal edge's occupied landing tile is still masked out")
+
+
 def test_sonar_report_picks_nearest_enemy_and_packs_correctly():
     parts = [
         ("A", 1, 2, 0, "E", 1),    # enemy head, offset (2, 0) from the head -> wrapped distance 2
@@ -173,5 +212,7 @@ if __name__ == "__main__":
     test_sprint_length_and_direction_selected_correctly()
     test_sprint_first_step_kelp_blocks_that_direction_at_every_length()
     test_move_i_0_to_2_matches_the_pre_sprint_single_step_head()
+    test_portal_landing_tile_occupancy_is_not_checked()
+    test_portal_edge_does_not_mask_out_normal_kelp_check()
     test_sonar_report_picks_nearest_enemy_and_packs_correctly()
     test_sonar_report_ignores_own_team_and_non_head_parts()
