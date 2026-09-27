@@ -83,3 +83,45 @@
 [01:13:00] full_run1: already running elsewhere (gen 13), waiting rather than launching a second
 [01:13:30] === campaign start ===
 [01:13:30] full_run1: already running elsewhere (gen 13), waiting rather than launching a second
+[01:14:00] full_run1: already running elsewhere (gen 13), waiting rather than launching a second
+[01:14:31] full_run1: already running elsewhere (gen 13), waiting rather than launching a second
+[01:15:01] full_run1: already running elsewhere (gen 13), waiting rather than launching a second
+[01:15:32] full_run1: already running elsewhere (gen 13), waiting rather than launching a second
+[01:16:02] full_run1: attempt 1 (resume) toward gen 25
+[01:34:05] === campaign start ===
+[01:34:06] full_run1: already running elsewhere (gen 19), waiting rather than launching a second
+[01:34:36] full_run1: already running elsewhere (gen 19), waiting rather than launching a second
+[01:35:06] full_run1: already running elsewhere (gen 19), waiting rather than launching a second
+[01:35:36] full_run1: already running elsewhere (gen 19), waiting rather than launching a second
+[01:36:07] full_run1: already running elsewhere (gen 20), waiting rather than launching a second
+[01:36:37] full_run1: already running elsewhere (gen 20), waiting rather than launching a second
+[01:37:07] full_run1: already running elsewhere (gen 20), waiting rather than launching a second
+[01:37:37] full_run1: already running elsewhere (gen 20), waiting rather than launching a second
+[01:38:08] full_run1: already running elsewhere (gen 20), waiting rather than launching a second
+[01:38:38] full_run1: already running elsewhere (gen 21), waiting rather than launching a second
+[01:39:08] full_run1: already running elsewhere (gen 21), waiting rather than launching a second
+[01:39:39] full_run1: already running elsewhere (gen 21), waiting rather than launching a second
+[01:40:09] full_run1: already running elsewhere (gen 21), waiting rather than launching a second
+[01:40:39] full_run1: already running elsewhere (gen 21), waiting rather than launching a second
+[01:41:10] full_run1: already running elsewhere (gen 21), waiting rather than launching a second
+[01:41:40] full_run1: already running elsewhere (gen 21), waiting rather than launching a second
+[01:42:10] full_run1: already running elsewhere (gen 21), waiting rather than launching a second
+[01:42:41] full_run1: already running elsewhere (gen 22), waiting rather than launching a second
+[01:43:11] full_run1: already running elsewhere (gen 22), waiting rather than launching a second
+[01:43:41] full_run1: already running elsewhere (gen 22), waiting rather than launching a second
+[01:44:12] full_run1: already running elsewhere (gen 22), waiting rather than launching a second
+[01:44:42] full_run1: already running elsewhere (gen 22), waiting rather than launching a second
+[01:45:12] full_run1: already running elsewhere (gen 22), waiting rather than launching a second
+[01:45:42] full_run1: already running elsewhere (gen 23), waiting rather than launching a second
+[01:46:13] full_run1: already running elsewhere (gen 23), waiting rather than launching a second
+[01:46:43] full_run1: already running elsewhere (gen 23), waiting rather than launching a second
+[01:47:13] full_run1: already running elsewhere (gen 23), waiting rather than launching a second
+[01:47:43] full_run1: already running elsewhere (gen 23), waiting rather than launching a second
+[01:48:14] full_run1: already running elsewhere (gen 24), waiting rather than launching a second
+[01:48:44] full_run1: already running elsewhere (gen 24), waiting rather than launching a second
+[01:49:14] full_run1: already running elsewhere (gen 24), waiting rather than launching a second
+[01:49:44] full_run1: already running elsewhere (gen 24), waiting rather than launching a second
+[01:50:15] full_run1: already running elsewhere (gen 24), waiting rather than launching a second
+[01:50:45] full_run1: reached gen 25
+[01:50:45] full_run1: averaged -> full_run1_avg8.json
+[01:50:45] validating full_run1_avg8.json (400 games vs defaults,old,grower_brain,splitter)

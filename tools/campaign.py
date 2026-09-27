@@ -22,8 +22,11 @@ LOG = TUNED / "campaign.log"
 VS = "defaults:2,old:1,grower_brain:2"  # session 1's benchmark (already running under this; kept for reference)
 # Sessions 2+: broadened 2026-09-27 to add policy (the previously-shipped trained bot, ~8x Brain's dragon count
 # -- session 1's grower_brain never tests being this outnumbered) and manual_heuristics (a prior from-scratch
-# submission, a genuinely different design rather than a brain.py variant).
-VS2 = "defaults:2,old:1,grower_brain:2,policy:2,manual_heuristics:1"
+# submission, a genuinely different design rather than a brain.py variant). manual_heuristics is weighted
+# heaviest: per the user, it is the strongest opponent measured so far (Brain currently loses to it, 46.0% over
+# 100 games, with total length/dragon count/longest-alive-dragon all roughly tied -- a tactical gap, not a
+# numbers one), so beating it specifically should dominate what these sessions optimize for.
+VS2 = "defaults:1,old:1,grower_brain:2,policy:2,manual_heuristics:3"
 
 S1_PARAMS = ("grow_mod,founder_units,split_units,tiles_per_unit,split_r_end,grow_care_len,grow_care_mult,"
              "grow_care_margin,split_len_max,explore,split_mate_radius,split_mate_cap,split_food_ratio")
@@ -124,7 +127,9 @@ def merge_params(*paths):
 
 def sonar_terrain_sweep(workers):
     """A single dimension: a direct weight sweep is more diagnostic than full CMA-ES here, and matches how
-    sonar_predict's negative result was established. Uses whatever session 1+2 have found so far as the base."""
+    sonar_predict's negative result was established. Uses whatever session 1+2 have found so far as the base.
+    Benchmarked directly against manual_heuristics (the strongest known opponent) rather than a self-play mirror,
+    since what matters is whether terrain-sharing helps against the actual bar, not just against itself."""
     out_path = TUNED / "sonar_terrain_sweep.json"
     if out_path.exists():
         log("sonar_terrain sweep already done, skipping")
@@ -138,11 +143,11 @@ def sonar_terrain_sweep(workers):
         for w in (0, 15, 40, 80, 150):
             params = {**base, "sonar_terrain": w}
             maps = [(900000 + i, 10, 64) for i in range(40)]
-            jobs = [league.Job(m, side, params, ("brain", {**base, "sonar_terrain": 0})) for m in maps for side in "AB"]
+            jobs = [league.Job(m, side, params, ("bot", "manual_heuristics")) for m in maps for side in "AB"]
             res = lg.run(jobs)
             s = league.summarize(res)
             results[w] = s["score"]
-            log(f"sonar_terrain={w}: score {s['score']:.3f} over {s['games']} games vs sonar_terrain=0")
+            log(f"sonar_terrain={w}: score {s['score']:.3f} over {s['games']} vs manual_heuristics")
     best = max(results, key=results.get)
     out = {**base, "sonar_terrain": best if results[best] > results[0] + 0.02 else 0}
     out_path.write_text(json.dumps({"params": out, "sweep": results}, indent=1))
@@ -219,6 +224,14 @@ def main():
         "grand_unified (final)": json.loads(s4.read_text())["params"],
     }
     round_robin(candidates, games=200, workers=args.workers)
+
+    for script in ("eval_vs_manual_heuristics.py", "eval_vs_policy.py"):
+        log(f"final detailed comparison: {script}")
+        proc = subprocess.run([PY, f"tools/{script}", "--games", "150", "--brain-params", str(s4),
+                                "--workers", str(args.workers)], cwd=ROOT, capture_output=True, text=True)
+        log(proc.stdout)
+        if proc.returncode != 0:
+            log(f"{script} FAILED: {proc.stderr[-2000:]}")
 
     log("=== campaign done: final candidate at tools/tuned/grand_run1_avg8.json ===")
     print(json.dumps(json.loads(s4.read_text())["params"], indent=1))

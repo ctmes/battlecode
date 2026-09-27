@@ -137,17 +137,15 @@ DEFAULTS = {
     # Once a dragon's own length reaches grow_care_len, it plays more cautiously: trap/dead-end/head-on
     # penalties are multiplied by grow_care_mult and need_margin gets grow_care_margin added, so a dragon that
     # is already a real investment (whether a surviving founder or a grow_mod-designated grower) protects that
-    # length instead of taking the same risks a short, disposable swarm dragon would. Tuned 2026-09-26 by CMA-ES
-    # (tools/tune.py, --params grow_care_len,grow_care_mult,grow_care_margin, 14 generations, averaged over the
-    # last 8 generation means: tools/tuned/grow_care_run1_avg8.json) against defaults/old/grower_brain (a
-    # disciplined opponent that splits a little early then stops and just grows -- built to reproduce the
-    # round-500 longest-living-dragon tiebreak loss). Validated on held-out maps/seeds: 92.0% [88.4%, 94.6%] vs
-    # grower_brain (was a loss before this), 50.0% [44.4%, 55.6%] vs plain defaults (no regression, but not a
-    # general win either -- this only activates once a dragon is already fairly long, so it is a narrow fix for
-    # the tiebreak weakness, not a strict replacement for DEFAULTS the way the rest of these values are).
-    "grow_care_len": 1,
-    "grow_care_mult": 1.9346,
-    "grow_care_margin": 1,
+    # length instead of taking the same risks a short, disposable swarm dragon would. Back to off (2026-09-27):
+    # the 2026-09-26 tuned values (len=1, mult=1.9346, margin=1) fixed the round-500 tiebreak loss in isolation,
+    # but as part of the combined bot they lost to manual_heuristics/ -- the exact same code from before this
+    # mechanism existed -- 33-46% instead of manual_heuristics' real, live 58% win rate. DEFAULTS resets here to
+    # match manual_heuristics exactly, and grow_care (plus split_len_max/explore/the crowding gates) goes back
+    # on only if a fresh, properly-validated tuning pass earns it back. See tools/tuned/ for the history.
+    "grow_care_len": 0,
+    "grow_care_mult": 1.0,
+    "grow_care_margin": 0,
     "budget_ns": 60_000_000,   # self-metering: skip optional work past this (points on the judge)
 }
 

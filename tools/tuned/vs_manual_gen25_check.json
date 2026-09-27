@@ -1,0 +1,17 @@
+{
+ "params": {
+  "grow_mod": 11,
+  "founder_units": 30,
+  "split_units": 59,
+  "split_r_end": 402,
+  "grow_care_len": 11,
+  "grow_care_mult": 1.1548,
+  "grow_care_margin": 0,
+  "split_len_max": 38,
+  "explore": 46.9937,
+  "split_mate_radius": 2,
+  "split_mate_cap": 3,
+  "split_food_ratio": 0.0694
+ },
+ "source": "vs_manual_run1 gen25 mean, mid-session check"
+}

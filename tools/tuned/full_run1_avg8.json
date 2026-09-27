@@ -1,0 +1,30 @@
+{
+ "names": [
+  "grow_mod",
+  "founder_units",
+  "split_units",
+  "tiles_per_unit",
+  "split_r_end",
+  "grow_care_len",
+  "grow_care_mult",
+  "grow_care_margin",
+  "split_len_max",
+  "explore",
+  "split_mate_radius",
+  "split_mate_cap",
+  "split_food_ratio"
+ ],
+ "params": {
+  "founder_units": 51,
+  "split_units": 54,
+  "split_r_end": 486,
+  "grow_care_len": 12,
+  "grow_care_mult": 3.9673,
+  "split_len_max": 36,
+  "explore": 166.3663,
+  "split_mate_radius": 1,
+  "split_mate_cap": 4,
+  "split_food_ratio": 0.9558
+ },
+ "source": "mean of the last 8 means of full_run1"
+}

@@ -1,0 +1,16 @@
+{
+ "params": {
+  "grow_mod": 8,
+  "founder_units": 37,
+  "split_units": 52,
+  "split_r_end": 369,
+  "grow_care_len": 7,
+  "grow_care_mult": 1.6474,
+  "grow_care_margin": 0,
+  "explore": 40.5001,
+  "split_mate_radius": 1,
+  "split_mate_cap": 1,
+  "split_food_ratio": 0.2448
+ },
+ "source": "manual recovery: mean of gens 3-8 (before sigma runaway), full_run1"
+}

@@ -1,0 +1,721 @@
+[02:04:14] === vs-manual-heuristics finetune start, 6.0h budget, seeded from full_run1_recovered.json ===
+[02:04:14] vs_manual_run1: attempt 1 (fresh)
+[03:20:21] vs_manual_run1: attempt 1 exited 1, now at gen 10
+[03:20:27] vs_manual_run1: attempt 2 (resume)
+[04:36:59] vs_manual_run1: attempt 2 exited 1, now at gen 18
+[04:37:06] vs_manual_run1: attempt 3 (resume)
+[05:45:28] vs_manual_run1: attempt 3 exited 3221225725, now at gen 25
+[05:45:34] vs_manual_run1: attempt 4 (resume)
+[05:45:35] vs_manual_run1: attempt 4 exited 1, now at gen 25
+[05:45:40] vs_manual_run1: attempt 5 (resume)
+[05:45:40] vs_manual_run1: attempt 5 exited 1, now at gen 25
+[05:45:45] vs_manual_run1: attempt 6 (resume)
+[05:45:46] vs_manual_run1: attempt 6 exited 1, now at gen 25
+[05:45:51] vs_manual_run1: attempt 7 (resume)
+[05:45:52] vs_manual_run1: attempt 7 exited 1, now at gen 25
+[05:45:58] vs_manual_run1: attempt 8 (resume)
+[05:45:59] vs_manual_run1: attempt 8 exited 1, now at gen 25
+[05:46:05] vs_manual_run1: attempt 9 (resume)
+[05:46:06] vs_manual_run1: attempt 9 exited 1, now at gen 25
+[05:46:11] vs_manual_run1: attempt 10 (resume)
+[05:46:12] vs_manual_run1: attempt 10 exited 1, now at gen 25
+[05:46:17] vs_manual_run1: attempt 11 (resume)
+[05:46:17] vs_manual_run1: attempt 11 exited 1, now at gen 25
+[05:46:23] vs_manual_run1: attempt 12 (resume)
+[05:46:23] vs_manual_run1: attempt 12 exited 1, now at gen 25
+[05:46:29] vs_manual_run1: attempt 13 (resume)
+[05:46:29] vs_manual_run1: attempt 13 exited 1, now at gen 25
+[05:46:34] vs_manual_run1: attempt 14 (resume)
+[05:46:35] vs_manual_run1: attempt 14 exited 1, now at gen 25
+[05:46:40] vs_manual_run1: attempt 15 (resume)
+[05:46:41] vs_manual_run1: attempt 15 exited 1, now at gen 25
+[05:46:46] vs_manual_run1: attempt 16 (resume)
+[05:46:47] vs_manual_run1: attempt 16 exited 1, now at gen 25
+[05:46:52] vs_manual_run1: attempt 17 (resume)
+[05:46:52] vs_manual_run1: attempt 17 exited 1, now at gen 25
+[05:46:58] vs_manual_run1: attempt 18 (resume)
+[05:46:58] vs_manual_run1: attempt 18 exited 1, now at gen 25
+[05:47:04] vs_manual_run1: attempt 19 (resume)
+[05:47:04] vs_manual_run1: attempt 19 exited 1, now at gen 25
+[05:47:10] vs_manual_run1: attempt 20 (resume)
+[05:47:10] vs_manual_run1: attempt 20 exited 1, now at gen 25
+[05:47:16] vs_manual_run1: attempt 21 (resume)
+[05:47:17] vs_manual_run1: attempt 21 exited 1, now at gen 25
+[05:47:22] vs_manual_run1: attempt 22 (resume)
+[05:47:23] vs_manual_run1: attempt 22 exited 1, now at gen 25
+[05:47:29] vs_manual_run1: attempt 23 (resume)
+[05:47:30] vs_manual_run1: attempt 23 exited 1, now at gen 25
+[05:47:35] vs_manual_run1: attempt 24 (resume)
+[05:47:36] vs_manual_run1: attempt 24 exited 1, now at gen 25
+[05:47:42] vs_manual_run1: attempt 25 (resume)
+[05:47:42] vs_manual_run1: attempt 25 exited 1, now at gen 25
+[05:47:48] vs_manual_run1: attempt 26 (resume)
+[05:47:48] vs_manual_run1: attempt 26 exited 1, now at gen 25
+[05:47:54] vs_manual_run1: attempt 27 (resume)
+[05:47:55] vs_manual_run1: attempt 27 exited 1, now at gen 25
+[05:48:01] vs_manual_run1: attempt 28 (resume)
+[05:48:02] vs_manual_run1: attempt 28 exited 1, now at gen 25
+[05:48:07] vs_manual_run1: attempt 29 (resume)
+[05:48:08] vs_manual_run1: attempt 29 exited 1, now at gen 25
+[05:48:14] vs_manual_run1: attempt 30 (resume)
+[05:48:14] vs_manual_run1: attempt 30 exited 1, now at gen 25
+[05:48:20] vs_manual_run1: attempt 31 (resume)
+[05:48:21] vs_manual_run1: attempt 31 exited 1, now at gen 25
+[05:48:27] vs_manual_run1: attempt 32 (resume)
+[05:48:28] vs_manual_run1: attempt 32 exited 1, now at gen 25
+[05:48:34] vs_manual_run1: attempt 33 (resume)
+[05:48:34] vs_manual_run1: attempt 33 exited 1, now at gen 25
+[05:48:40] vs_manual_run1: attempt 34 (resume)
+[05:48:41] vs_manual_run1: attempt 34 exited 1, now at gen 25
+[05:48:46] vs_manual_run1: attempt 35 (resume)
+[05:48:46] vs_manual_run1: attempt 35 exited 1, now at gen 25
+[05:48:52] vs_manual_run1: attempt 36 (resume)
+[05:48:52] vs_manual_run1: attempt 36 exited 1, now at gen 25
+[05:48:58] vs_manual_run1: attempt 37 (resume)
+[05:48:58] vs_manual_run1: attempt 37 exited 1, now at gen 25
+[05:49:04] vs_manual_run1: attempt 38 (resume)
+[05:49:05] vs_manual_run1: attempt 38 exited 1, now at gen 25
+[05:49:11] vs_manual_run1: attempt 39 (resume)
+[05:49:12] vs_manual_run1: attempt 39 exited 1, now at gen 25
+[05:49:17] vs_manual_run1: attempt 40 (resume)
+[05:49:18] vs_manual_run1: attempt 40 exited 1, now at gen 25
+[05:49:24] vs_manual_run1: attempt 41 (resume)
+[05:49:24] vs_manual_run1: attempt 41 exited 1, now at gen 25
+[05:49:30] vs_manual_run1: attempt 42 (resume)
+[05:49:30] vs_manual_run1: attempt 42 exited 1, now at gen 25
+[05:49:36] vs_manual_run1: attempt 43 (resume)
+[05:49:36] vs_manual_run1: attempt 43 exited 1, now at gen 25
+[05:49:42] vs_manual_run1: attempt 44 (resume)
+[05:49:42] vs_manual_run1: attempt 44 exited 1, now at gen 25
+[05:49:48] vs_manual_run1: attempt 45 (resume)
+[05:49:48] vs_manual_run1: attempt 45 exited 1, now at gen 25
+[05:49:54] vs_manual_run1: attempt 46 (resume)
+[05:49:54] vs_manual_run1: attempt 46 exited 1, now at gen 25
+[05:49:59] vs_manual_run1: attempt 47 (resume)
+[05:50:00] vs_manual_run1: attempt 47 exited 1, now at gen 25
+[05:50:06] vs_manual_run1: attempt 48 (resume)
+[05:50:06] vs_manual_run1: attempt 48 exited 1, now at gen 25
+[05:50:12] vs_manual_run1: attempt 49 (resume)
+[05:50:12] vs_manual_run1: attempt 49 exited 1, now at gen 25
+[05:50:18] vs_manual_run1: attempt 50 (resume)
+[05:50:18] vs_manual_run1: attempt 50 exited 1, now at gen 25
+[05:50:24] vs_manual_run1: attempt 51 (resume)
+[05:50:25] vs_manual_run1: attempt 51 exited 1, now at gen 25
+[05:50:31] vs_manual_run1: attempt 52 (resume)
+[05:50:32] vs_manual_run1: attempt 52 exited 1, now at gen 25
+[05:50:37] vs_manual_run1: attempt 53 (resume)
+[05:50:38] vs_manual_run1: attempt 53 exited 1, now at gen 25
+[05:50:44] vs_manual_run1: attempt 54 (resume)
+[05:50:44] vs_manual_run1: attempt 54 exited 1, now at gen 25
+[05:50:50] vs_manual_run1: attempt 55 (resume)
+[05:50:51] vs_manual_run1: attempt 55 exited 1, now at gen 25
+[05:50:57] vs_manual_run1: attempt 56 (resume)
+[05:50:57] vs_manual_run1: attempt 56 exited 1, now at gen 25
+[05:51:03] vs_manual_run1: attempt 57 (resume)
+[05:51:04] vs_manual_run1: attempt 57 exited 1, now at gen 25
+[05:51:10] vs_manual_run1: attempt 58 (resume)
+[05:51:11] vs_manual_run1: attempt 58 exited 1, now at gen 25
+[05:51:17] vs_manual_run1: attempt 59 (resume)
+[05:51:17] vs_manual_run1: attempt 59 exited 1, now at gen 25
+[05:51:23] vs_manual_run1: attempt 60 (resume)
+[05:51:24] vs_manual_run1: attempt 60 exited 1, now at gen 25
+[05:51:29] vs_manual_run1: attempt 61 (resume)
+[05:51:30] vs_manual_run1: attempt 61 exited 1, now at gen 25
+[05:51:35] vs_manual_run1: attempt 62 (resume)
+[05:51:36] vs_manual_run1: attempt 62 exited 1, now at gen 25
+[05:51:41] vs_manual_run1: attempt 63 (resume)
+[05:51:42] vs_manual_run1: attempt 63 exited 1, now at gen 25
+[05:51:47] vs_manual_run1: attempt 64 (resume)
+[05:51:47] vs_manual_run1: attempt 64 exited 1, now at gen 25
+[05:51:53] vs_manual_run1: attempt 65 (resume)
+[05:51:53] vs_manual_run1: attempt 65 exited 1, now at gen 25
+[05:51:59] vs_manual_run1: attempt 66 (resume)
+[05:51:59] vs_manual_run1: attempt 66 exited 1, now at gen 25
+[05:52:05] vs_manual_run1: attempt 67 (resume)
+[05:52:05] vs_manual_run1: attempt 67 exited 1, now at gen 25
+[05:52:11] vs_manual_run1: attempt 68 (resume)
+[05:52:11] vs_manual_run1: attempt 68 exited 1, now at gen 25
+[05:52:17] vs_manual_run1: attempt 69 (resume)
+[05:52:17] vs_manual_run1: attempt 69 exited 1, now at gen 25
+[05:52:23] vs_manual_run1: attempt 70 (resume)
+[05:52:23] vs_manual_run1: attempt 70 exited 1, now at gen 25
+[05:52:28] vs_manual_run1: attempt 71 (resume)
+[05:52:29] vs_manual_run1: attempt 71 exited 1, now at gen 25
+[05:52:34] vs_manual_run1: attempt 72 (resume)
+[05:52:35] vs_manual_run1: attempt 72 exited 1, now at gen 25
+[05:52:40] vs_manual_run1: attempt 73 (resume)
+[05:52:41] vs_manual_run1: attempt 73 exited 1, now at gen 25
+[05:52:46] vs_manual_run1: attempt 74 (resume)
+[05:52:47] vs_manual_run1: attempt 74 exited 1, now at gen 25
+[05:52:52] vs_manual_run1: attempt 75 (resume)
+[05:52:53] vs_manual_run1: attempt 75 exited 1, now at gen 25
+[05:52:58] vs_manual_run1: attempt 76 (resume)
+[05:52:59] vs_manual_run1: attempt 76 exited 1, now at gen 25
+[05:53:04] vs_manual_run1: attempt 77 (resume)
+[05:53:05] vs_manual_run1: attempt 77 exited 1, now at gen 25
+[05:53:10] vs_manual_run1: attempt 78 (resume)
+[05:53:11] vs_manual_run1: attempt 78 exited 1, now at gen 25
+[05:53:16] vs_manual_run1: attempt 79 (resume)
+[05:53:17] vs_manual_run1: attempt 79 exited 1, now at gen 25
+[05:53:22] vs_manual_run1: attempt 80 (resume)
+[05:53:23] vs_manual_run1: attempt 80 exited 1, now at gen 25
+[05:53:28] vs_manual_run1: attempt 81 (resume)
+[05:53:29] vs_manual_run1: attempt 81 exited 1, now at gen 25
+[05:53:34] vs_manual_run1: attempt 82 (resume)
+[05:53:35] vs_manual_run1: attempt 82 exited 1, now at gen 25
+[05:53:40] vs_manual_run1: attempt 83 (resume)
+[05:53:41] vs_manual_run1: attempt 83 exited 1, now at gen 25
+[05:53:46] vs_manual_run1: attempt 84 (resume)
+[05:53:47] vs_manual_run1: attempt 84 exited 1, now at gen 25
+[05:53:52] vs_manual_run1: attempt 85 (resume)
+[05:53:53] vs_manual_run1: attempt 85 exited 1, now at gen 25
+[05:53:58] vs_manual_run1: attempt 86 (resume)
+[05:53:59] vs_manual_run1: attempt 86 exited 1, now at gen 25
+[05:54:04] vs_manual_run1: attempt 87 (resume)
+[05:54:04] vs_manual_run1: attempt 87 exited 1, now at gen 25
+[05:54:10] vs_manual_run1: attempt 88 (resume)
+[05:54:10] vs_manual_run1: attempt 88 exited 1, now at gen 25
+[05:54:16] vs_manual_run1: attempt 89 (resume)
+[05:54:16] vs_manual_run1: attempt 89 exited 1, now at gen 25
+[05:54:22] vs_manual_run1: attempt 90 (resume)
+[05:54:22] vs_manual_run1: attempt 90 exited 1, now at gen 25
+[05:54:28] vs_manual_run1: attempt 91 (resume)
+[05:54:28] vs_manual_run1: attempt 91 exited 1, now at gen 25
+[05:54:34] vs_manual_run1: attempt 92 (resume)
+[05:54:34] vs_manual_run1: attempt 92 exited 1, now at gen 25
+[05:54:40] vs_manual_run1: attempt 93 (resume)
+[05:54:40] vs_manual_run1: attempt 93 exited 1, now at gen 25
+[05:54:45] vs_manual_run1: attempt 94 (resume)
+[05:54:46] vs_manual_run1: attempt 94 exited 1, now at gen 25
+[05:54:51] vs_manual_run1: attempt 95 (resume)
+[05:54:52] vs_manual_run1: attempt 95 exited 1, now at gen 25
+[05:54:57] vs_manual_run1: attempt 96 (resume)
+[05:54:58] vs_manual_run1: attempt 96 exited 1, now at gen 25
+[05:55:03] vs_manual_run1: attempt 97 (resume)
+[05:55:04] vs_manual_run1: attempt 97 exited 1, now at gen 25
+[05:55:09] vs_manual_run1: attempt 98 (resume)
+[05:55:10] vs_manual_run1: attempt 98 exited 1, now at gen 25
+[05:55:15] vs_manual_run1: attempt 99 (resume)
+[05:55:16] vs_manual_run1: attempt 99 exited 1, now at gen 25
+[05:55:21] vs_manual_run1: attempt 100 (resume)
+[05:55:22] vs_manual_run1: attempt 100 exited 1, now at gen 25
+[05:55:27] vs_manual_run1: attempt 101 (resume)
+[05:55:28] vs_manual_run1: attempt 101 exited 1, now at gen 25
+[05:55:33] vs_manual_run1: attempt 102 (resume)
+[05:55:34] vs_manual_run1: attempt 102 exited 1, now at gen 25
+[05:55:39] vs_manual_run1: attempt 103 (resume)
+[05:55:40] vs_manual_run1: attempt 103 exited 1, now at gen 25
+[05:55:45] vs_manual_run1: attempt 104 (resume)
+[05:55:46] vs_manual_run1: attempt 104 exited 1, now at gen 25
+[05:55:51] vs_manual_run1: attempt 105 (resume)
+[05:55:51] vs_manual_run1: attempt 105 exited 1, now at gen 25
+[05:55:57] vs_manual_run1: attempt 106 (resume)
+[05:55:57] vs_manual_run1: attempt 106 exited 1, now at gen 25
+[05:56:03] vs_manual_run1: attempt 107 (resume)
+[05:56:03] vs_manual_run1: attempt 107 exited 1, now at gen 25
+[05:56:09] vs_manual_run1: attempt 108 (resume)
+[05:56:09] vs_manual_run1: attempt 108 exited 1, now at gen 25
+[05:56:14] vs_manual_run1: attempt 109 (resume)
+[05:56:15] vs_manual_run1: attempt 109 exited 1, now at gen 25
+[05:56:20] vs_manual_run1: attempt 110 (resume)
+[05:56:21] vs_manual_run1: attempt 110 exited 1, now at gen 25
+[05:56:26] vs_manual_run1: attempt 111 (resume)
+[05:56:27] vs_manual_run1: attempt 111 exited 1, now at gen 25
+[05:56:32] vs_manual_run1: attempt 112 (resume)
+[05:56:33] vs_manual_run1: attempt 112 exited 1, now at gen 25
+[05:56:38] vs_manual_run1: attempt 113 (resume)
+[05:56:39] vs_manual_run1: attempt 113 exited 1, now at gen 25
+[05:56:44] vs_manual_run1: attempt 114 (resume)
+[05:56:45] vs_manual_run1: attempt 114 exited 1, now at gen 25
+[05:56:50] vs_manual_run1: attempt 115 (resume)
+[05:56:51] vs_manual_run1: attempt 115 exited 1, now at gen 25
+[05:56:56] vs_manual_run1: attempt 116 (resume)
+[05:56:56] vs_manual_run1: attempt 116 exited 1, now at gen 25
+[05:57:02] vs_manual_run1: attempt 117 (resume)
+[05:57:02] vs_manual_run1: attempt 117 exited 1, now at gen 25
+[05:57:08] vs_manual_run1: attempt 118 (resume)
+[05:57:08] vs_manual_run1: attempt 118 exited 1, now at gen 25
+[05:57:14] vs_manual_run1: attempt 119 (resume)
+[05:57:14] vs_manual_run1: attempt 119 exited 1, now at gen 25
+[05:57:20] vs_manual_run1: attempt 120 (resume)
+[05:57:20] vs_manual_run1: attempt 120 exited 1, now at gen 25
+[05:57:26] vs_manual_run1: attempt 121 (resume)
+[05:57:26] vs_manual_run1: attempt 121 exited 1, now at gen 25
+[05:57:32] vs_manual_run1: attempt 122 (resume)
+[05:57:32] vs_manual_run1: attempt 122 exited 1, now at gen 25
+[05:57:38] vs_manual_run1: attempt 123 (resume)
+[05:57:38] vs_manual_run1: attempt 123 exited 1, now at gen 25
+[05:57:44] vs_manual_run1: attempt 124 (resume)
+[05:57:44] vs_manual_run1: attempt 124 exited 1, now at gen 25
+[05:57:50] vs_manual_run1: attempt 125 (resume)
+[05:57:50] vs_manual_run1: attempt 125 exited 1, now at gen 25
+[05:57:56] vs_manual_run1: attempt 126 (resume)
+[05:57:56] vs_manual_run1: attempt 126 exited 1, now at gen 25
+[05:58:02] vs_manual_run1: attempt 127 (resume)
+[05:58:02] vs_manual_run1: attempt 127 exited 1, now at gen 25
+[05:58:08] vs_manual_run1: attempt 128 (resume)
+[05:58:08] vs_manual_run1: attempt 128 exited 1, now at gen 25
+[05:58:14] vs_manual_run1: attempt 129 (resume)
+[05:58:14] vs_manual_run1: attempt 129 exited 1, now at gen 25
+[05:58:20] vs_manual_run1: attempt 130 (resume)
+[05:58:20] vs_manual_run1: attempt 130 exited 1, now at gen 25
+[05:58:25] vs_manual_run1: attempt 131 (resume)
+[05:58:26] vs_manual_run1: attempt 131 exited 1, now at gen 25
+[05:58:31] vs_manual_run1: attempt 132 (resume)
+[05:58:32] vs_manual_run1: attempt 132 exited 1, now at gen 25
+[05:58:38] vs_manual_run1: attempt 133 (resume)
+[05:58:38] vs_manual_run1: attempt 133 exited 1, now at gen 25
+[05:58:44] vs_manual_run1: attempt 134 (resume)
+[05:58:44] vs_manual_run1: attempt 134 exited 1, now at gen 25
+[05:58:49] vs_manual_run1: attempt 135 (resume)
+[05:58:50] vs_manual_run1: attempt 135 exited 1, now at gen 25
+[05:58:56] vs_manual_run1: attempt 136 (resume)
+[05:58:56] vs_manual_run1: attempt 136 exited 1, now at gen 25
+[05:59:01] vs_manual_run1: attempt 137 (resume)
+[05:59:02] vs_manual_run1: attempt 137 exited 1, now at gen 25
+[05:59:08] vs_manual_run1: attempt 138 (resume)
+[05:59:08] vs_manual_run1: attempt 138 exited 1, now at gen 25
+[05:59:14] vs_manual_run1: attempt 139 (resume)
+[05:59:14] vs_manual_run1: attempt 139 exited 1, now at gen 25
+[05:59:20] vs_manual_run1: attempt 140 (resume)
+[05:59:20] vs_manual_run1: attempt 140 exited 1, now at gen 25
+[05:59:26] vs_manual_run1: attempt 141 (resume)
+[05:59:26] vs_manual_run1: attempt 141 exited 1, now at gen 25
+[05:59:32] vs_manual_run1: attempt 142 (resume)
+[05:59:32] vs_manual_run1: attempt 142 exited 1, now at gen 25
+[05:59:38] vs_manual_run1: attempt 143 (resume)
+[05:59:38] vs_manual_run1: attempt 143 exited 1, now at gen 25
+[05:59:44] vs_manual_run1: attempt 144 (resume)
+[05:59:44] vs_manual_run1: attempt 144 exited 1, now at gen 25
+[05:59:50] vs_manual_run1: attempt 145 (resume)
+[05:59:50] vs_manual_run1: attempt 145 exited 1, now at gen 25
+[05:59:56] vs_manual_run1: attempt 146 (resume)
+[05:59:56] vs_manual_run1: attempt 146 exited 1, now at gen 25
+[06:00:02] vs_manual_run1: attempt 147 (resume)
+[06:00:02] vs_manual_run1: attempt 147 exited 1, now at gen 25
+[06:00:08] vs_manual_run1: attempt 148 (resume)
+[06:00:08] vs_manual_run1: attempt 148 exited 1, now at gen 25
+[06:00:14] vs_manual_run1: attempt 149 (resume)
+[06:00:14] vs_manual_run1: attempt 149 exited 1, now at gen 25
+[06:00:20] vs_manual_run1: attempt 150 (resume)
+[06:00:20] vs_manual_run1: attempt 150 exited 1, now at gen 25
+[06:00:26] vs_manual_run1: attempt 151 (resume)
+[06:00:26] vs_manual_run1: attempt 151 exited 1, now at gen 25
+[06:00:32] vs_manual_run1: attempt 152 (resume)
+[06:00:32] vs_manual_run1: attempt 152 exited 1, now at gen 25
+[06:00:38] vs_manual_run1: attempt 153 (resume)
+[06:00:38] vs_manual_run1: attempt 153 exited 1, now at gen 25
+[06:00:44] vs_manual_run1: attempt 154 (resume)
+[06:00:45] vs_manual_run1: attempt 154 exited 1, now at gen 25
+[06:00:50] vs_manual_run1: attempt 155 (resume)
+[06:00:50] vs_manual_run1: attempt 155 exited 1, now at gen 25
+[06:00:56] vs_manual_run1: attempt 156 (resume)
+[06:00:56] vs_manual_run1: attempt 156 exited 1, now at gen 25
+[06:01:02] vs_manual_run1: attempt 157 (resume)
+[06:01:02] vs_manual_run1: attempt 157 exited 1, now at gen 25
+[06:01:08] vs_manual_run1: attempt 158 (resume)
+[06:01:08] vs_manual_run1: attempt 158 exited 1, now at gen 25
+[06:01:14] vs_manual_run1: attempt 159 (resume)
+[06:01:14] vs_manual_run1: attempt 159 exited 1, now at gen 25
+[06:01:20] vs_manual_run1: attempt 160 (resume)
+[06:01:20] vs_manual_run1: attempt 160 exited 1, now at gen 25
+[06:01:26] vs_manual_run1: attempt 161 (resume)
+[06:01:26] vs_manual_run1: attempt 161 exited 1, now at gen 25
+[06:01:32] vs_manual_run1: attempt 162 (resume)
+[06:01:32] vs_manual_run1: attempt 162 exited 1, now at gen 25
+[06:01:38] vs_manual_run1: attempt 163 (resume)
+[06:01:38] vs_manual_run1: attempt 163 exited 1, now at gen 25
+[06:01:44] vs_manual_run1: attempt 164 (resume)
+[06:01:44] vs_manual_run1: attempt 164 exited 1, now at gen 25
+[06:01:50] vs_manual_run1: attempt 165 (resume)
+[06:01:50] vs_manual_run1: attempt 165 exited 1, now at gen 25
+[06:01:56] vs_manual_run1: attempt 166 (resume)
+[06:01:56] vs_manual_run1: attempt 166 exited 1, now at gen 25
+[06:02:02] vs_manual_run1: attempt 167 (resume)
+[06:02:02] vs_manual_run1: attempt 167 exited 1, now at gen 25
+[06:02:08] vs_manual_run1: attempt 168 (resume)
+[06:02:08] vs_manual_run1: attempt 168 exited 1, now at gen 25
+[06:02:14] vs_manual_run1: attempt 169 (resume)
+[06:02:14] vs_manual_run1: attempt 169 exited 1, now at gen 25
+[06:02:20] vs_manual_run1: attempt 170 (resume)
+[06:02:20] vs_manual_run1: attempt 170 exited 1, now at gen 25
+[06:02:26] vs_manual_run1: attempt 171 (resume)
+[06:02:26] vs_manual_run1: attempt 171 exited 1, now at gen 25
+[06:02:32] vs_manual_run1: attempt 172 (resume)
+[06:02:33] vs_manual_run1: attempt 172 exited 1, now at gen 25
+[06:02:38] vs_manual_run1: attempt 173 (resume)
+[06:02:39] vs_manual_run1: attempt 173 exited 1, now at gen 25
+[06:02:44] vs_manual_run1: attempt 174 (resume)
+[06:02:45] vs_manual_run1: attempt 174 exited 1, now at gen 25
+[06:02:50] vs_manual_run1: attempt 175 (resume)
+[06:02:51] vs_manual_run1: attempt 175 exited 1, now at gen 25
+[06:02:56] vs_manual_run1: attempt 176 (resume)
+[06:02:57] vs_manual_run1: attempt 176 exited 1, now at gen 25
+[06:03:02] vs_manual_run1: attempt 177 (resume)
+[06:03:05] vs_manual_run1: attempt 177 exited 1, now at gen 25
+[06:03:11] vs_manual_run1: attempt 178 (resume)
+[06:03:12] vs_manual_run1: attempt 178 exited 1, now at gen 25
+[06:03:17] vs_manual_run1: attempt 179 (resume)
+[06:03:18] vs_manual_run1: attempt 179 exited 1, now at gen 25
+[06:03:23] vs_manual_run1: attempt 180 (resume)
+[06:03:24] vs_manual_run1: attempt 180 exited 1, now at gen 25
+[06:03:29] vs_manual_run1: attempt 181 (resume)
+[06:03:30] vs_manual_run1: attempt 181 exited 1, now at gen 25
+[06:03:35] vs_manual_run1: attempt 182 (resume)
+[06:03:36] vs_manual_run1: attempt 182 exited 1, now at gen 25
+[06:03:41] vs_manual_run1: attempt 183 (resume)
+[06:03:42] vs_manual_run1: attempt 183 exited 1, now at gen 25
+[06:03:47] vs_manual_run1: attempt 184 (resume)
+[06:03:48] vs_manual_run1: attempt 184 exited 1, now at gen 25
+[06:03:53] vs_manual_run1: attempt 185 (resume)
+[06:03:54] vs_manual_run1: attempt 185 exited 1, now at gen 25
+[06:03:59] vs_manual_run1: attempt 186 (resume)
+[06:04:00] vs_manual_run1: attempt 186 exited 1, now at gen 25
+[06:04:05] vs_manual_run1: attempt 187 (resume)
+[06:04:06] vs_manual_run1: attempt 187 exited 1, now at gen 25
+[06:04:11] vs_manual_run1: attempt 188 (resume)
+[06:04:12] vs_manual_run1: attempt 188 exited 1, now at gen 25
+[06:04:18] vs_manual_run1: attempt 189 (resume)
+[06:04:18] vs_manual_run1: attempt 189 exited 1, now at gen 25
+[06:04:24] vs_manual_run1: attempt 190 (resume)
+[06:04:24] vs_manual_run1: attempt 190 exited 1, now at gen 25
+[06:04:30] vs_manual_run1: attempt 191 (resume)
+[06:04:30] vs_manual_run1: attempt 191 exited 1, now at gen 25
+[06:04:36] vs_manual_run1: attempt 192 (resume)
+[06:04:36] vs_manual_run1: attempt 192 exited 1, now at gen 25
+[06:04:43] vs_manual_run1: attempt 193 (resume)
+[06:04:43] vs_manual_run1: attempt 193 exited 1, now at gen 25
+[06:04:49] vs_manual_run1: attempt 194 (resume)
+[06:04:49] vs_manual_run1: attempt 194 exited 1, now at gen 25
+[06:04:55] vs_manual_run1: attempt 195 (resume)
+[06:04:55] vs_manual_run1: attempt 195 exited 1, now at gen 25
+[06:05:01] vs_manual_run1: attempt 196 (resume)
+[06:05:01] vs_manual_run1: attempt 196 exited 1, now at gen 25
+[06:05:07] vs_manual_run1: attempt 197 (resume)
+[06:05:07] vs_manual_run1: attempt 197 exited 1, now at gen 25
+[06:05:13] vs_manual_run1: attempt 198 (resume)
+[06:05:13] vs_manual_run1: attempt 198 exited 1, now at gen 25
+[06:05:19] vs_manual_run1: attempt 199 (resume)
+[06:05:19] vs_manual_run1: attempt 199 exited 1, now at gen 25
+[06:05:25] vs_manual_run1: attempt 200 (resume)
+[06:05:25] vs_manual_run1: attempt 200 exited 1, now at gen 25
+[06:05:31] vs_manual_run1: attempt 201 (resume)
+[06:05:31] vs_manual_run1: attempt 201 exited 1, now at gen 25
+[06:05:37] vs_manual_run1: attempt 202 (resume)
+[06:05:37] vs_manual_run1: attempt 202 exited 1, now at gen 25
+[06:05:42] vs_manual_run1: attempt 203 (resume)
+[06:05:43] vs_manual_run1: attempt 203 exited 1, now at gen 25
+[06:05:48] vs_manual_run1: attempt 204 (resume)
+[06:05:49] vs_manual_run1: attempt 204 exited 1, now at gen 25
+[06:05:54] vs_manual_run1: attempt 205 (resume)
+[06:05:55] vs_manual_run1: attempt 205 exited 1, now at gen 25
+[06:06:00] vs_manual_run1: attempt 206 (resume)
+[06:06:01] vs_manual_run1: attempt 206 exited 1, now at gen 25
+[06:06:06] vs_manual_run1: attempt 207 (resume)
+[06:06:07] vs_manual_run1: attempt 207 exited 1, now at gen 25
+[06:06:12] vs_manual_run1: attempt 208 (resume)
+[06:06:13] vs_manual_run1: attempt 208 exited 1, now at gen 25
+[06:06:18] vs_manual_run1: attempt 209 (resume)
+[06:06:19] vs_manual_run1: attempt 209 exited 1, now at gen 25
+[06:06:24] vs_manual_run1: attempt 210 (resume)
+[06:06:25] vs_manual_run1: attempt 210 exited 1, now at gen 25
+[06:06:30] vs_manual_run1: attempt 211 (resume)
+[06:06:31] vs_manual_run1: attempt 211 exited 1, now at gen 25
+[06:06:36] vs_manual_run1: attempt 212 (resume)
+[06:06:37] vs_manual_run1: attempt 212 exited 1, now at gen 25
+[06:06:42] vs_manual_run1: attempt 213 (resume)
+[06:06:43] vs_manual_run1: attempt 213 exited 1, now at gen 25
+[06:06:48] vs_manual_run1: attempt 214 (resume)
+[06:06:49] vs_manual_run1: attempt 214 exited 1, now at gen 25
+[06:06:54] vs_manual_run1: attempt 215 (resume)
+[06:06:55] vs_manual_run1: attempt 215 exited 1, now at gen 25
+[06:07:00] vs_manual_run1: attempt 216 (resume)
+[06:07:01] vs_manual_run1: attempt 216 exited 1, now at gen 25
+[06:07:06] vs_manual_run1: attempt 217 (resume)
+[06:07:07] vs_manual_run1: attempt 217 exited 1, now at gen 25
+[06:07:12] vs_manual_run1: attempt 218 (resume)
+[06:07:13] vs_manual_run1: attempt 218 exited 1, now at gen 25
+[06:07:18] vs_manual_run1: attempt 219 (resume)
+[06:07:19] vs_manual_run1: attempt 219 exited 1, now at gen 25
+[06:07:24] vs_manual_run1: attempt 220 (resume)
+[06:07:25] vs_manual_run1: attempt 220 exited 1, now at gen 25
+[06:07:30] vs_manual_run1: attempt 221 (resume)
+[06:07:31] vs_manual_run1: attempt 221 exited 1, now at gen 25
+[06:07:36] vs_manual_run1: attempt 222 (resume)
+[06:07:37] vs_manual_run1: attempt 222 exited 1, now at gen 25
+[06:07:42] vs_manual_run1: attempt 223 (resume)
+[06:07:43] vs_manual_run1: attempt 223 exited 1, now at gen 25
+[06:07:48] vs_manual_run1: attempt 224 (resume)
+[06:07:49] vs_manual_run1: attempt 224 exited 1, now at gen 25
+[06:07:54] vs_manual_run1: attempt 225 (resume)
+[06:07:55] vs_manual_run1: attempt 225 exited 1, now at gen 25
+[06:08:00] vs_manual_run1: attempt 226 (resume)
+[06:08:01] vs_manual_run1: attempt 226 exited 1, now at gen 25
+[06:08:06] vs_manual_run1: attempt 227 (resume)
+[06:08:07] vs_manual_run1: attempt 227 exited 1, now at gen 25
+[06:08:12] vs_manual_run1: attempt 228 (resume)
+[06:08:13] vs_manual_run1: attempt 228 exited 1, now at gen 25
+[06:08:18] vs_manual_run1: attempt 229 (resume)
+[06:08:19] vs_manual_run1: attempt 229 exited 1, now at gen 25
+[06:08:24] vs_manual_run1: attempt 230 (resume)
+[06:08:25] vs_manual_run1: attempt 230 exited 1, now at gen 25
+[06:08:30] vs_manual_run1: attempt 231 (resume)
+[06:08:31] vs_manual_run1: attempt 231 exited 1, now at gen 25
+[06:08:36] vs_manual_run1: attempt 232 (resume)
+[06:08:37] vs_manual_run1: attempt 232 exited 1, now at gen 25
+[06:08:42] vs_manual_run1: attempt 233 (resume)
+[06:08:43] vs_manual_run1: attempt 233 exited 1, now at gen 25
+[06:08:48] vs_manual_run1: attempt 234 (resume)
+[06:08:49] vs_manual_run1: attempt 234 exited 1, now at gen 25
+[06:08:54] vs_manual_run1: attempt 235 (resume)
+[06:08:55] vs_manual_run1: attempt 235 exited 1, now at gen 25
+[06:09:00] vs_manual_run1: attempt 236 (resume)
+[06:09:01] vs_manual_run1: attempt 236 exited 1, now at gen 25
+[06:09:06] vs_manual_run1: attempt 237 (resume)
+[06:09:07] vs_manual_run1: attempt 237 exited 1, now at gen 25
+[06:09:12] vs_manual_run1: attempt 238 (resume)
+[06:09:13] vs_manual_run1: attempt 238 exited 1, now at gen 25
+[06:09:18] vs_manual_run1: attempt 239 (resume)
+[06:09:19] vs_manual_run1: attempt 239 exited 1, now at gen 25
+[06:09:24] vs_manual_run1: attempt 240 (resume)
+[06:09:25] vs_manual_run1: attempt 240 exited 1, now at gen 25
+[06:09:30] vs_manual_run1: attempt 241 (resume)
+[06:09:31] vs_manual_run1: attempt 241 exited 1, now at gen 25
+[06:09:36] vs_manual_run1: attempt 242 (resume)
+[06:09:37] vs_manual_run1: attempt 242 exited 1, now at gen 25
+[06:09:42] vs_manual_run1: attempt 243 (resume)
+[06:09:43] vs_manual_run1: attempt 243 exited 1, now at gen 25
+[06:09:48] vs_manual_run1: attempt 244 (resume)
+[06:09:49] vs_manual_run1: attempt 244 exited 1, now at gen 25
+[06:09:54] vs_manual_run1: attempt 245 (resume)
+[06:09:55] vs_manual_run1: attempt 245 exited 1, now at gen 25
+[06:10:00] vs_manual_run1: attempt 246 (resume)
+[06:10:01] vs_manual_run1: attempt 246 exited 1, now at gen 25
+[06:10:06] vs_manual_run1: attempt 247 (resume)
+[06:10:07] vs_manual_run1: attempt 247 exited 1, now at gen 25
+[06:10:12] vs_manual_run1: attempt 248 (resume)
+[06:10:13] vs_manual_run1: attempt 248 exited 1, now at gen 25
+[06:10:18] vs_manual_run1: attempt 249 (resume)
+[06:10:19] vs_manual_run1: attempt 249 exited 1, now at gen 25
+[06:10:24] vs_manual_run1: attempt 250 (resume)
+[06:10:25] vs_manual_run1: attempt 250 exited 1, now at gen 25
+[06:10:30] vs_manual_run1: attempt 251 (resume)
+[06:10:31] vs_manual_run1: attempt 251 exited 1, now at gen 25
+[06:10:36] vs_manual_run1: attempt 252 (resume)
+[06:10:37] vs_manual_run1: attempt 252 exited 1, now at gen 25
+[06:10:42] vs_manual_run1: attempt 253 (resume)
+[06:10:43] vs_manual_run1: attempt 253 exited 1, now at gen 25
+[06:10:48] vs_manual_run1: attempt 254 (resume)
+[06:10:49] vs_manual_run1: attempt 254 exited 1, now at gen 25
+[06:10:54] vs_manual_run1: attempt 255 (resume)
+[06:10:55] vs_manual_run1: attempt 255 exited 1, now at gen 25
+[06:11:00] vs_manual_run1: attempt 256 (resume)
+[06:11:01] vs_manual_run1: attempt 256 exited 1, now at gen 25
+[06:11:06] vs_manual_run1: attempt 257 (resume)
+[06:11:07] vs_manual_run1: attempt 257 exited 1, now at gen 25
+[06:11:12] vs_manual_run1: attempt 258 (resume)
+[06:11:13] vs_manual_run1: attempt 258 exited 1, now at gen 25
+[06:11:18] vs_manual_run1: attempt 259 (resume)
+[06:11:19] vs_manual_run1: attempt 259 exited 1, now at gen 25
+[06:11:24] vs_manual_run1: attempt 260 (resume)
+[06:11:25] vs_manual_run1: attempt 260 exited 1, now at gen 25
+[06:11:30] vs_manual_run1: attempt 261 (resume)
+[06:11:31] vs_manual_run1: attempt 261 exited 1, now at gen 25
+[06:11:37] vs_manual_run1: attempt 262 (resume)
+[06:11:37] vs_manual_run1: attempt 262 exited 1, now at gen 25
+[06:11:43] vs_manual_run1: attempt 263 (resume)
+[06:11:43] vs_manual_run1: attempt 263 exited 1, now at gen 25
+[06:11:49] vs_manual_run1: attempt 264 (resume)
+[06:11:49] vs_manual_run1: attempt 264 exited 1, now at gen 25
+[06:11:55] vs_manual_run1: attempt 265 (resume)
+[06:11:55] vs_manual_run1: attempt 265 exited 1, now at gen 25
+[06:12:01] vs_manual_run1: attempt 266 (resume)
+[06:12:01] vs_manual_run1: attempt 266 exited 1, now at gen 25
+[06:12:07] vs_manual_run1: attempt 267 (resume)
+[06:12:07] vs_manual_run1: attempt 267 exited 1, now at gen 25
+[06:12:13] vs_manual_run1: attempt 268 (resume)
+[06:12:13] vs_manual_run1: attempt 268 exited 1, now at gen 25
+[06:12:19] vs_manual_run1: attempt 269 (resume)
+[06:12:19] vs_manual_run1: attempt 269 exited 1, now at gen 25
+[06:12:25] vs_manual_run1: attempt 270 (resume)
+[06:12:25] vs_manual_run1: attempt 270 exited 1, now at gen 25
+[06:12:31] vs_manual_run1: attempt 271 (resume)
+[06:12:31] vs_manual_run1: attempt 271 exited 1, now at gen 25
+[06:12:37] vs_manual_run1: attempt 272 (resume)
+[06:12:37] vs_manual_run1: attempt 272 exited 1, now at gen 25
+[06:12:43] vs_manual_run1: attempt 273 (resume)
+[06:12:43] vs_manual_run1: attempt 273 exited 1, now at gen 25
+[06:12:49] vs_manual_run1: attempt 274 (resume)
+[06:12:49] vs_manual_run1: attempt 274 exited 1, now at gen 25
+[06:12:55] vs_manual_run1: attempt 275 (resume)
+[06:12:55] vs_manual_run1: attempt 275 exited 1, now at gen 25
+[06:13:01] vs_manual_run1: attempt 276 (resume)
+[06:13:02] vs_manual_run1: attempt 276 exited 1, now at gen 25
+[06:13:07] vs_manual_run1: attempt 277 (resume)
+[06:13:08] vs_manual_run1: attempt 277 exited 1, now at gen 25
+[06:13:13] vs_manual_run1: attempt 278 (resume)
+[06:13:14] vs_manual_run1: attempt 278 exited 1, now at gen 25
+[06:13:19] vs_manual_run1: attempt 279 (resume)
+[06:13:20] vs_manual_run1: attempt 279 exited 1, now at gen 25
+[06:13:25] vs_manual_run1: attempt 280 (resume)
+[06:13:26] vs_manual_run1: attempt 280 exited 1, now at gen 25
+[06:13:31] vs_manual_run1: attempt 281 (resume)
+[06:13:32] vs_manual_run1: attempt 281 exited 1, now at gen 25
+[06:13:37] vs_manual_run1: attempt 282 (resume)
+[06:13:38] vs_manual_run1: attempt 282 exited 1, now at gen 25
+[06:13:43] vs_manual_run1: attempt 283 (resume)
+[06:13:44] vs_manual_run1: attempt 283 exited 1, now at gen 25
+[06:13:49] vs_manual_run1: attempt 284 (resume)
+[06:13:50] vs_manual_run1: attempt 284 exited 1, now at gen 25
+[06:13:55] vs_manual_run1: attempt 285 (resume)
+[06:13:56] vs_manual_run1: attempt 285 exited 1, now at gen 25
+[06:14:02] vs_manual_run1: attempt 286 (resume)
+[06:14:02] vs_manual_run1: attempt 286 exited 1, now at gen 25
+[06:14:08] vs_manual_run1: attempt 287 (resume)
+[06:14:08] vs_manual_run1: attempt 287 exited 1, now at gen 25
+[06:14:14] vs_manual_run1: attempt 288 (resume)
+[06:14:14] vs_manual_run1: attempt 288 exited 1, now at gen 25
+[06:14:20] vs_manual_run1: attempt 289 (resume)
+[06:14:20] vs_manual_run1: attempt 289 exited 1, now at gen 25
+[06:14:26] vs_manual_run1: attempt 290 (resume)
+[06:14:26] vs_manual_run1: attempt 290 exited 1, now at gen 25
+[06:14:32] vs_manual_run1: attempt 291 (resume)
+[06:14:32] vs_manual_run1: attempt 291 exited 1, now at gen 25
+[06:14:38] vs_manual_run1: attempt 292 (resume)
+[06:14:38] vs_manual_run1: attempt 292 exited 1, now at gen 25
+[06:14:44] vs_manual_run1: attempt 293 (resume)
+[06:14:44] vs_manual_run1: attempt 293 exited 1, now at gen 25
+[06:14:50] vs_manual_run1: attempt 294 (resume)
+[06:14:50] vs_manual_run1: attempt 294 exited 1, now at gen 25
+[06:14:56] vs_manual_run1: attempt 295 (resume)
+[06:14:56] vs_manual_run1: attempt 295 exited 1, now at gen 25
+[06:15:02] vs_manual_run1: attempt 296 (resume)
+[06:15:03] vs_manual_run1: attempt 296 exited 1, now at gen 25
+[06:15:08] vs_manual_run1: attempt 297 (resume)
+[06:15:09] vs_manual_run1: attempt 297 exited 1, now at gen 25
+[06:15:14] vs_manual_run1: attempt 298 (resume)
+[06:15:15] vs_manual_run1: attempt 298 exited 1, now at gen 25
+[06:15:20] vs_manual_run1: attempt 299 (resume)
+[06:15:21] vs_manual_run1: attempt 299 exited 1, now at gen 25
+[06:15:26] vs_manual_run1: attempt 300 (resume)
+[06:15:27] vs_manual_run1: attempt 300 exited 1, now at gen 25
+[06:15:32] vs_manual_run1: attempt 301 (resume)
+[06:15:33] vs_manual_run1: attempt 301 exited 1, now at gen 25
+[06:15:38] vs_manual_run1: attempt 302 (resume)
+[06:15:39] vs_manual_run1: attempt 302 exited 1, now at gen 25
+[06:15:44] vs_manual_run1: attempt 303 (resume)
+[06:15:45] vs_manual_run1: attempt 303 exited 1, now at gen 25
+[06:15:50] vs_manual_run1: attempt 304 (resume)
+[06:15:51] vs_manual_run1: attempt 304 exited 1, now at gen 25
+[06:15:56] vs_manual_run1: attempt 305 (resume)
+[06:15:57] vs_manual_run1: attempt 305 exited 1, now at gen 25
+[06:16:02] vs_manual_run1: attempt 306 (resume)
+[06:16:03] vs_manual_run1: attempt 306 exited 1, now at gen 25
+[06:16:08] vs_manual_run1: attempt 307 (resume)
+[06:16:09] vs_manual_run1: attempt 307 exited 1, now at gen 25
+[06:16:14] vs_manual_run1: attempt 308 (resume)
+[06:16:15] vs_manual_run1: attempt 308 exited 1, now at gen 25
+[06:16:20] vs_manual_run1: attempt 309 (resume)
+[06:16:21] vs_manual_run1: attempt 309 exited 1, now at gen 25
+[06:16:26] vs_manual_run1: attempt 310 (resume)
+[06:16:27] vs_manual_run1: attempt 310 exited 1, now at gen 25
+[06:16:32] vs_manual_run1: attempt 311 (resume)
+[06:16:33] vs_manual_run1: attempt 311 exited 1, now at gen 25
+[06:16:38] vs_manual_run1: attempt 312 (resume)
+[06:16:39] vs_manual_run1: attempt 312 exited 1, now at gen 25
+[06:16:44] vs_manual_run1: attempt 313 (resume)
+[06:16:45] vs_manual_run1: attempt 313 exited 1, now at gen 25
+[06:16:50] vs_manual_run1: attempt 314 (resume)
+[06:16:51] vs_manual_run1: attempt 314 exited 1, now at gen 25
+[06:16:56] vs_manual_run1: attempt 315 (resume)
+[06:16:57] vs_manual_run1: attempt 315 exited 1, now at gen 25
+[06:17:02] vs_manual_run1: attempt 316 (resume)
+[06:17:03] vs_manual_run1: attempt 316 exited 1, now at gen 25
+[06:17:08] vs_manual_run1: attempt 317 (resume)
+[06:17:09] vs_manual_run1: attempt 317 exited 1, now at gen 25
+[06:17:14] vs_manual_run1: attempt 318 (resume)
+[06:17:15] vs_manual_run1: attempt 318 exited 1, now at gen 25
+[06:17:20] vs_manual_run1: attempt 319 (resume)
+[06:17:21] vs_manual_run1: attempt 319 exited 1, now at gen 25
+[06:17:27] vs_manual_run1: attempt 320 (resume)
+[06:17:27] vs_manual_run1: attempt 320 exited 1, now at gen 25
+[06:17:33] vs_manual_run1: attempt 321 (resume)
+[06:17:33] vs_manual_run1: attempt 321 exited 1, now at gen 25
+[06:17:39] vs_manual_run1: attempt 322 (resume)
+[06:17:39] vs_manual_run1: attempt 322 exited 1, now at gen 25
+[06:17:45] vs_manual_run1: attempt 323 (resume)
+[06:17:45] vs_manual_run1: attempt 323 exited 1, now at gen 25
+[06:17:51] vs_manual_run1: attempt 324 (resume)
+[06:17:51] vs_manual_run1: attempt 324 exited 1, now at gen 25
+[06:17:57] vs_manual_run1: attempt 325 (resume)
+[06:17:57] vs_manual_run1: attempt 325 exited 1, now at gen 25
+[06:18:03] vs_manual_run1: attempt 326 (resume)
+[06:18:03] vs_manual_run1: attempt 326 exited 1, now at gen 25
+[06:18:09] vs_manual_run1: attempt 327 (resume)
+[06:18:09] vs_manual_run1: attempt 327 exited 1, now at gen 25
+[06:18:15] vs_manual_run1: attempt 328 (resume)
+[06:18:15] vs_manual_run1: attempt 328 exited 1, now at gen 25
+[06:18:21] vs_manual_run1: attempt 329 (resume)
+[06:18:21] vs_manual_run1: attempt 329 exited 1, now at gen 25
+[06:18:27] vs_manual_run1: attempt 330 (resume)
+[06:18:27] vs_manual_run1: attempt 330 exited 1, now at gen 25
+[06:18:33] vs_manual_run1: attempt 331 (resume)
+[06:18:33] vs_manual_run1: attempt 331 exited 1, now at gen 25
+[06:18:39] vs_manual_run1: attempt 332 (resume)
+[06:18:39] vs_manual_run1: attempt 332 exited 1, now at gen 25
+[06:18:45] vs_manual_run1: attempt 333 (resume)
+[06:18:45] vs_manual_run1: attempt 333 exited 1, now at gen 25
+[06:18:51] vs_manual_run1: attempt 334 (resume)
+[06:18:51] vs_manual_run1: attempt 334 exited 1, now at gen 25
+[06:18:57] vs_manual_run1: attempt 335 (resume)
+[06:18:57] vs_manual_run1: attempt 335 exited 1, now at gen 25
+[06:19:03] vs_manual_run1: attempt 336 (resume)
+[06:19:03] vs_manual_run1: attempt 336 exited 1, now at gen 25
+[06:19:09] vs_manual_run1: attempt 337 (resume)
+[06:19:09] vs_manual_run1: attempt 337 exited 1, now at gen 25
+[06:19:15] vs_manual_run1: attempt 338 (resume)
+[06:19:16] vs_manual_run1: attempt 338 exited 1, now at gen 25
+[06:19:21] vs_manual_run1: attempt 339 (resume)
+[06:19:22] vs_manual_run1: attempt 339 exited 1, now at gen 25
+[06:19:27] vs_manual_run1: attempt 340 (resume)
+[06:19:28] vs_manual_run1: attempt 340 exited 1, now at gen 25
+[06:19:33] vs_manual_run1: attempt 341 (resume)
+[06:19:34] vs_manual_run1: attempt 341 exited 1, now at gen 25
+[06:19:39] vs_manual_run1: attempt 342 (resume)
+[06:19:40] vs_manual_run1: attempt 342 exited 1, now at gen 25
+[06:19:45] vs_manual_run1: attempt 343 (resume)
+[06:19:46] vs_manual_run1: attempt 343 exited 1, now at gen 25
+[06:19:51] vs_manual_run1: attempt 344 (resume)
+[06:19:52] vs_manual_run1: attempt 344 exited 1, now at gen 25
+[06:19:57] vs_manual_run1: attempt 345 (resume)
+[06:19:58] vs_manual_run1: attempt 345 exited 1, now at gen 25
+[06:20:03] vs_manual_run1: attempt 346 (resume)
+[06:20:04] vs_manual_run1: attempt 346 exited 1, now at gen 25
+[06:20:09] vs_manual_run1: attempt 347 (resume)
+[06:20:10] vs_manual_run1: attempt 347 exited 1, now at gen 25
+[06:20:15] vs_manual_run1: attempt 348 (resume)
+[06:20:16] vs_manual_run1: attempt 348 exited 1, now at gen 25
+[06:20:21] vs_manual_run1: attempt 349 (resume)
+[06:20:22] vs_manual_run1: attempt 349 exited 1, now at gen 25
+[06:20:27] vs_manual_run1: attempt 350 (resume)
+[06:20:28] vs_manual_run1: attempt 350 exited 1, now at gen 25
+[06:20:33] vs_manual_run1: attempt 351 (resume)
+[06:20:34] vs_manual_run1: attempt 351 exited 1, now at gen 25
+[06:20:39] vs_manual_run1: attempt 352 (resume)
+[06:20:40] vs_manual_run1: attempt 352 exited 1, now at gen 25
+[06:20:45] vs_manual_run1: attempt 353 (resume)
+[06:20:46] vs_manual_run1: attempt 353 exited 1, now at gen 25
+[06:20:51] vs_manual_run1: attempt 354 (resume)
+[06:20:52] vs_manual_run1: attempt 354 exited 1, now at gen 25
+[06:20:57] vs_manual_run1: attempt 355 (resume)
+[06:20:58] vs_manual_run1: attempt 355 exited 1, now at gen 25
+[06:21:03] vs_manual_run1: attempt 356 (resume)
+[06:21:04] vs_manual_run1: attempt 356 exited 1, now at gen 25
+[06:21:09] vs_manual_run1: attempt 357 (resume)
+[06:21:16] vs_manual_run1: attempt 357 exited 1, now at gen 25
+[06:21:21] vs_manual_run1: attempt 358 (resume)
+[06:21:38] vs_manual_run1: attempt 358 exited 3221225725, now at gen 25
+[11:05:46] === vs-manual-heuristics finetune start, 2.5h budget, seeded from full_run1_recovered.json ===
+[11:05:46] vs_manual_run1: attempt 1 (resume)
+[12:08:53] vs_manual_run1: attempt 1 exited 1 after 3786s, now at gen 31
+[12:08:59] vs_manual_run1: attempt 2 (resume)

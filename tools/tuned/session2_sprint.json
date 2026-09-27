@@ -1,0 +1,74 @@
+{
+ "names": [
+  "sprint_max",
+  "pearl_here",
+  "pearl_near",
+  "pearl_k"
+ ],
+ "params": {
+  "pearl_here": 2743.1256,
+  "pearl_near": 54.5044
+ },
+ "state": {
+  "m": [
+   0.021416847499666804,
+   0.9669451182773103,
+   0.6238081983418405,
+   0.6690486732020098
+  ],
+  "sigma": 0.08473463404235104,
+  "C": [
+   0.7651078697450882,
+   1.2847269059794872,
+   0.6641471458295535,
+   0.9992344941894671
+  ],
+  "ps": [
+   0.5763459540313339,
+   1.5421915009815315,
+   -0.8317966420238231,
+   1.185388025983831
+  ],
+  "pc": [
+   0.5649964170963832,
+   1.5118223116452854,
+   -0.8154167114543718,
+   1.162045092648308
+  ],
+  "gen": 1
+ },
+ "history": [
+  {
+   "gen": 0,
+   "best": 0.6190476190476192,
+   "avg": 0.5577380952380953,
+   "mean": 0.5952380952380952,
+   "sigma": 0.08473463404235104,
+   "mean_params": {},
+   "mean_vs": {
+    "manual_heuristics": 0.528,
+    "old": 0.778,
+    "grower_brain": 0.861,
+    "policy": 0.417
+   },
+   "mean_deaths_per_k": 34.64,
+   "errors": 0
+  }
+ ],
+ "args": {
+  "cmd": "run",
+  "name": "session2_sprint",
+  "generations": 60,
+  "pop": 20,
+  "maps": 10,
+  "max_side": 64,
+  "seed": 1000,
+  "sigma": 0.08,
+  "vs": "manual_heuristics:4,old:1,grower_brain:1,policy:1",
+  "params": "sprint_max,pearl_here,pearl_near,pearl_k",
+  "start": "",
+  "no_bundled": false,
+  "resume": false,
+  "workers": 8
+ }
+}
