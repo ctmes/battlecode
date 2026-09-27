@@ -22,6 +22,7 @@ import time
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 from league import Job, League, summarize, wilson  # noqa: E402  (also puts bot/ on the path)
+import ladder_maps  # noqa: E402
 from brain import DEFAULTS  # noqa: E402
 
 TUNED = ROOT / "tools" / "tuned"
@@ -41,29 +42,37 @@ SPACE = {
     "head_risk": (0, 1500, "lin"), "head_risk_small": (0, 600, "lin"), "trade_ratio": (0.2, 1.2, "lin"),
     "team_head_risk": (0, 800, "lin"), "straight": (0, 120, "lin"),
     "split_len": (3, 12, "int"), "split_child": (2, 4, "int"), "founder_split_len": (3, 12, "int"),
-    "grow_mod": (0, 12, "int"), "split_r_end": (100, 500, "int"), "split_min_exits": (1, 3, "int"),
+    # grow_mod starts at 2: 0 (every child swarms) and 1 (no child ever splits) are opposite extremes one integer
+    # apart, a cliff the search kept falling off (full_run1 gens 23-24).
+    "grow_mod": (2, 16, "int"), "split_r_end": (100, 500, "int"), "split_min_exits": (1, 3, "int"),
     "tiles_per_unit": (0, 150, "int"), "split_pearls": (0, 4, "int"), "split_units": (4, 64, "int"),
     "founder_units": (2, 64, "int"), "dead_end": (0, 400, "lin"), "need_floor": (0, 60, "int"),
     "voro": (0, 12, "lin"), "voro_radius": (2, 9, "int"),
     # Added for the length-tiebreak weakness (a dragon that is already long plays more cautiously instead of
     # risking the investment): 0 / 1.0 / 0 are all no-ops, so the optimizer can tune this back off if it doesn't
     # help. See tools/tuned/ for grow_care-only runs (--params grow_care_len,grow_care_mult,grow_care_margin).
-    "grow_care_len": (0, 15, "int"), "grow_care_mult": (1.0, 4.0, "lin"), "grow_care_margin": (0, 6, "int"),
+    # grow_care_len starts at 1, not 0 (= off): with grow_care_mult 1.0 and grow_care_margin 0 the mechanism is a
+    # no-op at any length, so its strength is tuned smoothly through those two instead of an on/off step.
+    "grow_care_len": (1, 30, "int"), "grow_care_mult": (1.0, 4.0, "lin"), "grow_care_margin": (0, 6, "int"),
     # Local crowding/food gate on splitting (see want_split): refuses to split into a spot already thick with
     # teammates, or short on pearls per nearby mouth, instead of only a flat team-size cap. 0 is off for both.
     "split_mate_radius": (0, 6, "int"), "split_mate_cap": (1, 6, "int"), "split_food_ratio": (0, 3, "lin"),
     # A length ceiling on splitting: the existing split_len/founder_split_len are floors (minimum length to be
     # split-eligible), never a ceiling, so nothing previously stopped an already-long dragon splitting itself
-    # away the instant local conditions allowed. 0 = off (old behaviour, no ceiling).
-    "split_len_max": (0, 60, "int"),
+    # away the instant local conditions allowed. 0 = off, which OFF_AT_TOP encodes as the top of the range: values
+    # 1-5 used to sit right next to "off" and disable splitting outright (bot/brain.py want_split), so every CMA
+    # mean that drifted there scored 0.000 against every opponent (vs_manual_run1 gens 8 and 11).
+    "split_len_max": (6, 64, "int"),
     # Explore: with no pearl signal nearby, reward a move onto never-seen ground instead of only "straight"
     # (which can loop a dragon back through already-searched-empty space). 0 = off.
     "explore": (0, 200, "lin"),
     # Sprint: cover up to this many tiles in one turn (costing length) instead of always 1. 1 = off.
     "sprint_max": (1, 3, "int"),
-    # Sonar (terrain): relay a known kelp/portal edge instead of an enemy sighting. 0 = off.
-    "sonar_terrain": (0, 150, "lin"),
+    # sonar_terrain is deliberately absent: brain.py only tests it for > 0, so its magnitude does nothing and CMA
+    # would be tuning noise. Decide it by a direct on/off A/B instead.
 }
+# Parameters whose "off" value (0) lies outside their range: encoded as the range's top, decoded back to 0 there.
+OFF_AT_TOP = {"split_len_max"}
 # The brain as it was before the dead-end / room-floor / grower / territory work (git HEAD~ of brain.py's DEFAULTS).
 OLD = {"grow_mod": 0, "split_r_end": 10 ** 9, "dead_end": 0.0, "need_floor": 0, "voro": 0.0, "voro_radius": 8}
 OPPONENTS = {
@@ -83,6 +92,17 @@ OPPONENTS = {
     # variations on the current brain.py.
     "policy": ("bot", "policy"),
     "manual_heuristics": ("bot", "manual_heuristics"),
+    # Frozen opponents (code AND parameters pinned; see snapshots/README.md): unlike "defaults"/"old", which follow
+    # whatever bot/brain.py DEFAULTS say at import time, these never move when the bot changes.
+    "live": ("frozen", (str(ROOT / "manual-heuristics"), {})),  # v2, the bot on the ladder since 25 Sep
+    "v3": ("frozen", (str(ROOT / "snapshots" / "brain_2026-09-27"),
+                      {"grow_care_len": 1, "grow_care_mult": 1.9346, "grow_care_margin": 1})),
+    "tuned_0927": ("frozen", (str(ROOT / "snapshots" / "brain_2026-09-27"),
+                              {"grow_mod": 9, "founder_units": 57, "split_units": 64, "tiles_per_unit": 1,
+                               "split_r_end": 418, "grow_care_len": 13, "grow_care_mult": 1.3835,
+                               "grow_care_margin": 3, "split_len_max": 41, "split_mate_cap": 3,
+                               "split_food_ratio": 0.1705})),  # vs_manual_run1's final mean
+    "grower": ("bot", "grower"),
 }
 
 
@@ -106,14 +126,24 @@ def parse_vs(text):
 
 
 # ---------------------------------------------------------------------- parameter encoding
+def reflect(x):
+    """Folds any real number into [0, 1] by mirroring at the bounds (period 2). Unlike clipping, this keeps the
+    objective defined and continuous outside the box, so CMA-ES can sample and move there without the evolution
+    path piling up against a wall -- the clip-the-mean version inflated sigma every generation whenever the optimum
+    sat on a bound (0.15 -> 3.9 in 30 generations on a toy problem; full_run1 went 0.138 -> 1.989)."""
+    x %= 2.0
+    return 2.0 - x if x > 1.0 else x
+
+
 def decode(u, names):
-    """Unit-box vector -> {name: value} (clipped to the box, ints rounded)."""
+    """Unconstrained vector -> {name: value} (reflected into the box, ints rounded)."""
     out = {}
     for x, name in zip(u, names):
         lo, hi, scale = SPACE[name]
-        x = min(1.0, max(0.0, x))
+        x = reflect(x)
         v = lo * (hi / lo) ** x if scale == "log" else lo + x * (hi - lo)
-        out[name] = int(round(v)) if scale == "int" else round(v, 4)
+        v = int(round(v)) if scale == "int" else round(v, 4)
+        out[name] = 0 if name in OFF_AT_TOP and v >= hi else v
     return out
 
 
@@ -121,7 +151,8 @@ def encode(params, names):
     out = []
     for name in names:
         lo, hi, scale = SPACE[name]
-        v = min(hi, max(lo, params.get(name, DEFAULTS[name])))
+        v = params.get(name, DEFAULTS[name])
+        v = hi if name in OFF_AT_TOP and v == 0 else min(hi, max(lo, v))
         out.append(math.log(v / lo) / math.log(hi / lo) if scale == "log" else (v - lo) / (hi - lo))
     return out
 
@@ -131,7 +162,7 @@ def changed(params):
     out = {}
     for k, v in params.items():
         lo, hi, scale = SPACE[k]
-        d = min(hi, max(lo, DEFAULTS[k]))
+        d = DEFAULTS[k] if k in OFF_AT_TOP and DEFAULTS[k] == 0 else min(hi, max(lo, DEFAULTS[k]))
         if v != (int(round(d)) if scale == "int" else round(d, 4)):
             out[k] = v
     return out
@@ -160,7 +191,7 @@ class SepCMA:
         self.ys = []
 
     def ask(self, rng):
-        """lam points (unclipped); the caller clips them when it evaluates."""
+        """lam points in the unconstrained space; decode() reflects them into the box when they are evaluated."""
         self.ys = [[math.sqrt(c) * rng.gauss(0, 1) for c in self.C] for _ in range(self.lam)]
         return [[m + self.sigma * y for m, y in zip(self.m, ys)] for ys in self.ys]
 
@@ -168,7 +199,7 @@ class SepCMA:
         n, w = self.n, self.w
         best = sorted(range(self.lam), key=lambda k: -fitness[k])[: self.mu]
         yw = [sum(w[j] * self.ys[best[j]][i] for j in range(self.mu)) for i in range(n)]
-        self.m = [min(1.0, max(0.0, m + self.sigma * y)) for m, y in zip(self.m, yw)]
+        self.m = [m + self.sigma * y for m, y in zip(self.m, yw)]  # unclipped: see reflect()
         k = math.sqrt(self.cs * (2 - self.cs) * self.mueff)
         self.ps = [(1 - self.cs) * p + k * y / math.sqrt(c) for p, y, c in zip(self.ps, yw, self.C)]
         norm = math.sqrt(sum(p * p for p in self.ps))
@@ -222,7 +253,7 @@ def fitness(per_opp, vs):
 
 
 RUN_DEFAULTS = {"generations": 20, "pop": 16, "maps": 10, "max_side": 32, "seed": 1000, "sigma": 0.15,
-                "vs": "defaults:2,old:2", "params": "", "start": "", "no_bundled": False}
+                "vs": "defaults:2,old:2", "params": "", "start": "", "no_bundled": False, "ladder": 0}
 
 
 def run(args):
@@ -234,8 +265,8 @@ def run(args):
     # match the original run to continue it rather than silently start a different search. Anything left unset on
     # the command line (still None) falls back to the resumed run's own settings, then to RUN_DEFAULTS.
     for key, fallback in RUN_DEFAULTS.items():
-        if getattr(args, key) is None:
-            setattr(args, key, (saved["args"][key] if saved else fallback))
+        if getattr(args, key, None) is None:  # absent (programmatic callers) counts as unset
+            setattr(args, key, (saved["args"].get(key, fallback) if saved else fallback))  # .get: older runs
     vs = parse_vs(args.vs)
     names = saved["names"] if saved else (args.params.split(",") if args.params else list(SPACE))
     start = json.loads(pathlib.Path(args.start).read_text())["params"] if args.start else {}
@@ -245,13 +276,16 @@ def run(args):
         es.load(saved["state"])
         history = saved["history"]
     anchors = bundled(args.max_side) if not args.no_bundled else []
-    print(f"tuning {len(names)} parameters, population {args.pop}, {args.maps} generated + {len(anchors)} bundled maps "
-          f"x 2 sides x {len(vs)} opponents = {(args.maps + len(anchors)) * 2 * len(vs)} games per candidate", flush=True)
+    n_ladder = args.ladder * len(ladder_maps.POOL)
+    print(f"tuning {len(names)} parameters, population {args.pop}, {args.maps} generated + {len(anchors)} bundled + "
+          f"{n_ladder} ladder-variant maps x 2 sides x {len(vs)} opponents = "
+          f"{(args.maps + len(anchors) + n_ladder) * 2 * len(vs)} games per candidate", flush=True)
     with League(args.workers) as lg:
         while es.gen < args.generations:
             t0 = time.perf_counter()
             g = es.gen
             maps = [(args.seed + g * args.maps + i, 10, args.max_side) for i in range(args.maps)] + anchors
+            maps += ladder_maps.train_specs(args.ladder, g) if args.ladder else []  # fresh variants, never held-out ones
             points = es.ask(random.Random(f"tune/{args.name}/{g}"))
             mean_params = decode(es.m, names)  # the last candidate is the mean this generation started from
             per = play_all(lg, [decode(p, names) for p in points] + [mean_params], maps, vs)
@@ -297,11 +331,13 @@ def validate(args):
     n_maps = math.ceil(args.games / 2)
     generated = [(args.seed + i, 10, args.max_side) for i in range(n_maps)]
     real = bundled(64)
+    ladder = ladder_maps.holdout_specs(args.ladder - 1) if args.ladder > 0 else []
     print(f"candidate {params or '(= DEFAULTS)'}\n{n_maps} generated maps x 2 sides = {2 * n_maps} games per opponent, "
-          f"plus {len(real)} bundled maps x 2 sides\n")
+          f"plus {len(real)} bundled maps x 2 sides, plus {len(ladder)} held-out ladder maps x 2 sides\n")
+    sets = [("generated", generated), ("bundled", real), ("ladder", ladder)]
     with League(args.workers) as lg:
         for name, _ in vs:
-            for label, maps in (("generated", generated), ("bundled", real)):
+            for label, maps in [(lab, ms) for lab, ms in sets if ms]:
                 per = play_all(lg, [params], maps, [(name, 1.0)])[0][name]
                 s = summarize(per)
                 lo, hi = wilson(s["score"], s["games"])
@@ -331,6 +367,8 @@ def main():
     r.add_argument("--params", default=None, help="comma list of parameters to tune (default: all of SPACE)")
     r.add_argument("--start", default=None, help="tuned .json to start from (default: brain.DEFAULTS)")
     r.add_argument("--no-bundled", action="store_true", default=None)
+    r.add_argument("--ladder", type=int, default=None,
+                   help="fresh variants of each ladder-pool map per generation (tools/ladder_maps.py); 0 = none")
     r.add_argument("--resume", action="store_true")
     r.add_argument("--workers", type=int, default=None, help="always auto-detected when omitted, even on --resume")
     a = sub.add_parser("average", help="average the last few generation means of a run into NAME_avgK.json")
@@ -342,6 +380,8 @@ def main():
     v.add_argument("--vs", default="defaults,old,splitter")
     v.add_argument("--seed", type=int, default=100000)
     v.add_argument("--max-side", type=int, default=64)
+    v.add_argument("--ladder", type=int, default=0,
+                   help="held-out ladder maps: each pool map as played, plus this many - 1 reserved variants of it")
     v.add_argument("--workers", type=int, default=None)
     args = ap.parse_args()
     {"run": run, "average": average, "validate": validate}[args.cmd](args)

@@ -1,0 +1,7 @@
+Frozen copies of bot code, used as tuning/validation opponents (tools/tune.py OPPONENTS, via tools/frozen_brain.py)
+so that an opponent never changes when bot/brain.py does. Never edit a snapshot; add a new dated folder instead.
+
+- `brain_2026-09-27/`: bot/brain.py + proto.py at commit 3bba468 (DEFAULTS = the live v2 manual-heuristics play,
+  plus the switched-off grow_care / crowding / sprint / explore / terrain-sonar mechanisms that "v3" and
+  "tuned_0927" turn on through params).
+- The live v2 bot itself is `manual-heuristics/` at the repo root.

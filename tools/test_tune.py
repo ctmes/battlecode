@@ -25,10 +25,36 @@ def test_encoding():
         p = tune.decode([rng.uniform(-0.5, 1.5) for _ in names], names)
         for name, v in p.items():
             lo, hi, scale = tune.SPACE[name]
-            assert lo <= v <= hi, f"{name}={v} escapes {lo}..{hi}"
+            assert lo <= v <= hi or (name in tune.OFF_AT_TOP and v == 0), f"{name}={v} escapes {lo}..{hi}"
             assert isinstance(v, int) == (scale == "int"), f"{name}={v!r} has the wrong type"
     assert set(tune.SPACE) <= set(tune.DEFAULTS), "SPACE names a parameter the brain does not have"
     print("ok  parameters encode and decode within bounds")
+
+
+def test_sigma_stays_bounded_with_the_optimum_on_a_bound():
+    """Regression test: SepCMA used to clip the mean into the box but feed the unclipped step into its evolution
+    path, so with the optimum on a bound sigma grew every generation (0.15 -> 3.9 in 30 generations on exactly this
+    problem; full_run1 went 0.138 -> 1.989). With reflect() it must shrink back instead."""
+    n, rng = 13, random.Random(3)
+    target = [1.0] * 7 + [0.3] * 6
+    es = tune.SepCMA([0.5] * n, 0.15, 14)
+    for g in range(30):
+        pts = es.ask(random.Random(100 + g))
+        es.tell([-sum((tune.reflect(x) - t) ** 2 for x, t in zip(p, target)) + rng.gauss(0, 0.05) for p in pts])
+    assert es.sigma < 0.3, f"sigma ran away to {es.sigma:.2f} with the optimum on a bound"
+    print(f"ok  sigma stays bounded ({es.sigma:.3f} after 30 generations) when the optimum sits on a bound")
+
+
+def test_no_sentinel_cliffs():
+    """Values next to an 'off' sentinel must not flip the behaviour: split_len_max 1-5 disabled splitting outright
+    and grow_mod 0/1 are opposite extremes, and both used to be inside SPACE."""
+    names = list(tune.SPACE)
+    for u in (0.0, 0.01, 0.05, 0.99, 1.0):
+        p = tune.decode([u] * len(names), names)
+        assert p.get("split_len_max", 0) == 0 or p["split_len_max"] >= 6, p["split_len_max"]
+        assert p["grow_mod"] >= 2, p["grow_mod"]
+    assert "sonar_terrain" not in tune.SPACE, "sonar_terrain's magnitude is unused: it is an on/off A/B, not a CMA knob"
+    print("ok  no parameter range sits next to an on/off cliff")
 
 
 def test_parse_vs():
@@ -150,6 +176,8 @@ def test_average_last_one_uses_only_the_final_mean():
 
 def run():
     test_encoding()
+    test_sigma_stays_bounded_with_the_optimum_on_a_bound()
+    test_no_sentinel_cliffs()
     test_parse_vs()
     test_cma_optimizes_a_noisy_objective()
     test_wilson()

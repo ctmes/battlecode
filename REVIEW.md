@@ -337,3 +337,48 @@ Yes. Make that the main line, with these conditions:
 6. What produced the `0xC00000FD` crashes and the 350 fast exit-1 restarts in `finetune_vs_manual`? Is stderr captured anywhere?
 7. Why was the 114-generation sprint/sonar run discarded? If the portal-legality fix only changed the action mask, its weights may have been salvageable.
 8. Two sessions are editing `bot/brain.py` and launching tuning runs concurrently. Who owns the working tree?
+
+---
+
+## Addendum (27 Sep, afternoon): ladder data, round robin, ladder maps
+
+**Ladder record for the live bot** (v2 manual-heuristics, uploaded 25 Sep 16:23, from the user): 113–0–79 over 192 games, **59% [52, 66]**. This is the first external number, and it is clearly above 50%.
+
+| Map | W–D–L | Win rate |
+|---|---|---|
+| Autarky | 16–0–5 | 76% |
+| Queen Of Spades | 14–0–5 | 74% |
+| Prisoners Dilemma | 13–0–7 | 65% |
+| Trophy | 13–0–8 | 62% |
+| Slithery Fight | 11–0–7 | 61% |
+| Schooltime | 10–0–7 | 59% |
+| Trauma | 13–0–9 | 59% |
+| Default | 8–0–8 | 50% |
+| Devil | 10–0–10 | 50% |
+| Portals | 5–0–10 | **33%** |
+
+Big Empty, Default Small and Stronghold have 1 game each, which looks like an older pool. The current pool is 10 maps, all 25–63 wide, with none small. That closes the size-gated-hybrid idea in §7.
+
+**Ladder maps recovered.** Replays are Cap'n Proto "packed" messages. `tools/replay_maps.py` (a port of the official viewer's decoder) writes every map to `maps/ladder/`. The decoding is byte-exact: Queen Of Spades, Schooltime, Trophy and Default Small match the bundled files, and all 11 maps play in the engine. Two findings:
+
+- The ladder's **Default** is not the local `default.map` (2,048 vs 2,112 edges), consistently across two replays.
+- Stronghold is still missing, because it appears in no replay.
+
+`maps/ladder/` is a subfolder, so the `maps/*.map` globs in `tune.py` and `evolve.py` do not pick it up.
+
+**Round robin** (7 bots, 1,344 games; 8 bundled + 24 fresh generated maps, both seats):
+
+| Bot | Overall | Large maps (33–64) |
+|---|---|---|
+| v3 Brain | 71% | 82% |
+| Evolved policy | 71% | 46% |
+| Today's tuned Brain | 71% | 82% |
+| Shipped bot | 69% | 77% |
+| BC policy | 42% | n/a |
+| Splitter | 23% | n/a |
+| Grower | 4% | n/a |
+
+- The three Brains are tied head to head (43–57% per pairing).
+- The evolved policy beats every Brain 77–80% on maps ≤20 wide and 5–10% on 33–64.
+
+**New lead, Portals** [V mechanism; L cause of the 33%]: the Brain treats portals as walls (`bot/brain.py:14`). On `maps/ladder/portals.map` (40 portal edges, 286 kelp edges on 32×16), Brain vs Brain produced only 1,915 dragon-turns in 500 rounds. Total length ended at 8–10, and most deaths were walls. On Devil the same pairing gave 14,243 turns and length 88. Learning portal pairs (portal ids are visible, and a pair is known once both ends have been seen or relayed by sonar) is the most specific, testable improvement this review has found.

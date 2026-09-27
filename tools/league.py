@@ -1,6 +1,7 @@
 """Parallel matches: brain parameter sets against opponents on many maps, on both sides.
 
-A map is a tuple (mapgen seed, min side, max side) or the path of a .map file. An opponent is ("brain", params) for
+A map is a tuple (mapgen seed, min side, max side), ("ladder", name, variant) for a variant of a ladder map (see
+tools/ladder_maps.py), or the path of a .map file. An opponent is ("brain", params) for
 another brain, ("bot", name) for a sparring bot from tools/opponents.py, or ("frozen", dir_path) for a frozen bot/
 snapshot (e.g. manual-heuristics/, see frozen_brain.py) whose code and params are pinned regardless of what
 bot/brain.py currently contains. Games are deterministic, so one game per (map, side) is all there is to learn from
@@ -23,6 +24,7 @@ sys.path.insert(0, str(ROOT / "bot"))
 sys.path.insert(0, str(ROOT / "tools"))
 import arena  # noqa: E402
 import frozen_brain  # noqa: E402
+import ladder_maps  # noqa: E402
 import mapgen  # noqa: E402
 import opponents  # noqa: E402
 from brain import Brain  # noqa: E402
@@ -45,6 +47,8 @@ def _init():
 
 @functools.lru_cache(maxsize=96)
 def map_bytes(spec):
+    if isinstance(spec, tuple) and spec[0] == "ladder":
+        return ladder_maps.variant(spec[1], spec[2]).dumps().encode()
     if isinstance(spec, tuple):
         return mapgen.generate(*spec).dumps().encode()
     return pathlib.Path(spec).read_bytes()
@@ -52,6 +56,9 @@ def map_bytes(spec):
 
 def map_area(spec):
     """Cheap size estimate (no map is built) used to start the slowest games first."""
+    if isinstance(spec, tuple) and spec[0] == "ladder":
+        m = ladder_maps.original(spec[1])
+        return m.w * m.h
     if isinstance(spec, tuple):
         seed, lo, hi = spec
         w, h = mapgen.pick_size(random.Random(f"battlecode-map/{seed}/0"), lo, hi)  # the first attempt, nearly always the one used
@@ -97,7 +104,7 @@ def _opponent(spec, seed):
 def play_job(job):
     t0 = time.perf_counter()
     me = CountingPlayer("me", job.mine or None)
-    foe = _opponent(job.opp, job.map[0] if isinstance(job.map, tuple) else 0)
+    foe = _opponent(job.opp, job.map[0] if isinstance(job.map, tuple) and isinstance(job.map[0], int) else 0)
     res, deaths, errors = arena.play(_engine, map_bytes(job.map), *((me, foe) if job.side == "A" else (foe, me)))
     a = job.side == "A"
     score = 0.5 if res.winner is None else float(res.winner == job.side)
