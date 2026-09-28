@@ -1,63 +1,616 @@
 match,at,map,seat,opponent,opponent_elo,result,ranked
-462922,2026-09-28T06:48:04.395Z,Slithery Fight,A,Camalares,1439,win,True
-462873,2026-09-28T06:47:47.541Z,Slithery Fight,A,kimsclub,1429,win,False
-462919,2026-09-28T06:47:23.837Z,Slithery Fight,A,Camalares,1439,win,True
-462923,2026-09-28T06:46:52.293Z,Default,A,Camalares,1439,win,True
-462916,2026-09-28T06:46:41.510Z,Default,A,Camalares,1439,loss,True
-462921,2026-09-28T06:46:40.251Z,Portals,A,Camalares,1439,win,True
-462920,2026-09-28T06:46:23.442Z,Trophy,A,Camalares,1439,win,True
-462917,2026-09-28T06:46:20.983Z,Portals,A,Camalares,1439,loss,True
-462924,2026-09-28T06:46:04.092Z,Autarky,A,Camalares,1439,win,True
-462872,2026-09-28T06:45:57.659Z,Schooltime,A,kimsclub,1429,win,False
-462925,2026-09-28T06:45:49.603Z,Trophy,A,Camalares,1439,loss,True
-462918,2026-09-28T06:45:44.986Z,Queen Of Spades,A,Camalares,1439,win,True
-462868,2026-09-28T06:45:35.156Z,Devil,A,kimsclub,1429,loss,False
-462858,2026-09-28T06:45:29.058Z,Slithery Fight,A,The Null Pointer,1436,win,False
-462866,2026-09-28T06:45:28.595Z,Autarky,A,kimsclub,1429,loss,False
-462875,2026-09-28T06:45:25.892Z,Trophy,A,kimsclub,1429,win,False
-462867,2026-09-28T06:45:20.609Z,Default,A,kimsclub,1429,win,False
-462870,2026-09-28T06:45:12.722Z,Prisoners Dilemma,A,kimsclub,1429,loss,False
-462857,2026-09-28T06:45:10.215Z,Schooltime,A,The Null Pointer,1436,win,False
-462869,2026-09-28T06:45:03.640Z,Portals,A,kimsclub,1429,win,False
-462860,2026-09-28T06:45:00.361Z,Trophy,A,The Null Pointer,1436,win,False
-462874,2026-09-28T06:44:57.974Z,Trauma,A,kimsclub,1429,loss,False
-462871,2026-09-28T06:44:57.107Z,Queen Of Spades,A,kimsclub,1429,win,False
-462851,2026-09-28T06:44:53.369Z,Autarky,A,The Null Pointer,1436,win,False
-462856,2026-09-28T06:44:41.750Z,Queen Of Spades,A,The Null Pointer,1436,win,False
-462853,2026-09-28T06:44:41.188Z,Devil,A,The Null Pointer,1436,loss,False
-462852,2026-09-28T06:44:40.956Z,Default,A,The Null Pointer,1436,win,False
-462855,2026-09-28T06:44:40.580Z,Prisoners Dilemma,A,The Null Pointer,1436,loss,False
-462859,2026-09-28T06:44:39.538Z,Trauma,A,The Null Pointer,1436,win,False
-462854,2026-09-28T06:44:37.181Z,Portals,A,The Null Pointer,1436,win,False
-459918,2026-09-28T06:44:25.440Z,Trauma,A,kimsclub,1429,win,True
-462712,2026-09-28T06:43:53.602Z,Slithery Fight,A,Camalares,1439,win,False
-458580,2026-09-28T06:43:18.563Z,Trauma,B,The Null Pointer,1436,win,True
-462713,2026-09-28T06:42:29.792Z,Trauma,A,Camalares,1439,loss,False
-462711,2026-09-28T06:42:25.110Z,Schooltime,A,Camalares,1439,win,False
-462714,2026-09-28T06:42:21.978Z,Trophy,A,Camalares,1439,win,False
-462702,2026-09-28T06:42:20.908Z,Slithery Fight,A,deez,1448,win,False
-459921,2026-09-28T06:42:17.205Z,Portals,A,kimsclub,1429,loss,True
-462708,2026-09-28T06:42:13.859Z,Portals,A,Camalares,1439,loss,False
-462677,2026-09-28T06:42:05.010Z,Slithery Fight,A,halleluiah,1451,win,False
-462706,2026-09-28T06:42:01.566Z,Default,A,Camalares,1439,win,False
-462705,2026-09-28T06:41:54.249Z,Autarky,A,Camalares,1439,win,False
-462704,2026-09-28T06:41:40.410Z,Trophy,A,deez,1448,win,False
-462709,2026-09-28T06:41:39.553Z,Prisoners Dilemma,A,Camalares,1439,loss,False
-462710,2026-09-28T06:41:39.365Z,Queen Of Spades,A,Camalares,1439,win,False
-462707,2026-09-28T06:41:37.806Z,Devil,A,Camalares,1439,win,False
-462695,2026-09-28T06:41:36.544Z,Autarky,A,deez,1448,win,False
-462696,2026-09-28T06:41:35.812Z,Default,A,deez,1448,win,False
-462701,2026-09-28T06:41:31.396Z,Schooltime,A,deez,1448,win,False
-462679,2026-09-28T06:41:26.872Z,Trophy,A,halleluiah,1451,win,False
-462670,2026-09-28T06:41:24.914Z,Autarky,A,halleluiah,1451,loss,False
-462676,2026-09-28T06:41:24.894Z,Schooltime,A,halleluiah,1451,win,False
-462700,2026-09-28T06:41:24.817Z,Queen Of Spades,A,deez,1448,win,False
-462697,2026-09-28T06:41:22.946Z,Devil,A,deez,1448,win,False
-462699,2026-09-28T06:41:21.320Z,Prisoners Dilemma,A,deez,1448,win,False
-462671,2026-09-28T06:41:17.806Z,Default,A,halleluiah,1451,loss,False
-462703,2026-09-28T06:41:17.742Z,Trauma,A,deez,1448,loss,False
-462672,2026-09-28T06:41:15.493Z,Devil,A,halleluiah,1451,win,False
-462698,2026-09-28T06:41:07.044Z,Portals,A,deez,1448,win,False
-462674,2026-09-28T06:41:04.751Z,Prisoners Dilemma,A,halleluiah,1451,win,False
-462675,2026-09-28T06:41:04.305Z,Queen Of Spades,A,halleluiah,1451,loss,False
-462673,2026-09-28T06:41:00.906Z,Portals,A,halleluiah,1451,loss,False
+459920,2026-09-28T06:55:56.965Z,Queen Of Spades,A,kimsclub,1425,win,True
+458581,2026-09-28T06:54:47.127Z,Queen Of Spades,B,The Null Pointer,1432,win,True
+459917,2026-09-28T06:53:40.485Z,Devil,A,kimsclub,1425,win,True
+458577,2026-09-28T06:51:46.914Z,Devil,B,The Null Pointer,1432,win,True
+462922,2026-09-28T06:48:04.395Z,Slithery Fight,A,Camalares,1442,win,True
+462873,2026-09-28T06:47:47.541Z,Slithery Fight,A,kimsclub,1425,win,False
+462919,2026-09-28T06:47:23.837Z,Slithery Fight,A,Camalares,1442,win,True
+462923,2026-09-28T06:46:52.293Z,Default,A,Camalares,1442,win,True
+462916,2026-09-28T06:46:41.510Z,Default,A,Camalares,1442,loss,True
+462921,2026-09-28T06:46:40.251Z,Portals,A,Camalares,1442,win,True
+462920,2026-09-28T06:46:23.442Z,Trophy,A,Camalares,1442,win,True
+462917,2026-09-28T06:46:20.983Z,Portals,A,Camalares,1442,loss,True
+462924,2026-09-28T06:46:04.092Z,Autarky,A,Camalares,1442,win,True
+462872,2026-09-28T06:45:57.659Z,Schooltime,A,kimsclub,1425,win,False
+462925,2026-09-28T06:45:49.603Z,Trophy,A,Camalares,1442,loss,True
+462918,2026-09-28T06:45:44.986Z,Queen Of Spades,A,Camalares,1442,win,True
+462868,2026-09-28T06:45:35.156Z,Devil,A,kimsclub,1425,loss,False
+462858,2026-09-28T06:45:29.058Z,Slithery Fight,A,The Null Pointer,1432,win,False
+462866,2026-09-28T06:45:28.595Z,Autarky,A,kimsclub,1425,loss,False
+462875,2026-09-28T06:45:25.892Z,Trophy,A,kimsclub,1425,win,False
+462867,2026-09-28T06:45:20.609Z,Default,A,kimsclub,1425,win,False
+462870,2026-09-28T06:45:12.722Z,Prisoners Dilemma,A,kimsclub,1425,loss,False
+462857,2026-09-28T06:45:10.215Z,Schooltime,A,The Null Pointer,1432,win,False
+462869,2026-09-28T06:45:03.640Z,Portals,A,kimsclub,1425,win,False
+462860,2026-09-28T06:45:00.361Z,Trophy,A,The Null Pointer,1432,win,False
+462874,2026-09-28T06:44:57.974Z,Trauma,A,kimsclub,1425,loss,False
+462871,2026-09-28T06:44:57.107Z,Queen Of Spades,A,kimsclub,1425,win,False
+462851,2026-09-28T06:44:53.369Z,Autarky,A,The Null Pointer,1432,win,False
+462856,2026-09-28T06:44:41.750Z,Queen Of Spades,A,The Null Pointer,1432,win,False
+462853,2026-09-28T06:44:41.188Z,Devil,A,The Null Pointer,1432,loss,False
+462852,2026-09-28T06:44:40.956Z,Default,A,The Null Pointer,1432,win,False
+462855,2026-09-28T06:44:40.580Z,Prisoners Dilemma,A,The Null Pointer,1432,loss,False
+462859,2026-09-28T06:44:39.538Z,Trauma,A,The Null Pointer,1432,win,False
+462854,2026-09-28T06:44:37.181Z,Portals,A,The Null Pointer,1432,win,False
+459918,2026-09-28T06:44:25.440Z,Trauma,A,kimsclub,1425,win,True
+462712,2026-09-28T06:43:53.602Z,Slithery Fight,A,Camalares,1442,win,False
+458580,2026-09-28T06:43:18.563Z,Trauma,B,The Null Pointer,1432,win,True
+462713,2026-09-28T06:42:29.792Z,Trauma,A,Camalares,1442,loss,False
+462711,2026-09-28T06:42:25.110Z,Schooltime,A,Camalares,1442,win,False
+462714,2026-09-28T06:42:21.978Z,Trophy,A,Camalares,1442,win,False
+462702,2026-09-28T06:42:20.908Z,Slithery Fight,A,deez,1450,win,False
+459921,2026-09-28T06:42:17.205Z,Portals,A,kimsclub,1425,loss,True
+462708,2026-09-28T06:42:13.859Z,Portals,A,Camalares,1442,loss,False
+462677,2026-09-28T06:42:05.010Z,Slithery Fight,A,halleluiah,1452,win,False
+462706,2026-09-28T06:42:01.566Z,Default,A,Camalares,1442,win,False
+462705,2026-09-28T06:41:54.249Z,Autarky,A,Camalares,1442,win,False
+462704,2026-09-28T06:41:40.410Z,Trophy,A,deez,1450,win,False
+462709,2026-09-28T06:41:39.553Z,Prisoners Dilemma,A,Camalares,1442,loss,False
+462710,2026-09-28T06:41:39.365Z,Queen Of Spades,A,Camalares,1442,win,False
+462707,2026-09-28T06:41:37.806Z,Devil,A,Camalares,1442,win,False
+462695,2026-09-28T06:41:36.544Z,Autarky,A,deez,1450,win,False
+462696,2026-09-28T06:41:35.812Z,Default,A,deez,1450,win,False
+462701,2026-09-28T06:41:31.396Z,Schooltime,A,deez,1450,win,False
+462679,2026-09-28T06:41:26.872Z,Trophy,A,halleluiah,1452,win,False
+462670,2026-09-28T06:41:24.914Z,Autarky,A,halleluiah,1452,loss,False
+462676,2026-09-28T06:41:24.894Z,Schooltime,A,halleluiah,1452,win,False
+462700,2026-09-28T06:41:24.817Z,Queen Of Spades,A,deez,1450,win,False
+462697,2026-09-28T06:41:22.946Z,Devil,A,deez,1450,win,False
+462699,2026-09-28T06:41:21.320Z,Prisoners Dilemma,A,deez,1450,win,False
+462671,2026-09-28T06:41:17.806Z,Default,A,halleluiah,1452,loss,False
+462703,2026-09-28T06:41:17.742Z,Trauma,A,deez,1450,loss,False
+462672,2026-09-28T06:41:15.493Z,Devil,A,halleluiah,1452,win,False
+462698,2026-09-28T06:41:07.044Z,Portals,A,deez,1450,win,False
+462674,2026-09-28T06:41:04.751Z,Prisoners Dilemma,A,halleluiah,1452,win,False
+462675,2026-09-28T06:41:04.305Z,Queen Of Spades,A,halleluiah,1452,loss,False
+462673,2026-09-28T06:41:00.906Z,Portals,A,halleluiah,1452,loss,False
+462678,2026-09-28T06:40:56.566Z,Trauma,A,halleluiah,1452,loss,False
+458578,2026-09-28T06:40:39.228Z,Portals,B,The Null Pointer,1432,loss,True
+458579,2026-09-28T06:31:39.432Z,Autarky,B,The Null Pointer,1432,win,True
+459919,2026-09-28T06:30:31.679Z,Schooltime,A,kimsclub,1425,win,True
+449232,2026-09-28T05:15:03.833Z,Queen Of Spades,A,halleluiah,1452,win,True
+450522,2026-09-28T05:12:34.204Z,Devil,B,deez,1450,win,True
+449235,2026-09-28T05:09:55.469Z,Devil,A,halleluiah,1452,loss,True
+450525,2026-09-28T05:01:03.151Z,Trauma,B,deez,1450,loss,True
+450524,2026-09-28T04:54:48.750Z,Portals,B,deez,1450,win,True
+449233,2026-09-28T04:52:04.168Z,Portals,A,halleluiah,1452,loss,True
+449234,2026-09-28T04:45:34.587Z,Default,A,halleluiah,1452,loss,True
+450523,2026-09-28T04:40:58.902Z,Autarky,B,deez,1450,win,True
+449236,2026-09-28T04:36:45.797Z,Autarky,A,halleluiah,1452,loss,True
+450526,2026-09-28T04:14:21.153Z,Slithery Fight,B,deez,1450,loss,True
+442031,2026-09-28T03:13:29.956Z,Prisoners Dilemma,B,BattleSavvy,1462,loss,True
+442030,2026-09-28T03:04:45.201Z,Devil,B,BattleSavvy,1462,loss,True
+440737,2026-09-28T03:02:37.231Z,Devil,A,kimsclub,1425,loss,True
+440738,2026-09-28T02:48:22.700Z,Trauma,A,kimsclub,1425,win,True
+440740,2026-09-28T02:43:38.689Z,Portals,A,kimsclub,1425,loss,True
+440739,2026-09-28T02:28:36.049Z,Autarky,A,kimsclub,1425,win,True
+442027,2026-09-28T02:26:00.808Z,Schooltime,B,BattleSavvy,1462,loss,True
+440741,2026-09-28T02:21:40.493Z,Schooltime,A,kimsclub,1425,win,True
+442028,2026-09-28T02:17:04.435Z,Slithery Fight,B,BattleSavvy,1462,win,True
+432535,2026-09-28T01:12:50.707Z,Prisoners Dilemma,B,Python Enjoyers,1453,loss,True
+433842,2026-09-28T01:10:38.801Z,Queen Of Spades,A,Alpha floW,1416,win,True
+432537,2026-09-28T01:03:37.963Z,Devil,B,Python Enjoyers,1453,win,True
+433840,2026-09-28T01:00:57.914Z,Trophy,A,Alpha floW,1416,win,True
+432534,2026-09-28T00:55:16.032Z,Trauma,B,Python Enjoyers,1453,loss,True
+433839,2026-09-28T00:47:49.608Z,Default,A,Alpha floW,1416,win,True
+432533,2026-09-28T00:43:00.992Z,Default,B,Python Enjoyers,1453,loss,True
+433838,2026-09-28T00:39:46.969Z,Autarky,A,Alpha floW,1416,win,True
+432536,2026-09-28T00:34:57.680Z,Autarky,B,Python Enjoyers,1453,loss,True
+433841,2026-09-28T00:14:34.939Z,Slithery Fight,A,Alpha floW,1416,win,True
+426885,2026-09-27T22:36:18.439Z,Trophy,A,🫧🐟,1444,win,True
+425582,2026-09-27T22:35:18.030Z,Trophy,A,unsure,1446,win,True
+426881,2026-09-27T22:34:00.101Z,Trauma,A,🫧🐟,1444,loss,True
+425584,2026-09-27T22:32:20.798Z,Trauma,A,unsure,1446,loss,True
+426884,2026-09-27T22:30:53.257Z,Portals,A,🫧🐟,1444,loss,True
+425585,2026-09-27T22:29:41.703Z,Portals,A,unsure,1446,loss,True
+426883,2026-09-27T22:28:05.556Z,Default,A,🫧🐟,1444,win,True
+425583,2026-09-27T22:25:30.860Z,Default,A,unsure,1446,loss,True
+426882,2026-09-27T22:18:12.258Z,Schooltime,A,🫧🐟,1444,win,True
+425581,2026-09-27T22:03:06.687Z,Slithery Fight,A,unsure,1446,loss,True
+419194,2026-09-27T20:34:32.390Z,Prisoners Dilemma,B,天天开心 :(,1541,loss,True
+419195,2026-09-27T20:32:42.027Z,Queen Of Spades,B,天天开心 :(,1541,loss,True
+420487,2026-09-27T20:31:55.640Z,Devil,B,urruur,1416,win,True
+420486,2026-09-27T20:29:05.995Z,Trophy,B,urruur,1416,win,True
+419197,2026-09-27T20:27:43.004Z,Trophy,B,天天开心 :(,1541,loss,True
+420485,2026-09-27T20:26:33.539Z,Trauma,B,urruur,1416,win,True
+420483,2026-09-27T20:24:22.549Z,Portals,B,urruur,1416,loss,True
+419196,2026-09-27T20:23:27.428Z,Portals,B,天天开心 :(,1541,loss,True
+420484,2026-09-27T20:09:42.511Z,Slithery Fight,B,urruur,1416,loss,True
+419193,2026-09-27T20:05:39.389Z,Slithery Fight,B,天天开心 :(,1541,loss,True
+412593,2026-09-27T18:35:14.340Z,Prisoners Dilemma,B,Death first search,1473,loss,True
+412595,2026-09-27T18:31:31.608Z,Devil,B,Death first search,1473,loss,True
+413899,2026-09-27T18:29:09.097Z,Trauma,A,天天开心 :(,1541,loss,True
+413897,2026-09-27T18:26:28.330Z,Portals,A,天天开心 :(,1541,loss,True
+412594,2026-09-27T18:22:46.384Z,Default,B,Death first search,1473,win,True
+413901,2026-09-27T18:21:05.006Z,Autarky,A,天天开心 :(,1541,loss,True
+413898,2026-09-27T18:16:26.897Z,Schooltime,A,天天开心 :(,1541,win,True
+412592,2026-09-27T18:12:31.946Z,Schooltime,B,Death first search,1473,win,True
+413900,2026-09-27T18:09:17.994Z,Slithery Fight,A,天天开心 :(,1541,loss,True
+412596,2026-09-27T18:03:24.137Z,Slithery Fight,B,Death first search,1473,loss,True
+406113,2026-09-27T16:35:30.361Z,Devil,B,:3:3:3,1456,win,True
+404849,2026-09-27T16:30:57.762Z,Trophy,A,KUEE,1445,win,True
+404847,2026-09-27T16:27:26.811Z,Trauma,A,KUEE,1445,loss,True
+406114,2026-09-27T16:26:59.785Z,Portals,B,:3:3:3,1456,loss,True
+406110,2026-09-27T16:24:49.894Z,Default,B,:3:3:3,1456,win,True
+406111,2026-09-27T16:22:30.476Z,Autarky,B,:3:3:3,1456,win,True
+404846,2026-09-27T16:19:16.147Z,Autarky,A,KUEE,1445,loss,True
+406112,2026-09-27T16:17:35.200Z,Schooltime,B,:3:3:3,1456,loss,True
+404848,2026-09-27T16:14:15.073Z,Schooltime,A,KUEE,1445,loss,True
+404845,2026-09-27T16:05:48.469Z,Slithery Fight,A,KUEE,1445,win,True
+396366,2026-09-27T14:54:13.540Z,Prisoners Dilemma,A,Camalares,1442,loss,True
+396367,2026-09-27T14:51:22.345Z,Queen Of Spades,A,Camalares,1442,win,True
+397622,2026-09-27T14:49:35.526Z,Devil,B,waddledee,1550,loss,True
+396368,2026-09-27T14:46:27.922Z,Devil,A,Camalares,1442,loss,True
+397623,2026-09-27T14:43:42.618Z,Trophy,B,waddledee,1550,win,True
+396370,2026-09-27T14:39:24.966Z,Trophy,A,Camalares,1442,loss,True
+397625,2026-09-27T14:38:21.571Z,Trauma,B,waddledee,1550,loss,True
+397624,2026-09-27T14:32:11.490Z,Portals,B,waddledee,1550,loss,True
+397621,2026-09-27T14:23:04.145Z,Autarky,B,waddledee,1550,win,True
+396369,2026-09-27T14:04:21.842Z,Slithery Fight,A,Camalares,1442,win,True
+388003,2026-09-27T13:15:35.390Z,Prisoners Dilemma,A,KUEE,1445,loss,True
+386753,2026-09-27T13:03:52.373Z,Trophy,A,Python Enjoyers,1453,win,True
+388006,2026-09-27T13:03:03.462Z,Trauma,A,KUEE,1445,loss,True
+386755,2026-09-27T13:02:00.745Z,Trauma,A,Python Enjoyers,1453,loss,True
+386752,2026-09-27T12:57:50.504Z,Portals,A,Python Enjoyers,1453,loss,True
+388004,2026-09-27T12:54:05.432Z,Default,A,KUEE,1445,win,True
+386754,2026-09-27T12:49:58.310Z,Default,A,Python Enjoyers,1453,win,True
+386756,2026-09-27T12:42:46.974Z,Autarky,A,Python Enjoyers,1453,loss,True
+388002,2026-09-27T12:37:52.440Z,Schooltime,A,KUEE,1445,loss,True
+388005,2026-09-27T12:19:23.468Z,Slithery Fight,A,KUEE,1445,win,True
+375938,2026-09-27T11:13:41.437Z,Prisoners Dilemma,B,hmm,1451,loss,True
+374722,2026-09-27T11:11:13.411Z,Prisoners Dilemma,A,placeholder name,1421,loss,True
+375935,2026-09-27T11:09:44.976Z,Queen Of Spades,B,hmm,1451,win,True
+374719,2026-09-27T11:07:13.017Z,Queen Of Spades,A,placeholder name,1421,win,True
+375934,2026-09-27T11:05:52.550Z,Devil,B,hmm,1451,loss,True
+374718,2026-09-27T11:03:46.970Z,Devil,A,placeholder name,1421,win,True
+375936,2026-09-27T11:02:58.461Z,Trophy,B,hmm,1451,win,True
+374720,2026-09-27T10:40:56.907Z,Default,A,placeholder name,1421,win,True
+374721,2026-09-27T10:34:05.318Z,Autarky,A,placeholder name,1421,win,True
+375937,2026-09-27T10:17:59.416Z,Slithery Fight,B,hmm,1451,loss,True
+365411,2026-09-27T09:07:26.985Z,Prisoners Dilemma,B,Toha Heavy Industries,1586,win,True
+366621,2026-09-27T09:05:38.827Z,Queen Of Spades,B,:3:3:3,1456,win,True
+365408,2026-09-27T09:03:49.109Z,Queen Of Spades,B,Toha Heavy Industries,1586,win,True
+366618,2026-09-27T09:01:55.062Z,Devil,B,:3:3:3,1456,loss,True
+366620,2026-09-27T08:43:20.914Z,Portals,B,:3:3:3,1456,loss,True
+365409,2026-09-27T08:39:18.841Z,Portals,B,Toha Heavy Industries,1586,loss,True
+366619,2026-09-27T08:31:06.031Z,Autarky,B,:3:3:3,1456,loss,True
+365407,2026-09-27T08:28:22.159Z,Autarky,B,Toha Heavy Industries,1586,loss,True
+366617,2026-09-27T08:26:27.885Z,Schooltime,B,:3:3:3,1456,win,True
+365410,2026-09-27T08:02:36.076Z,Slithery Fight,B,Toha Heavy Industries,1586,loss,True
+364079,2026-09-27T07:53:58.074Z,Slithery Fight,B,quasar,1447,loss,True
+364078,2026-09-27T07:51:53.637Z,Autarky,B,quasar,1447,loss,True
+364080,2026-09-27T07:51:39.743Z,Devil,B,quasar,1447,loss,True
+364082,2026-09-27T07:51:04.319Z,Prisoners Dilemma,B,quasar,1447,win,True
+364081,2026-09-27T07:50:21.878Z,Trauma,B,quasar,1447,win,True
+354718,2026-09-27T06:56:09.621Z,Prisoners Dilemma,B,Aha,1485,loss,True
+354721,2026-09-27T06:52:42.520Z,Devil,B,Aha,1485,win,True
+355932,2026-09-27T06:50:52.682Z,Trophy,B,Spirit,1506,win,True
+354720,2026-09-27T06:47:37.340Z,Trophy,B,Aha,1485,win,True
+355929,2026-09-27T06:45:43.006Z,Trauma,B,Spirit,1506,win,True
+354719,2026-09-27T06:44:17.088Z,Trauma,B,Aha,1485,win,True
+355928,2026-09-27T06:37:38.162Z,Default,B,Spirit,1506,win,True
+355930,2026-09-27T06:33:25.494Z,Autarky,B,Spirit,1506,win,True
+355931,2026-09-27T06:23:23.422Z,Schooltime,B,Spirit,1506,loss,True
+354722,2026-09-27T06:16:25.410Z,Schooltime,B,Aha,1485,loss,True
+350790,2026-09-27T05:15:41.284Z,Slithery Fight,A,5ilky,1456,loss,False
+350789,2026-09-27T05:15:40.097Z,Schooltime,A,5ilky,1456,win,False
+350783,2026-09-27T05:15:36.124Z,Autarky,A,5ilky,1456,win,False
+350784,2026-09-27T05:15:31.194Z,Default,A,5ilky,1456,win,False
+350785,2026-09-27T05:15:29.533Z,Devil,A,5ilky,1456,loss,False
+350792,2026-09-27T05:15:24.203Z,Trophy,A,5ilky,1456,loss,False
+350791,2026-09-27T05:15:23.585Z,Trauma,A,5ilky,1456,win,False
+350788,2026-09-27T05:15:23.251Z,Queen Of Spades,A,5ilky,1456,win,False
+350786,2026-09-27T05:15:21.920Z,Portals,A,5ilky,1456,win,False
+350787,2026-09-27T05:15:18.271Z,Prisoners Dilemma,A,5ilky,1456,loss,False
+350354,2026-09-27T05:12:01.532Z,Slithery Fight,A,Camalares,1442,win,False
+350349,2026-09-27T05:11:24.968Z,Devil,A,Camalares,1442,win,False
+350348,2026-09-27T05:11:18.159Z,Default,A,Camalares,1442,win,False
+350355,2026-09-27T05:11:12.566Z,Trauma,A,Camalares,1442,win,False
+350350,2026-09-27T05:11:00.961Z,Portals,A,Camalares,1442,loss,False
+350352,2026-09-27T05:11:00.821Z,Queen Of Spades,A,Camalares,1442,win,False
+350347,2026-09-27T05:10:57.060Z,Autarky,A,Camalares,1442,win,False
+350353,2026-09-27T05:10:55.254Z,Schooltime,A,Camalares,1442,win,False
+350356,2026-09-27T05:10:49.103Z,Trophy,A,Camalares,1442,loss,False
+350351,2026-09-27T05:10:31.672Z,Prisoners Dilemma,A,Camalares,1442,loss,False
+349863,2026-09-27T05:05:37.163Z,Slithery Fight,A,Elan,1425,loss,True
+349862,2026-09-27T05:05:14.396Z,Schooltime,A,Elan,1425,loss,True
+349860,2026-09-27T05:04:53.381Z,Devil,A,Elan,1425,loss,True
+349861,2026-09-27T05:04:46.114Z,Autarky,A,Elan,1425,win,True
+349864,2026-09-27T05:04:43.045Z,Portals,A,Elan,1425,loss,True
+349720,2026-09-27T05:04:23.286Z,Slithery Fight,A,Elan,1425,loss,False
+349719,2026-09-27T05:04:10.783Z,Schooltime,A,Elan,1425,loss,False
+349714,2026-09-27T05:03:38.836Z,Default,A,Elan,1425,win,False
+349716,2026-09-27T05:03:22.597Z,Portals,A,Elan,1425,loss,False
+349721,2026-09-27T05:03:18.690Z,Trauma,A,Elan,1425,win,False
+349718,2026-09-27T05:03:16.706Z,Queen Of Spades,A,Elan,1425,win,False
+349715,2026-09-27T05:03:15.646Z,Devil,A,Elan,1425,win,False
+349717,2026-09-27T05:03:14.972Z,Prisoners Dilemma,A,Elan,1425,win,False
+349713,2026-09-27T05:03:10.470Z,Autarky,A,Elan,1425,win,False
+349722,2026-09-27T05:03:10.127Z,Trophy,A,Elan,1425,win,False
+345364,2026-09-27T05:02:45.609Z,Prisoners Dilemma,B,Camalares,1442,loss,True
+345360,2026-09-27T05:00:27.984Z,Queen Of Spades,B,Camalares,1442,win,True
+344166,2026-09-27T04:58:30.560Z,Queen Of Spades,A,Hydra,1524,win,True
+345361,2026-09-27T04:53:23.910Z,Trophy,B,Camalares,1442,loss,True
+344169,2026-09-27T04:51:19.405Z,Trophy,A,Hydra,1524,win,True
+345362,2026-09-27T04:50:17.544Z,Trauma,B,Camalares,1442,win,True
+344165,2026-09-27T04:43:32.463Z,Portals,A,Hydra,1524,win,True
+345363,2026-09-27T04:41:08.592Z,Default,B,Camalares,1442,win,True
+344168,2026-09-27T04:33:56.681Z,Autarky,A,Hydra,1524,win,True
+346721,2026-09-27T04:14:14.513Z,Schooltime,A,low_cortisol,1482,win,False
+346718,2026-09-27T04:13:26.750Z,Autarky,A,low_cortisol,1482,loss,False
+346722,2026-09-27T04:13:03.365Z,Trauma,A,low_cortisol,1482,loss,False
+346720,2026-09-27T04:13:02.092Z,Queen Of Spades,A,low_cortisol,1482,win,False
+346719,2026-09-27T04:13:01.450Z,Prisoners Dilemma,A,low_cortisol,1482,loss,False
+344167,2026-09-27T04:03:11.499Z,Slithery Fight,A,Hydra,1524,win,True
+341519,2026-09-27T03:12:28.589Z,Schooltime,A,gorro,1467,win,False
+341520,2026-09-27T03:12:15.368Z,Trophy,A,gorro,1467,win,False
+341516,2026-09-27T03:12:12.944Z,Autarky,A,gorro,1467,win,False
+341518,2026-09-27T03:11:59.944Z,Queen Of Spades,A,gorro,1467,loss,False
+341517,2026-09-27T03:11:47.751Z,Prisoners Dilemma,A,gorro,1467,win,False
+341504,2026-09-27T03:11:31.798Z,Autarky,A,IT,1464,loss,False
+341507,2026-09-27T03:11:28.659Z,Queen Of Spades,A,IT,1464,loss,False
+341506,2026-09-27T03:11:18.785Z,Prisoners Dilemma,A,IT,1464,win,False
+341508,2026-09-27T03:11:18.179Z,Trophy,A,IT,1464,loss,False
+341505,2026-09-27T03:11:16.724Z,Portals,A,IT,1464,loss,False
+340870,2026-09-27T02:59:30.265Z,Schooltime,A,5ilky,1456,win,True
+340872,2026-09-27T02:59:27.355Z,Slithery Fight,A,5ilky,1456,win,True
+340874,2026-09-27T02:59:09.758Z,Default,A,5ilky,1456,loss,True
+340871,2026-09-27T02:59:07.077Z,Queen Of Spades,A,5ilky,1456,win,True
+340873,2026-09-27T02:59:05.387Z,Trauma,A,5ilky,1456,win,True
+340847,2026-09-27T02:57:46.071Z,Slithery Fight,A,5ilky,1456,win,False
+340848,2026-09-27T02:57:28.523Z,Trophy,A,5ilky,1456,win,False
+340846,2026-09-27T02:57:17.618Z,Queen Of Spades,A,5ilky,1456,win,False
+340844,2026-09-27T02:57:16.796Z,Portals,A,5ilky,1456,loss,False
+340845,2026-09-27T02:57:15.914Z,Prisoners Dilemma,A,5ilky,1456,win,False
+338507,2026-09-27T02:36:38.060Z,Queen Of Spades,A,tootless,1490,win,True
+338503,2026-09-27T02:32:41.098Z,Devil,A,tootless,1490,win,True
+338506,2026-09-27T02:30:13.222Z,Trophy,A,tootless,1490,win,True
+337298,2026-09-27T02:28:52.615Z,Trophy,A,the land of the nugget,1435,win,True
+338504,2026-09-27T02:28:17.020Z,Trauma,A,tootless,1490,loss,True
+337299,2026-09-27T02:26:49.973Z,Trauma,A,the land of the nugget,1435,win,True
+337301,2026-09-27T02:24:32.336Z,Portals,A,the land of the nugget,1435,loss,True
+338505,2026-09-27T02:23:53.205Z,Default,A,tootless,1490,loss,True
+337302,2026-09-27T02:20:50.078Z,Default,A,the land of the nugget,1435,loss,True
+337300,2026-09-27T02:02:21.084Z,Slithery Fight,A,the land of the nugget,1435,win,True
+331454,2026-09-27T00:41:06.742Z,Prisoners Dilemma,B,YY Slayers,1500,win,True
+331456,2026-09-27T00:39:29.798Z,Queen Of Spades,B,YY Slayers,1500,win,True
+331457,2026-09-27T00:37:34.652Z,Devil,B,YY Slayers,1500,loss,True
+330269,2026-09-27T00:35:57.292Z,Devil,A,oh-Artistburger-AHA-TastyMeat!,1442,loss,True
+330270,2026-09-27T00:33:01.098Z,Trophy,A,oh-Artistburger-AHA-TastyMeat!,1442,win,True
+331458,2026-09-27T00:30:22.172Z,Trauma,B,YY Slayers,1500,loss,True
+330271,2026-09-27T00:29:47.543Z,Trauma,A,oh-Artistburger-AHA-TastyMeat!,1442,win,True
+330273,2026-09-27T00:21:37.604Z,Autarky,A,oh-Artistburger-AHA-TastyMeat!,1442,win,True
+331455,2026-09-27T00:17:46.201Z,Schooltime,B,YY Slayers,1500,loss,True
+330272,2026-09-27T00:14:54.077Z,Schooltime,A,oh-Artistburger-AHA-TastyMeat!,1442,win,True
+325749,2026-09-26T22:34:21.375Z,Prisoners Dilemma,A,Salt Light,1431,win,True
+324538,2026-09-26T22:32:53.654Z,Prisoners Dilemma,B,Gilligan’s crew,1440,win,True
+325752,2026-09-26T22:30:49.524Z,Queen Of Spades,A,Salt Light,1431,win,True
+324535,2026-09-26T22:29:57.352Z,Queen Of Spades,B,Gilligan’s crew,1440,loss,True
+325753,2026-09-26T22:28:03.522Z,Devil,A,Salt Light,1431,loss,True
+324536,2026-09-26T22:27:12.656Z,Devil,B,Gilligan’s crew,1440,loss,True
+324537,2026-09-26T22:25:03.914Z,Trophy,B,Gilligan’s crew,1440,loss,True
+325751,2026-09-26T22:21:35.294Z,Portals,A,Salt Light,1431,win,True
+325750,2026-09-26T22:17:17.735Z,Autarky,A,Salt Light,1431,win,True
+324534,2026-09-26T22:14:16.641Z,Autarky,B,Gilligan’s crew,1440,win,True
+322786,2026-09-26T21:20:50.773Z,Slithery Fight,B,Chris Quants,1304,win,True
+322787,2026-09-26T21:18:50.046Z,Devil,B,Chris Quants,1304,win,True
+322788,2026-09-26T21:18:31.981Z,Trophy,B,Chris Quants,1304,loss,True
+322785,2026-09-26T21:18:06.508Z,Autarky,B,Chris Quants,1304,win,True
+322784,2026-09-26T21:17:47.041Z,Trauma,B,Chris Quants,1304,win,True
+320538,2026-09-26T20:30:08.348Z,Devil,A,qwerty,1395,win,True
+319338,2026-09-26T20:29:51.909Z,Devil,A,Split and Stack,1403,loss,True
+320537,2026-09-26T20:25:47.271Z,Trauma,A,qwerty,1395,win,True
+319339,2026-09-26T20:25:24.141Z,Trauma,A,Split and Stack,1403,loss,True
+319337,2026-09-26T20:23:07.056Z,Portals,A,Split and Stack,1403,loss,True
+320539,2026-09-26T20:21:31.893Z,Default,A,qwerty,1395,win,True
+319340,2026-09-26T20:21:30.817Z,Default,A,Split and Stack,1403,loss,True
+320540,2026-09-26T20:18:13.827Z,Autarky,A,qwerty,1395,win,True
+319341,2026-09-26T20:12:12.048Z,Schooltime,A,Split and Stack,1403,win,True
+320541,2026-09-26T20:06:28.890Z,Slithery Fight,A,qwerty,1395,loss,True
+314834,2026-09-26T18:42:11.358Z,Prisoners Dilemma,B,Med Students,1357,win,True
+313648,2026-09-26T18:36:36.081Z,Devil,A,ShauryaVSharma,1422,win,True
+314837,2026-09-26T18:34:16.287Z,Trophy,B,Med Students,1357,win,True
+313649,2026-09-26T18:29:47.906Z,Trauma,A,ShauryaVSharma,1422,loss,True
+314833,2026-09-26T18:27:58.017Z,Default,B,Med Students,1357,loss,True
+314836,2026-09-26T18:26:57.654Z,Portals,B,Med Students,1357,win,True
+313651,2026-09-26T18:24:36.254Z,Default,A,ShauryaVSharma,1422,win,True
+313650,2026-09-26T18:21:44.240Z,Autarky,A,ShauryaVSharma,1422,win,True
+313652,2026-09-26T18:13:29.254Z,Schooltime,A,ShauryaVSharma,1422,win,True
+314835,2026-09-26T18:09:51.750Z,Slithery Fight,B,Med Students,1357,win,True
+310918,2026-09-26T17:07:57.492Z,Schooltime,A,Sponge(Albert and Bob),1992,loss,False
+310919,2026-09-26T17:07:48.389Z,Slithery Fight,A,Sponge(Albert and Bob),1992,loss,False
+310926,2026-09-26T17:07:07.780Z,Slithery Fight,A,NK1000,1366,win,False
+310923,2026-09-26T17:06:57.449Z,Autarky,A,NK1000,1366,win,False
+310927,2026-09-26T17:06:54.154Z,Trophy,A,NK1000,1366,win,False
+310912,2026-09-26T17:06:46.851Z,Autarky,A,Sponge(Albert and Bob),1992,loss,False
+310920,2026-09-26T17:06:44.150Z,Trauma,A,Sponge(Albert and Bob),1992,loss,False
+310925,2026-09-26T17:06:42.666Z,Queen Of Spades,A,NK1000,1366,win,False
+310924,2026-09-26T17:06:40.074Z,Prisoners Dilemma,A,NK1000,1366,win,False
+310915,2026-09-26T17:06:34.643Z,Portals,A,Sponge(Albert and Bob),1992,loss,False
+310913,2026-09-26T17:06:29.551Z,Default,A,Sponge(Albert and Bob),1992,loss,False
+310917,2026-09-26T17:06:28.203Z,Queen Of Spades,A,Sponge(Albert and Bob),1992,loss,False
+310921,2026-09-26T17:06:28.171Z,Trophy,A,Sponge(Albert and Bob),1992,loss,False
+310895,2026-09-26T17:06:27.647Z,Schooltime,A,CTFP,1331,win,False
+310896,2026-09-26T17:06:27.085Z,Slithery Fight,A,CTFP,1331,win,False
+310889,2026-09-26T17:06:21.909Z,Autarky,A,CTFP,1331,win,False
+310914,2026-09-26T17:06:21.727Z,Devil,A,Sponge(Albert and Bob),1992,loss,False
+310898,2026-09-26T17:06:21.235Z,Trophy,A,CTFP,1331,win,False
+310916,2026-09-26T17:06:20.834Z,Prisoners Dilemma,A,Sponge(Albert and Bob),1992,loss,False
+310890,2026-09-26T17:06:19.631Z,Default,A,CTFP,1331,win,False
+310888,2026-09-26T17:06:19.233Z,Slithery Fight,A,AstraMaxxing,1375,win,True
+310891,2026-09-26T17:06:18.545Z,Devil,A,CTFP,1331,win,False
+310894,2026-09-26T17:06:07.923Z,Queen Of Spades,A,CTFP,1331,win,False
+310893,2026-09-26T17:06:07.530Z,Prisoners Dilemma,A,CTFP,1331,win,False
+310897,2026-09-26T17:06:06.518Z,Trauma,A,CTFP,1331,win,False
+310892,2026-09-26T17:06:04.779Z,Portals,A,CTFP,1331,loss,False
+310886,2026-09-26T17:06:03.015Z,Trauma,A,AstraMaxxing,1375,loss,True
+310884,2026-09-26T17:06:01.257Z,Devil,A,AstraMaxxing,1375,win,True
+310887,2026-09-26T17:05:59.814Z,Prisoners Dilemma,A,AstraMaxxing,1375,win,True
+310885,2026-09-26T17:05:56.522Z,Portals,A,AstraMaxxing,1375,win,True
+310874,2026-09-26T17:05:40.786Z,Slithery Fight,A,AstraMaxxing,1375,win,False
+310873,2026-09-26T17:05:36.820Z,Schooltime,A,AstraMaxxing,1375,win,False
+310867,2026-09-26T17:05:27.987Z,Autarky,A,AstraMaxxing,1375,win,False
+310868,2026-09-26T17:05:27.072Z,Default,A,AstraMaxxing,1375,loss,False
+310869,2026-09-26T17:05:17.867Z,Devil,A,AstraMaxxing,1375,win,False
+310875,2026-09-26T17:05:17.788Z,Trauma,A,AstraMaxxing,1375,loss,False
+310876,2026-09-26T17:05:17.658Z,Trophy,A,AstraMaxxing,1375,win,False
+310871,2026-09-26T17:05:15.500Z,Prisoners Dilemma,A,AstraMaxxing,1375,win,False
+310872,2026-09-26T17:05:11.983Z,Queen Of Spades,A,AstraMaxxing,1375,win,False
+310870,2026-09-26T17:05:11.060Z,Portals,A,AstraMaxxing,1375,loss,False
+310603,2026-09-26T17:00:02.522Z,Slithery Fight,A,AstraMaxxing,1375,win,False
+310602,2026-09-26T16:59:43.940Z,Schooltime,A,AstraMaxxing,1375,loss,False
+310564,2026-09-26T16:59:42.857Z,Slithery Fight,A,Sponge(Albert and Bob),1992,loss,False
+310563,2026-09-26T16:59:30.640Z,Schooltime,A,Sponge(Albert and Bob),1992,loss,False
+310605,2026-09-26T16:59:20.960Z,Trophy,A,AstraMaxxing,1375,win,False
+310596,2026-09-26T16:59:20.108Z,Autarky,A,AstraMaxxing,1375,win,False
+310597,2026-09-26T16:59:19.850Z,Default,A,AstraMaxxing,1375,win,False
+310598,2026-09-26T16:59:16.478Z,Devil,A,AstraMaxxing,1375,win,False
+310600,2026-09-26T16:59:04.849Z,Prisoners Dilemma,A,AstraMaxxing,1375,win,False
+310604,2026-09-26T16:58:59.259Z,Trauma,A,AstraMaxxing,1375,loss,False
+310601,2026-09-26T16:58:55.843Z,Queen Of Spades,A,AstraMaxxing,1375,loss,False
+310599,2026-09-26T16:58:51.859Z,Portals,A,AstraMaxxing,1375,loss,False
+310565,2026-09-26T16:57:55.974Z,Trauma,A,Sponge(Albert and Bob),1992,loss,False
+310558,2026-09-26T16:57:42.679Z,Default,A,Sponge(Albert and Bob),1992,loss,False
+310557,2026-09-26T16:57:36.347Z,Autarky,A,Sponge(Albert and Bob),1992,loss,False
+310560,2026-09-26T16:57:35.187Z,Portals,A,Sponge(Albert and Bob),1992,loss,False
+310566,2026-09-26T16:57:30.619Z,Trophy,A,Sponge(Albert and Bob),1992,loss,False
+310559,2026-09-26T16:57:21.960Z,Devil,A,Sponge(Albert and Bob),1992,loss,False
+310561,2026-09-26T16:57:20.359Z,Prisoners Dilemma,A,Sponge(Albert and Bob),1992,loss,False
+310562,2026-09-26T16:57:19.059Z,Queen Of Spades,A,Sponge(Albert and Bob),1992,loss,False
+308270,2026-09-26T16:38:48.497Z,Devil,A,Eagle C,1349,win,True
+307071,2026-09-26T16:38:22.085Z,Queen Of Spades,B,NK1000,1366,loss,True
+308271,2026-09-26T16:36:01.860Z,Trophy,A,Eagle C,1349,win,True
+307069,2026-09-26T16:36:01.730Z,Devil,B,NK1000,1366,loss,True
+308267,2026-09-26T16:32:16.120Z,Trauma,A,Eagle C,1349,win,True
+307068,2026-09-26T16:29:20.231Z,Trauma,B,NK1000,1366,loss,True
+308268,2026-09-26T16:27:42.189Z,Default,A,Eagle C,1349,win,True
+307070,2026-09-26T16:24:06.942Z,Portals,B,NK1000,1366,loss,True
+308269,2026-09-26T16:23:37.304Z,Autarky,A,Eagle C,1349,loss,True
+307067,2026-09-26T16:21:22.510Z,Autarky,B,NK1000,1366,win,True
+306215,2026-09-26T15:59:26.399Z,Slithery Fight,A,5ilky,1456,loss,False
+306214,2026-09-26T15:59:09.216Z,Schooltime,A,5ilky,1456,loss,False
+306208,2026-09-26T15:58:35.083Z,Autarky,A,5ilky,1456,loss,False
+306210,2026-09-26T15:58:28.996Z,Devil,A,5ilky,1456,loss,False
+306209,2026-09-26T15:58:28.307Z,Default,A,5ilky,1456,loss,False
+306217,2026-09-26T15:58:21.044Z,Trophy,A,5ilky,1456,win,False
+306211,2026-09-26T15:58:20.076Z,Portals,A,5ilky,1456,loss,False
+306216,2026-09-26T15:58:19.158Z,Trauma,A,5ilky,1456,win,False
+306212,2026-09-26T15:58:17.445Z,Prisoners Dilemma,A,5ilky,1456,win,False
+306213,2026-09-26T15:58:13.915Z,Queen Of Spades,A,5ilky,1456,loss,False
+305250,2026-09-26T15:37:16.936Z,Slithery Fight,A,kgts,1416,loss,False
+305249,2026-09-26T15:36:49.961Z,Schooltime,A,kgts,1416,win,False
+305252,2026-09-26T15:36:27.553Z,Trophy,A,kgts,1416,loss,False
+305245,2026-09-26T15:36:20.555Z,Devil,A,kgts,1416,win,False
+305244,2026-09-26T15:36:11.553Z,Default,A,kgts,1416,loss,False
+305243,2026-09-26T15:36:09.904Z,Autarky,A,kgts,1416,win,False
+305246,2026-09-26T15:35:47.721Z,Portals,A,kgts,1416,loss,False
+305251,2026-09-26T15:35:36.522Z,Trauma,A,kgts,1416,loss,False
+305247,2026-09-26T15:35:33.596Z,Prisoners Dilemma,A,kgts,1416,win,False
+305248,2026-09-26T15:35:25.007Z,Queen Of Spades,A,kgts,1416,win,False
+305169,2026-09-26T15:32:53.515Z,Slithery Fight,A,Bunsen Burners,1305,loss,False
+305164,2026-09-26T15:32:38.910Z,Devil,A,Bunsen Burners,1305,loss,False
+305168,2026-09-26T15:32:32.599Z,Schooltime,A,Bunsen Burners,1305,win,False
+305171,2026-09-26T15:32:32.511Z,Trophy,A,Bunsen Burners,1305,win,False
+305163,2026-09-26T15:32:20.282Z,Default,A,Bunsen Burners,1305,loss,False
+305162,2026-09-26T15:32:14.948Z,Autarky,A,Bunsen Burners,1305,loss,False
+305166,2026-09-26T15:31:56.383Z,Prisoners Dilemma,A,Bunsen Burners,1305,loss,False
+305167,2026-09-26T15:31:51.479Z,Queen Of Spades,A,Bunsen Burners,1305,win,False
+305170,2026-09-26T15:31:45.913Z,Trauma,A,Bunsen Burners,1305,loss,False
+305165,2026-09-26T15:31:43.755Z,Portals,A,Bunsen Burners,1305,win,False
+304948,2026-09-26T15:28:27.378Z,Slithery Fight,A,Quantify,1560,loss,False
+304976,2026-09-26T15:27:38.741Z,Slithery Fight,A,NIULAI,1335,win,False
+304975,2026-09-26T15:27:15.409Z,Schooltime,A,NIULAI,1335,win,False
+304970,2026-09-26T15:27:01.736Z,Default,A,NIULAI,1335,win,False
+304947,2026-09-26T15:26:56.962Z,Schooltime,A,Quantify,1560,loss,False
+304978,2026-09-26T15:26:42.741Z,Trophy,A,NIULAI,1335,win,False
+304941,2026-09-26T15:26:40.521Z,Autarky,A,Quantify,1560,loss,False
+304845,2026-09-26T15:26:30.832Z,Slithery Fight,A,dev test 1 :P,1960,loss,False
+304942,2026-09-26T15:26:26.595Z,Default,A,Quantify,1560,loss,False
+304969,2026-09-26T15:26:26.569Z,Autarky,A,NIULAI,1335,win,False
+304973,2026-09-26T15:26:21.946Z,Prisoners Dilemma,A,NIULAI,1335,win,False
+304943,2026-09-26T15:26:20.606Z,Devil,A,Quantify,1560,loss,False
+304949,2026-09-26T15:26:16.664Z,Trauma,A,Quantify,1560,loss,False
+304977,2026-09-26T15:26:16.450Z,Trauma,A,NIULAI,1335,loss,False
+304971,2026-09-26T15:26:11.621Z,Devil,A,NIULAI,1335,win,False
+304974,2026-09-26T15:26:07.266Z,Queen Of Spades,A,NIULAI,1335,win,False
+304972,2026-09-26T15:26:04.814Z,Portals,A,NIULAI,1335,win,False
+304950,2026-09-26T15:25:59.520Z,Trophy,A,Quantify,1560,loss,False
+304946,2026-09-26T15:25:59.278Z,Queen Of Spades,A,Quantify,1560,loss,False
+304945,2026-09-26T15:25:57.158Z,Prisoners Dilemma,A,Quantify,1560,loss,False
+304944,2026-09-26T15:25:48.391Z,Portals,A,Quantify,1560,win,False
+304844,2026-09-26T15:25:18.268Z,Schooltime,A,dev test 1 :P,1960,loss,False
+304838,2026-09-26T15:25:00.525Z,Autarky,A,dev test 1 :P,1960,loss,False
+304847,2026-09-26T15:24:28.465Z,Trophy,A,dev test 1 :P,1960,loss,False
+304846,2026-09-26T15:24:20.969Z,Trauma,A,dev test 1 :P,1960,loss,False
+304841,2026-09-26T15:24:06.532Z,Portals,A,dev test 1 :P,1960,loss,False
+304839,2026-09-26T15:24:02.994Z,Default,A,dev test 1 :P,1960,loss,False
+304840,2026-09-26T15:24:01.912Z,Devil,A,dev test 1 :P,1960,loss,False
+304843,2026-09-26T15:24:01.446Z,Queen Of Spades,A,dev test 1 :P,1960,loss,False
+304842,2026-09-26T15:23:53.876Z,Prisoners Dilemma,A,dev test 1 :P,1960,loss,False
+300331,2026-09-26T14:43:53.424Z,Prisoners Dilemma,A,Bunsen Burners,1305,loss,True
+300329,2026-09-26T14:42:08.195Z,Queen Of Spades,A,Bunsen Burners,1305,loss,True
+301488,2026-09-26T14:40:32.915Z,Devil,B,NIULAI,1335,win,True
+301490,2026-09-26T14:36:32.965Z,Trophy,B,NIULAI,1335,win,True
+300327,2026-09-26T14:32:59.638Z,Trauma,A,Bunsen Burners,1305,loss,True
+301487,2026-09-26T14:31:46.077Z,Default,B,NIULAI,1335,loss,True
+301491,2026-09-26T14:23:54.933Z,Portals,B,NIULAI,1335,win,True
+301489,2026-09-26T14:20:00.101Z,Schooltime,B,NIULAI,1335,win,True
+300330,2026-09-26T14:16:36.565Z,Schooltime,A,Bunsen Burners,1305,win,True
+300328,2026-09-26T14:05:55.391Z,Slithery Fight,A,Bunsen Burners,1305,win,True
+297816,2026-09-26T13:30:31.596Z,Big Empty,B,LOOPING THE FUNCTIONS,1402,win,True
+297814,2026-09-26T13:29:29.134Z,Stronghold,B,LOOPING THE FUNCTIONS,1402,loss,True
+297817,2026-09-26T13:29:26.243Z,Devil,B,LOOPING THE FUNCTIONS,1402,win,True
+297815,2026-09-26T13:29:17.919Z,Default,B,LOOPING THE FUNCTIONS,1402,loss,True
+297813,2026-09-26T13:28:49.083Z,Prisoners Dilemma,B,LOOPING THE FUNCTIONS,1402,loss,True
+293838,2026-09-26T12:42:35.537Z,Queen Of Spades,A,Perm,1358,loss,True
+292677,2026-09-26T12:42:08.209Z,Queen Of Spades,A,kgts,1416,loss,True
+292679,2026-09-26T12:40:57.107Z,Devil,A,kgts,1416,win,True
+293840,2026-09-26T12:37:24.913Z,Trophy,A,Perm,1358,win,True
+293837,2026-09-26T12:31:47.328Z,Trauma,A,Perm,1358,loss,True
+293841,2026-09-26T12:25:23.399Z,Autarky,A,Perm,1358,loss,True
+292681,2026-09-26T12:18:17.394Z,Stronghold,A,kgts,1416,win,True
+292678,2026-09-26T12:14:12.399Z,Schooltime,A,kgts,1416,loss,True
+294553,2026-09-26T12:12:49.744Z,Stronghold,B,Quantify,1560,loss,False
+294549,2026-09-26T12:12:25.592Z,Autarky,B,Quantify,1560,win,False
+294552,2026-09-26T12:12:01.835Z,Queen Of Spades,B,Quantify,1560,loss,False
+294551,2026-09-26T12:11:50.196Z,Prisoners Dilemma,B,Quantify,1560,loss,False
+294550,2026-09-26T12:11:47.173Z,Default Small,B,Quantify,1560,loss,False
+293839,2026-09-26T12:08:27.078Z,Big Empty,A,Perm,1358,loss,True
+292680,2026-09-26T12:02:47.383Z,Big Empty,A,kgts,1416,win,True
+286394,2026-09-26T10:48:17.144Z,Schooltime,B,V1,1347,win,True
+285251,2026-09-26T10:46:59.455Z,Default Small,A,CaprioticThunders,1325,win,True
+285255,2026-09-26T10:40:55.591Z,Queen Of Spades,A,CaprioticThunders,1325,win,True
+286393,2026-09-26T10:33:57.793Z,Trauma,B,V1,1347,loss,True
+285253,2026-09-26T10:28:18.929Z,Default,A,CaprioticThunders,1325,loss,True
+286391,2026-09-26T10:27:05.681Z,Autarky,B,V1,1347,loss,True
+285254,2026-09-26T10:26:19.428Z,Autarky,A,CaprioticThunders,1325,win,True
+286395,2026-09-26T10:24:15.667Z,Stronghold,B,V1,1347,loss,True
+285252,2026-09-26T10:22:39.616Z,Stronghold,A,CaprioticThunders,1325,loss,True
+286392,2026-09-26T10:09:47.516Z,Big Empty,B,V1,1347,loss,True
+278527,2026-09-26T08:50:10.791Z,Default Small,A,beyonce,1386,win,True
+279652,2026-09-26T08:48:56.097Z,Prisoners Dilemma,B,OST Productions,1332,loss,True
+279656,2026-09-26T08:46:08.266Z,Queen Of Spades,B,OST Productions,1332,loss,True
+278530,2026-09-26T08:45:07.391Z,Queen Of Spades,A,beyonce,1386,loss,True
+279653,2026-09-26T08:45:06.425Z,Devil,B,OST Productions,1332,win,True
+278529,2026-09-26T08:43:51.046Z,Devil,A,beyonce,1386,win,True
+278531,2026-09-26T08:41:50.378Z,Trophy,A,beyonce,1386,win,True
+279654,2026-09-26T08:39:08.390Z,Default,B,OST Productions,1332,loss,True
+278528,2026-09-26T08:37:31.536Z,Default,A,beyonce,1386,loss,True
+279655,2026-09-26T08:35:46.011Z,Autarky,B,OST Productions,1332,loss,True
+277003,2026-09-26T07:37:11.770Z,Big Empty,B,DOGJI,1536,win,False
+277009,2026-09-26T07:37:07.665Z,Schooltime,B,DOGJI,1536,win,False
+277002,2026-09-26T07:37:03.117Z,Autarky,B,DOGJI,1536,win,False
+277011,2026-09-26T07:36:58.987Z,Trauma,B,DOGJI,1536,loss,False
+277004,2026-09-26T07:36:57.833Z,Default,B,DOGJI,1536,win,False
+277010,2026-09-26T07:36:53.964Z,Stronghold,B,DOGJI,1536,win,False
+277012,2026-09-26T07:36:53.786Z,Trophy,B,DOGJI,1536,win,False
+277005,2026-09-26T07:36:52.534Z,Default Small,B,DOGJI,1536,win,False
+277008,2026-09-26T07:36:51.238Z,Queen Of Spades,B,DOGJI,1536,win,False
+277007,2026-09-26T07:36:50.956Z,Prisoners Dilemma,B,DOGJI,1536,win,False
+277006,2026-09-26T07:36:50.192Z,Devil,B,DOGJI,1536,win,False
+276205,2026-09-26T07:15:54.301Z,Trophy,B,Ravine reapers,1365,win,True
+276203,2026-09-26T07:15:50.952Z,Devil,B,Ravine reapers,1365,win,True
+276206,2026-09-26T07:15:37.537Z,Trauma,B,Ravine reapers,1365,loss,True
+276207,2026-09-26T07:15:15.019Z,Queen Of Spades,B,Ravine reapers,1365,loss,True
+276204,2026-09-26T07:15:06.203Z,Default Small,B,Ravine reapers,1365,win,True
+273136,2026-09-26T06:53:52.197Z,Default Small,A,Blue Dragon,1600,loss,True
+272011,2026-09-26T06:52:19.990Z,Prisoners Dilemma,A,luck_lack,1312,win,True
+272014,2026-09-26T06:50:07.209Z,Queen Of Spades,A,luck_lack,1312,loss,True
+272013,2026-09-26T06:48:52.589Z,Devil,A,luck_lack,1312,win,True
+273140,2026-09-26T06:37:18.270Z,Autarky,A,Blue Dragon,1600,loss,True
+273139,2026-09-26T06:34:50.772Z,Stronghold,A,Blue Dragon,1600,win,True
+272015,2026-09-26T06:30:37.754Z,Stronghold,A,luck_lack,1312,loss,True
+273137,2026-09-26T06:27:35.149Z,Schooltime,A,Blue Dragon,1600,loss,True
+273138,2026-09-26T06:23:32.343Z,Big Empty,A,Blue Dragon,1600,loss,True
+272012,2026-09-26T06:23:22.115Z,Schooltime,A,luck_lack,1312,win,True
+269746,2026-09-26T05:15:05.757Z,Autarky,B,JJYA,1510,win,False
+269744,2026-09-26T05:14:41.946Z,Trauma,B,JJYA,1510,loss,False
+269745,2026-09-26T05:14:37.552Z,Prisoners Dilemma,B,JJYA,1510,win,False
+265305,2026-09-26T04:40:52.621Z,Default Small,B,GZHU-AISquad-Machine,1359,loss,True
+266435,2026-09-26T04:40:08.395Z,Prisoners Dilemma,A,CaprioticThunders,1325,win,True
+265304,2026-09-26T04:39:33.330Z,Prisoners Dilemma,B,GZHU-AISquad-Machine,1359,loss,True
+266434,2026-09-26T04:39:00.126Z,Queen Of Spades,A,CaprioticThunders,1325,loss,True
+265303,2026-09-26T04:37:41.894Z,Devil,B,GZHU-AISquad-Machine,1359,loss,True
+266433,2026-09-26T04:32:51.187Z,Trauma,A,CaprioticThunders,1325,loss,True
+266431,2026-09-26T04:31:07.921Z,Default,A,CaprioticThunders,1325,win,True
+265302,2026-09-26T04:26:16.066Z,Autarky,B,GZHU-AISquad-Machine,1359,win,True
+266432,2026-09-26T04:25:04.368Z,Stronghold,A,CaprioticThunders,1325,loss,True
+265301,2026-09-26T04:01:09.685Z,Big Empty,B,GZHU-AISquad-Machine,1359,loss,True
+259245,2026-09-26T02:33:39.080Z,Default Small,B,fa_kyuu,1342,win,True
+260343,2026-09-26T02:33:34.771Z,Prisoners Dilemma,B,Wisher,1374,loss,True
+260342,2026-09-26T02:31:12.707Z,Devil,B,Wisher,1374,win,True
+259244,2026-09-26T02:25:40.009Z,Trauma,B,fa_kyuu,1342,loss,True
+260345,2026-09-26T02:25:13.114Z,Default,B,Wisher,1374,loss,True
+259242,2026-09-26T02:23:13.942Z,Default,B,fa_kyuu,1342,loss,True
+260346,2026-09-26T02:22:20.589Z,Autarky,B,Wisher,1374,win,True
+259246,2026-09-26T02:20:56.833Z,Autarky,B,fa_kyuu,1342,loss,True
+260344,2026-09-26T02:15:26.490Z,Schooltime,B,Wisher,1374,loss,True
+259243,2026-09-26T02:13:01.115Z,Schooltime,B,fa_kyuu,1342,loss,True
+258460,2026-09-26T01:58:55.341Z,Schooltime,B,E=MC^2+AI,1405,loss,True
+258459,2026-09-26T01:58:17.863Z,Default,B,E=MC^2+AI,1405,loss,True
+258461,2026-09-26T01:58:01.727Z,Trophy,B,E=MC^2+AI,1405,win,True
+258462,2026-09-26T01:58:00.470Z,Devil,B,E=MC^2+AI,1405,win,True
+258458,2026-09-26T01:57:37.476Z,Default Small,B,E=MC^2+AI,1405,win,True
+253928,2026-09-26T00:32:42.967Z,Queen Of Spades,A,lingling_40h,1528,loss,True
+252805,2026-09-26T00:32:23.338Z,Queen Of Spades,B,Proof by Intimidation,1373,loss,True
+252806,2026-09-26T00:31:23.166Z,Devil,B,Proof by Intimidation,1373,win,True
+253931,2026-09-26T00:29:19.154Z,Trophy,A,lingling_40h,1528,win,True
+252804,2026-09-26T00:26:56.650Z,Trauma,B,Proof by Intimidation,1373,loss,True
+252803,2026-09-26T00:25:13.057Z,Default,B,Proof by Intimidation,1373,loss,True
+252802,2026-09-26T00:22:30.914Z,Autarky,B,Proof by Intimidation,1373,win,True
+253927,2026-09-26T00:20:47.942Z,Stronghold,A,lingling_40h,1528,loss,True
+253930,2026-09-26T00:16:06.624Z,Schooltime,A,lingling_40h,1528,loss,True
+253929,2026-09-26T00:10:32.494Z,Big Empty,A,lingling_40h,1528,loss,True
+250952,2026-09-25T23:18:21.175Z,Big Empty,B,Quantify,1560,win,False
+250953,2026-09-25T23:16:42.991Z,Prisoners Dilemma,B,Quantify,1560,loss,False
+248804,2026-09-25T22:27:54.127Z,Default Small,A,Nimo_is_lost,1376,win,True
+247692,2026-09-25T22:24:51.392Z,Trophy,B,Get Cooked,1409,loss,True
+248807,2026-09-25T22:24:16.102Z,Trophy,A,Nimo_is_lost,1376,win,True
+248806,2026-09-25T22:22:19.761Z,Trauma,A,Nimo_is_lost,1376,loss,True
+248805,2026-09-25T22:21:14.487Z,Default,A,Nimo_is_lost,1376,loss,True
+247689,2026-09-25T22:21:14.125Z,Trauma,B,Get Cooked,1409,win,True
+247688,2026-09-25T22:20:14.776Z,Default,B,Get Cooked,1409,loss,True
+247690,2026-09-25T22:16:16.116Z,Stronghold,B,Get Cooked,1409,loss,True
+247691,2026-09-25T22:11:13.863Z,Schooltime,B,Get Cooked,1409,loss,True
+248803,2026-09-25T22:05:17.529Z,Big Empty,A,Nimo_is_lost,1376,win,True
+246923,2026-09-25T21:58:55.088Z,Stronghold,B,BloodBath,1833,loss,True
+246926,2026-09-25T21:58:43.463Z,Autarky,B,BloodBath,1833,win,True
+246927,2026-09-25T21:58:42.379Z,Default,B,BloodBath,1833,win,True
+246924,2026-09-25T21:58:25.108Z,Trophy,B,BloodBath,1833,win,True
+246925,2026-09-25T21:58:24.013Z,Trauma,B,BloodBath,1833,loss,True
+243066,2026-09-25T20:31:03.224Z,Default Small,A,Every Villain Is Lemons!,1393,win,True
+244174,2026-09-25T20:30:21.716Z,Prisoners Dilemma,A,CaprioticThunders,1325,win,True
+244176,2026-09-25T20:28:22.206Z,Devil,A,CaprioticThunders,1325,win,True
+243063,2026-09-25T20:25:20.766Z,Trophy,A,Every Villain Is Lemons!,1393,win,True
+243064,2026-09-25T20:21:45.691Z,Default,A,Every Villain Is Lemons!,1393,win,True
+244175,2026-09-25T20:20:43.475Z,Autarky,A,CaprioticThunders,1325,win,True
+244172,2026-09-25T20:18:47.039Z,Stronghold,A,CaprioticThunders,1325,loss,True
+244173,2026-09-25T20:16:09.965Z,Schooltime,A,CaprioticThunders,1325,loss,True
+243062,2026-09-25T20:13:16.765Z,Schooltime,A,Every Villain Is Lemons!,1393,loss,True
+243065,2026-09-25T20:02:23.956Z,Big Empty,A,Every Villain Is Lemons!,1393,loss,True
+239367,2026-09-25T18:28:02.705Z,Default Small,B,YY Slayers,1500,win,True
+238272,2026-09-25T18:24:11.408Z,Devil,A,I need an internship,1417,win,True
+239364,2026-09-25T18:23:47.424Z,Trophy,B,YY Slayers,1500,loss,True
+239366,2026-09-25T18:21:11.888Z,Trauma,B,YY Slayers,1500,loss,True
+238271,2026-09-25T18:20:53.149Z,Trauma,A,I need an internship,1417,loss,True
+238269,2026-09-25T18:19:30.330Z,Default,A,I need an internship,1417,loss,True
+239368,2026-09-25T18:18:47.057Z,Autarky,B,YY Slayers,1500,loss,True
+238273,2026-09-25T18:13:32.810Z,Stronghold,A,I need an internship,1417,loss,True
+239365,2026-09-25T18:11:41.124Z,Schooltime,B,YY Slayers,1500,loss,True
+238270,2026-09-25T18:10:50.232Z,Schooltime,A,I need an internship,1417,win,True
+236340,2026-09-25T17:08:58.932Z,Big Empty,B,Oswald,1633,loss,True
+236337,2026-09-25T17:07:58.472Z,Trophy,B,Oswald,1633,loss,True
+236336,2026-09-25T17:07:39.220Z,Autarky,B,Oswald,1633,loss,True
+236338,2026-09-25T17:07:04.618Z,Queen Of Spades,B,Oswald,1633,loss,True
+236339,2026-09-25T17:06:57.241Z,Trauma,B,Oswald,1633,loss,True
+233592,2026-09-25T16:36:00.230Z,Default Small,A,the ROOOK,1443,loss,True
+232507,2026-09-25T16:35:58.848Z,Default Small,A,Miaule,1338,win,True
+233589,2026-09-25T16:35:44.694Z,Queen Of Spades,A,the ROOOK,1443,loss,True
+232506,2026-09-25T16:35:08.279Z,Prisoners Dilemma,A,Miaule,1338,win,True
+232508,2026-09-25T16:34:23.477Z,Queen Of Spades,A,Miaule,1338,win,True
+232504,2026-09-25T16:32:15.023Z,Devil,A,Miaule,1338,loss,True
+233590,2026-09-25T16:30:32.650Z,Trophy,A,the ROOOK,1443,win,True
+232505,2026-09-25T16:25:31.338Z,Default,A,Miaule,1338,loss,True
+233591,2026-09-25T16:24:48.792Z,Autarky,A,the ROOOK,1443,win,True
+233593,2026-09-25T16:21:29.586Z,Schooltime,A,the ROOOK,1443,loss,True

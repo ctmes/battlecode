@@ -166,9 +166,21 @@ DEFAULTS = {
     # grower_brain, 87.1 -> 97.5% vs the evolved policy and 95.0 -> 96.7% vs splitter, and cut games lost by
     # elimination from 23 to 0. No illegal-split deaths. The king_* mechanism above did not help and stays off.
     "boxed_split": 1,
-    "boxed_reserve": 0,        # unit slots below the limit that boxed-in splits of short dragons may not use
+    # boxed_reserve 4 + spare_team 1, 2026-09-28, held-out ladder set (tools/longest_bench.py --holdout, 120 games per
+    # opponent): 65.4% [57-73] head-to-head vs mh2 (the same bot with both at 0), 62.5 -> 74.6% vs tuned_0927,
+    # 74.2 -> 76.7% vs live v2, 76.7 -> 78.3% vs grower_frozen, 75.0 -> 73.8% vs v3 (noise), no other change.
+    # Known cost it does NOT fix (found by the other session from mh2 replays): after split_r_end every split is a
+    # boxed one, and a boxed long dragon still loses 2 length per SPLIT -- see "rear split" in the project notes.
+    "boxed_reserve": 4,        # unit slots below the limit that boxed-in splits of short dragons may not use
     "boxed_long": 8,           # ... "short" meaning shorter than this
-    "spare_team": 0,           # boxed in and unable to split: die alone rather than head-on a teammate (see SPARE_RANK)
+    "spare_team": 1,           # boxed in and unable to split: die alone rather than head-on a teammate (see SPARE_RANK)
+    # Rear split, 2026-09-28. mh2's ladder replays: our longest dragon split after round 433 (so every split a boxed
+    # one) in 31 of 68 games vs 1 of 292 for v2, e.g. leading 12:9 at round 480 and losing 8:9. Held-out ladder set,
+    # 300 games per opponent, mh3 -> mh3 + rear split: 60.8 -> 71.2% vs mh2, 77.7 -> 81.7% vs live v2, 73.8 -> 77.2%
+    # vs v3, 76.7 -> 78.7% vs grower_frozen (72.2 -> 77.2% overall), longest dragon at round 500 about +1.3, tiebreak
+    # losses 303 -> 248, no eliminations, no errors. On from round 0 it lengthened the longest more but did not win more.
+    "boxed_rear_len": 5,       # boxed-in split of a dragon at least this long gives the child all but 2 segments
+    "boxed_rear_r": 433,       # ... from this round on (0 = always; boxed_rear_len 0 = off)
     "budget_ns": 60_000_000,   # self-metering: skip optional work past this (points on the judge)
 }
 
@@ -513,6 +525,10 @@ class Brain:
             # dragon that died in local mh2 games did so with the team at the 64-dragon cap, where no split is legal
             cap = self.limit - (p["boxed_reserve"] if length < p["boxed_long"] else 0)
             if p["boxed_split"] and child >= 2 and length - child >= 2 and t.units < cap:
+                # rear split: leave 2 segments at the boxed head and hand the rest to the child, which leaves from the
+                # old tail facing away, so a long dragon loses 2 once instead of 2 every round it stays boxed in
+                if p["boxed_rear_len"] and length >= p["boxed_rear_len"] and t.rnd >= p["boxed_rear_r"]:
+                    child = length - 2
                 return b"SPLIT %d\n" % child
             if p["spare_team"]:
                 best = min(range(4), key=lambda d: (SPARE_RANK[status[d]], d != t.dir))

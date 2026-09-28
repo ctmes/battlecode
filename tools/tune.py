@@ -104,6 +104,10 @@ OPPONENTS = {
                                "grow_care_margin": 3, "split_len_max": 41, "split_mate_cap": 3,
                                "split_food_ratio": 0.1705})),  # vs_manual_run1's final mean
     "grower": ("bot", "grower"),
+    # grower_brain above follows the live DEFAULTS (so since 28 Sep it splits when boxed in too); this is the
+    # original, pinned to the 27 Sep code, for comparisons across time.
+    "grower_frozen": ("frozen", (str(ROOT / "snapshots" / "brain_2026-09-27"),
+                                 {"founder_units": 10, "split_units": 10, "split_r_end": 150, "grow_mod": 0})),
 }
 
 

@@ -124,13 +124,21 @@ def main():
             dest.write_bytes(gzip.decompress(body) if body[:2] == b"\x1f\x8b" else body)
             got += 1
             time.sleep(PAUSE)
+    # merge into the existing index (a fresh row replaces an old one with the same match id), so a narrow --since
+    # or --maps fetch adds to the history instead of wiping it
     index = out / "index.csv"
+    merged = {}
+    if index.exists():
+        with index.open(newline="", encoding="utf-8") as f:
+            merged = {r["match"]: r for r in csv.DictReader(f)}
+    merged.update({str(r["match"]): r for r in rows})
+    fields = ["match", "at", "map", "seat", "opponent", "opponent_elo", "result", "ranked"]
     with index.open("w", newline="", encoding="utf-8") as f:  # team names include non-Latin scripts
-        w = csv.DictWriter(f, fieldnames=list(rows[0]) if rows else ["match"])
+        w = csv.DictWriter(f, fieldnames=fields)
         w.writeheader()
-        w.writerows(rows)
+        w.writerows(sorted(merged.values(), key=lambda r: r["at"], reverse=True))
     wins = sum(r["result"] == "win" for r in rows)
-    print(f"{len(rows)} games ({wins} wins), {got} replays downloaded, index -> {index}")
+    print(f"{len(rows)} games ({wins} wins), {got} replays downloaded, index ({len(merged)} games) -> {index}")
 
 
 if __name__ == "__main__":
