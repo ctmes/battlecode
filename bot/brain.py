@@ -146,6 +146,22 @@ DEFAULTS = {
     "grow_care_len": 0,
     "grow_care_mult": 1.0,
     "grow_care_margin": 0,
+    # King: a founder that never splits and plays with king_care x the usual caution, so the team ends the game
+    # with one long dragon. 74% of the live bot's ladder losses (37 of 57, 26 Sep 18:00 - 27 Sep 08:43 UTC) were at
+    # round 500 on the longest-dragon tiebreak: its longest dragon averaged 8.5 against the opponent's 15.0. A founder
+    # is king if its id is below king_first (every ladder map lists the teams' dragons alternately, so 2 = each
+    # team's first founder) or it starts at least king_len long (Autarky, Prisoners Dilemma and Slithery Fight hand
+    # out 14-, 11- and 25-long founders, which the swarm otherwise splits straight into 2-long children). 0 = off.
+    "king_first": 0,
+    "king_len": 0,
+    "king_care": 1.0,
+    # Boxed in (no safe move): split instead of taking the least-bad move, since a split stands still. 0 = off.
+    # On 2026-09-28, on the held-out ladder set (tools/longest_bench.py --holdout: the 10 ladder maps as played plus
+    # 5 reserved variants each, both seats, 120 games per opponent), this one change took the live v2 bot from 50.0%
+    # to 72.5% [64-80] against v2 itself, 51.7 -> 75.8% vs v3, 45.4 -> 64.2% vs tuned_0927, 65.0 -> 78.3% vs
+    # grower_brain, 87.1 -> 97.5% vs the evolved policy and 95.0 -> 96.7% vs splitter, and cut games lost by
+    # elimination from 23 to 0. No illegal-split deaths. The king_* mechanism above did not help and stays off.
+    "boxed_split": 1,
     "budget_ns": 60_000_000,   # self-metering: skip optional work past this (points on the judge)
 }
 
@@ -175,6 +191,7 @@ class Brain:
         tpu = self.p["tiles_per_unit"]
         self.target = unit_limit if tpu <= 0 else max(2, min(unit_limit, n // tpu))  # preferred team size
         self.founder = None  # True when alive at round 0 (decided on the first turn)
+        self.king = None  # a founder that never splits (see DEFAULTS "king_first"); decided on the first turn
         self.errors = 0
         self.t0 = 0
 
@@ -325,7 +342,7 @@ class Brain:
         p = self.p
         length = t.length
         child = p["split_child"]
-        if child < 2 or length - child < 2 or t.units >= self.limit or t.rnd >= p["split_r_end"]:
+        if child < 2 or length - child < 2 or t.units >= self.limit or t.rnd >= p["split_r_end"] or self.king:
             return False
         if p["split_len_max"] > 0 and length >= p["split_len_max"]:
             return False  # already a real investment: a length floor alone never stops a big dragon from
@@ -431,6 +448,9 @@ class Brain:
         length = t.length
         self.learn_edges(t)
         self.seen |= self.window((hx - 3) % w_, (hy - 3) % h_)
+        if self.king is None:  # before any early return, so a boxed-in first turn still decides it
+            self.king = t.rnd == 0 and ((p["king_first"] > 0 and self.id < p["king_first"])
+                                        or (p["king_len"] > 0 and length >= p["king_len"]))
 
         # visible dragons
         occ = 0
@@ -478,6 +498,12 @@ class Brain:
                         "kelp": kelp, "port": port, "body": list(self.body[:8]), "tail": self.tail,
                         "parts": [tuple(q) for q in t.parts][:12]}
         if not ok:
+            # Boxed in: every move is kelp, a body, a head-on trade or an unseen portal exit. A split is not a move,
+            # so the parent stays put and survives the turn (the child takes the rear segments, facing away), which
+            # beats any of those -- and it is how a long dragon spawned in a pocket gets out (see "king_first").
+            child = p["split_child"]
+            if p["boxed_split"] and child >= 2 and length - child >= 2 and t.units < self.limit:
+                return b"SPLIT %d\n" % child
             best = min(range(4), key=lambda d: (status[d], d != t.dir))
             return MOVES[best]
 
@@ -574,6 +600,8 @@ class Brain:
         if p["grow_care_len"] > 0 and length >= p["grow_care_len"]:
             care = p["grow_care_mult"]
             margin += p["grow_care_margin"]
+        if self.king:
+            care = max(care, p["king_care"])
         need = min(max(length + margin, p["need_floor"]), p["need_cap"])
         tail = self.tail
         free_trap = free & self.seen if p["pessimistic"] else free
