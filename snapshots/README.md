@@ -7,3 +7,6 @@ so that an opponent never changes when bot/brain.py does. Never edit a snapshot;
 - The live v2 bot itself is `manual-heuristics/` at the repo root.
 - `mh2_2026-09-28/`: bot/brain.py + proto.py at commit b9a62f4, submitted to the ladder as "mh2" (v4) on
   2026-09-28 06:40 UTC: v2 manual heuristics plus boxed_split=1.
+- `mh3_2026-09-28/`: bot/brain.py + proto.py as submitted to the ladder as "mh3" on 2026-09-28: mh2 plus
+  spare_team=1, boxed_reserve=4 and the rear split (boxed_rear_len=5, boxed_rear_r=433). Held-out ladder set,
+  300 games per opponent: 71.2% vs mh2, 77.2% overall vs mh2 / live / v3 / grower_frozen.
