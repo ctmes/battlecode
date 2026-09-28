@@ -5,3 +5,5 @@ so that an opponent never changes when bot/brain.py does. Never edit a snapshot;
   plus the switched-off grow_care / crowding / sprint / explore / terrain-sonar mechanisms that "v3" and
   "tuned_0927" turn on through params).
 - The live v2 bot itself is `manual-heuristics/` at the repo root.
+- `mh2_2026-09-28/`: bot/brain.py + proto.py at commit b9a62f4, submitted to the ladder as "mh2" (v4) on
+  2026-09-28 06:40 UTC: v2 manual heuristics plus boxed_split=1.

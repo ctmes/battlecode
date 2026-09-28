@@ -94,7 +94,8 @@ OPPONENTS = {
     "manual_heuristics": ("bot", "manual_heuristics"),
     # Frozen opponents (code AND parameters pinned; see snapshots/README.md): unlike "defaults"/"old", which follow
     # whatever bot/brain.py DEFAULTS say at import time, these never move when the bot changes.
-    "live": ("frozen", (str(ROOT / "manual-heuristics"), {})),  # v2, the bot on the ladder since 25 Sep
+    "live": ("frozen", (str(ROOT / "manual-heuristics"), {})),  # v2, on the ladder 25-28 Sep
+    "mh2": ("frozen", (str(ROOT / "snapshots" / "mh2_2026-09-28"), {})),  # v2 + boxed_split, submitted 28 Sep 06:40Z
     "v3": ("frozen", (str(ROOT / "snapshots" / "brain_2026-09-27"),
                       {"grow_care_len": 1, "grow_care_mult": 1.9346, "grow_care_margin": 1})),
     "tuned_0927": ("frozen", (str(ROOT / "snapshots" / "brain_2026-09-27"),

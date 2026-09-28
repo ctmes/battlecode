@@ -37,10 +37,6 @@ TERRAIN_EDGE_VERTICAL = (0, 1, 0, 1)
 
 # legality classes, best first
 OK, PORTAL, TRADE_ENEMY, TRADE_TEAM, DEAD = 0, 1, 2, 3, 4
-# With "spare_team" on, a boxed-in dragon that cannot split prefers dying alone (DEAD) to a head-on with a teammate
-# (TRADE_TEAM), which kills both: in local games a third of mh2's long-dragon deaths were doomed short teammates
-# taking a long dragon down with them. A trade with an enemy still ranks above dying alone.
-SPARE_RANK = {OK: 0, PORTAL: 1, TRADE_ENEMY: 2, DEAD: 3, TRADE_TEAM: 4}
 
 DEFAULTS = {
     # Tuned 2026-09-22 by CMA-ES (tools/tune.py) over 25 of these parameters, in 2 rounds (the 2nd with a widened
@@ -166,9 +162,6 @@ DEFAULTS = {
     # grower_brain, 87.1 -> 97.5% vs the evolved policy and 95.0 -> 96.7% vs splitter, and cut games lost by
     # elimination from 23 to 0. No illegal-split deaths. The king_* mechanism above did not help and stays off.
     "boxed_split": 1,
-    "boxed_reserve": 0,        # unit slots below the limit that boxed-in splits of short dragons may not use
-    "boxed_long": 8,           # ... "short" meaning shorter than this
-    "spare_team": 0,           # boxed in and unable to split: die alone rather than head-on a teammate (see SPARE_RANK)
     "budget_ns": 60_000_000,   # self-metering: skip optional work past this (points on the judge)
 }
 
@@ -509,15 +502,9 @@ class Brain:
             # so the parent stays put and survives the turn (the child takes the rear segments, facing away), which
             # beats any of those -- and it is how a long dragon spawned in a pocket gets out (see "king_first").
             child = p["split_child"]
-            # near the unit limit, short dragons leave the last boxed_reserve slots to long ones: every boxed-in long
-            # dragon that died in local mh2 games did so with the team at the 64-dragon cap, where no split is legal
-            cap = self.limit - (p["boxed_reserve"] if length < p["boxed_long"] else 0)
-            if p["boxed_split"] and child >= 2 and length - child >= 2 and t.units < cap:
+            if p["boxed_split"] and child >= 2 and length - child >= 2 and t.units < self.limit:
                 return b"SPLIT %d\n" % child
-            if p["spare_team"]:
-                best = min(range(4), key=lambda d: (SPARE_RANK[status[d]], d != t.dir))
-            else:
-                best = min(range(4), key=lambda d: (status[d], d != t.dir))
+            best = min(range(4), key=lambda d: (status[d], d != t.dir))
             return MOVES[best]
 
         # prediction: a visible enemy head's own reported facing is a free, zero-cost, always-current guess at
