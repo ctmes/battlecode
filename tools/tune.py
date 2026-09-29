@@ -77,6 +77,16 @@ SPACE = {
     "dive_len": (3, 40, "int"), "dive_trap": (0, 1, "lin"), "dive_radius": (2, 14, "int"),
     "boxed_rear_len": (4, 10, "int"), "boxed_reserve": (0, 8, "int"),
     "portal_unknown": (0, 400, "lin"), "portal_blind": (0, 300, "lin"),
+    # mh5's feeding the king (29 Sep; screened, not tuned): feed_r is the round it starts
+    "feed_r": (150, 450, "int"), "feed_len": (3, 12, "int"), "feed_min": (4, 16, "int"), "feed_dist": (1, 5, "int"),
+    "feed_ratio": (1.0, 3.0, "lin"),
+    # Sprints (29 Sep): sprint_max above switches them all (rams included) on; sprint_ram at 100 almost never beats
+    # the best move, so it is off in practice there. sprint_threat 0 and radar 0 are off.
+    "sprint_seg": (500, 6000, "log"), "sprint_contest": (0, 3000, "lin"), "sprint_ram": (100, 3000, "log"),
+    "sprint_ram_margin": (-3, 6, "int"), "sprint_ram_r": (0, 450, "int"),
+    "sprint_threat": (0, 1.5, "lin"), "sprint_threat_len": (2, 16, "int"),
+    # Radar (protocol 3): 0 off, 1 one ray ahead, 2 ahead and both sides; what the decoded lines are used for
+    "radar": (0, 2, "int"), "radar_dive": (0, 1, "int"), "radar_head": (0, 600, "lin"),
 }
 # Parameters whose "off" value (0) lies outside their range: encoded as the range's top, decoded back to 0 there.
 OFF_AT_TOP = {"split_len_max"}
@@ -128,6 +138,25 @@ OPPONENTS = {
     "mh5": ("frozen", (str(ROOT / "snapshots" / "mh5_2026-09-29"), {})),
     # mh5 + splitting with enemy heads in view (split_enemy_dist 0); a submittable bot folder, DEFAULTS = mh6
     "mh6": ("frozen", (str(ROOT / "snapshots" / "mh6_2026-09-29"), {})),
+    # mh6 + the food field (food_pull 40: with no pearl in view, head for the known map's fountains); DEFAULTS = mh7
+    "mh7": ("frozen", (str(ROOT / "snapshots" / "mh7_2026-09-29"), {})),
+    # mh5 that sprint-rams any enemy head 2-3 steps away with its dragons up to 3 long, as the ladder's top 3 do
+    # (11-38% of their sprints are rams; 323 of them hit mh4 in 55 ladder games). Frozen code: mh5 + sprints + radar
+    # (snapshots/mh5s_2026-09-29, DEFAULTS = the base, all new mechanisms off)
+    "mh5ram": ("frozen", (str(ROOT / "snapshots" / "mh5s_2026-09-29"),
+                          {"portals": 1, "map_oracle": 1, "oracle_seen": 1, "split_r_end": 300, "boxed_r_end": 300,
+                           "boxed_rear_r": 0, "ram_len": 3, "ram": 1000.0, "dive_len": 99, "dive_trap": 0.0,
+                           "dive_scope": 2, "dive_radius": 6, "feed_r": 250, "feed_len": 8, "feed_dist": 3,
+                           "feed_min": 8, "feed_ratio": 1.5,
+                           "sprint_max": 3, "sprint_ram": 1000.0, "sprint_ram_margin": -9})),
+    # the same sprint-rammer on mh7 (food field, splits with enemies in view). Frozen code: main's bot/ after the
+    # sprint-sonar merge (snapshots/mh7s_2026-09-29, DEFAULTS = the base, all new mechanisms off)
+    "mh7ram": ("frozen", (str(ROOT / "snapshots" / "mh7s_2026-09-29"),
+                          {"portals": 1, "map_oracle": 1, "oracle_seen": 1, "split_r_end": 300, "boxed_r_end": 300,
+                           "boxed_rear_r": 0, "ram_len": 3, "ram": 1000.0, "dive_len": 99, "dive_trap": 0.0,
+                           "dive_scope": 2, "dive_radius": 6, "feed_r": 250, "feed_len": 8, "feed_dist": 3,
+                           "feed_min": 8, "feed_ratio": 1.5, "split_enemy_dist": 0, "food_pull": 40.0,
+                           "sprint_max": 3, "sprint_ram": 1000.0, "sprint_ram_margin": -9})),
     "v3": ("frozen", (str(ROOT / "snapshots" / "brain_2026-09-27"),
                       {"grow_care_len": 1, "grow_care_mult": 1.9346, "grow_care_margin": 1})),
     "tuned_0927": ("frozen", (str(ROOT / "snapshots" / "brain_2026-09-27"),
@@ -308,7 +337,7 @@ def fitness(per_opp, vs):
 
 RUN_DEFAULTS = {"generations": 20, "pop": 16, "maps": 10, "max_side": 32, "seed": 1000, "sigma": 0.15,
                 "vs": "defaults:2,old:2", "params": "", "start": "", "no_bundled": False, "ladder": 0,
-                "seeds": 0, "base": ""}
+                "seeds": 0, "base": "", "checkpoint": 0}
 
 
 def run(args):
@@ -362,8 +391,14 @@ def run(args):
             print(f"gen {g:3d}  best {h['best']:.3f}  avg {h['avg']:.3f}  mean {h['mean']:.3f} "
                   f"{h['mean_vs']}  deaths/k {h['mean_deaths_per_k']}  sigma {es.sigma:.3f}  "
                   f"{time.perf_counter() - t0:.0f}s ({games / (time.perf_counter() - t0):.1f} games/s)", flush=True)
-            path.write_text(json.dumps({"names": names, "params": changed(decode(es.m, names)), "state": es.state(),
-                                        "history": history, "args": vars(args), "base": base}, indent=1))
+            saved = json.dumps({"names": names, "params": changed(decode(es.m, names)), "state": es.state(),
+                                "history": history, "args": vars(args), "base": base,
+                                "full": {**base, **decode(es.m, names)}}, indent=1)
+            path.write_text(saved)
+            if args.checkpoint and es.gen % args.checkpoint == 0:
+                # a copy that later generations do not overwrite: "full" is the whole candidate (base included),
+                # ready for bench1x; the state resumes from here if renamed to <name>.json
+                (TUNED / f"{args.name}_gen{es.gen}.json").write_text(saved)
     print(f"\nwrote {path}\nparameters that differ from DEFAULTS: {changed(decode(es.m, names))}")
 
 
@@ -433,6 +468,8 @@ def main():
                    help="engine seeds per ladder-pool map per generation, maps as played (needs unswbc >= 1.0: .venv-1x)")
     r.add_argument("--base", default=None, help="tuned-format .json of fixed params under every candidate (and the "
                                                 "start point unless --start)")
+    r.add_argument("--checkpoint", type=int, default=None,
+                   help="every N generations also keep <name>_gen<N>.json, which later generations do not overwrite")
     r.add_argument("--resume", action="store_true")
     r.add_argument("--workers", type=int, default=None, help="always auto-detected when omitted, even on --resume")
     a = sub.add_parser("average", help="average the last few generation means of a run into NAME_avgK.json")

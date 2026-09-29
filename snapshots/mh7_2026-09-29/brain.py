@@ -81,24 +81,12 @@ DEFAULTS = {
     "rally_r": 0,
     "rally_pull": 0.0,
     "rally_age": 30,
-    # Sprinting: MOVE with 2+ direction letters (e.g. MOVE NNE) takes that many steps in one turn; every step after
-    # the first costs a tail segment unless it eats a pearl, and a dragon of length 2 cannot pay for one (it dies
-    # with no valid action). sprint_paths() applies each candidate path step by step exactly as the engine does
-    # (rules "Execution order"), so a sprint is as safe as a plain move, turns included. 1 = off (never sprint).
-    # Ladder top 3 (tools/scout.py replays, 29 Sep): sprints are 0.3-1.3% of their turns and almost never kill the
-    # sprinter by accident; 11-38% are rams (a 3-long dragon sprinting 2-3 tiles onto an enemy head), most of the
-    # rest take pearls on the way. Their rams cost mh4 323 dragons in 55 ladder games (median length 6 vs their 3).
+    # Sprinting: MOVE with a direction letter repeated `steps` times covers `steps` tiles in one turn instead of
+    # 1, costing `steps - 1` body segments (the engine's own rule -- see the "Sprinting" rules section). 1 = off
+    # (never sprint). Unlike the RL policy, which only legality-checks a sprint's first step, want_sprint below
+    # walks the whole path with the same kh/kv/ph/pv edges a plain move already uses, so a sprint here is exactly
+    # as safe as a plain move, never a blind gamble on steps 2-3. Untuned.
     "sprint_max": 1,
-    "sprint_seg": 2348.8051,   # score per segment a sprint spends (a pearl eaten on the way pays one back)
-    "sprint_contest": 0.0,     # bonus per pearl a sprint eats that an enemy head is within 2 steps of
-    "sprint_ram": 0.0,         # score of a 2-3 step sprint onto an enemy head (same length gate as "ram") ...
-    "sprint_ram_margin": 0,    # ... that shows at least this many segments more than we have
-    "sprint_ram_r": 0,         # ... from this round on
-    # Defence: an enemy head at least 3 long can sprint-ram any tile within min(3, its length - 1) steps of it, so a
-    # move ending there is penalized like an adjacent enemy head (head_risk), times this (0 = off). Only enemies a
-    # trade would hurt us against count, as for head_risk.
-    "sprint_threat": 0.0,
-    "sprint_threat_len": 0,    # ... for our dragons at least this long
     "trap": 8763.9753,         # penalty scale when the reachable area is smaller than needed
     "need_margin": 3,          # needed area = length + margin
     "need_cap": 120,           # ... capped, so the flood fill can exit early
@@ -238,18 +226,14 @@ DEFAULTS = {
     "dive_fountain": 0,        # scope 1 only: 1 = only onto a pearl on a tile showing countdown 1 (a fountain)
     "dive_units": 0,           # ... and only while the team has at least this many dragons
     "dive_radius": 6,          # scope 2: Manhattan distance to a known fountain
-    # Radar (unswbc 1.x protocol 3, 29 Sep). The bot prints PROTOCOL 3 once (split children inherit it) and pings
-    # after every action, from the head, along: 1 = the new facing only; 2 = the new facing and both sides (never
-    # back: that ray stops on our own neck). Next turn's ECHOES line counts what the rays stopped on first -- kelp,
-    # a teammate's body or head, an enemy's body or head -- pooled over the rays, with no direction and no
-    # distance. radar_lines() decodes it: a ray whose first hit is already in view (kelp, or a dragon part) is
-    # subtracted, and what is left belongs to the rays that left the view, so with one of those the kind is exact,
-    # and with several the counts still say "all clear to kelp" or "all blocked". Pings cost nothing else; a bot
-    # that ignores sonar plays the same games. 0 = off (protocol 2, as up to mh4). All of the top 3 ping every
-    # turn by 29 Sep: cheji and forgot along all 4 directions, Cutlery along its open ones (ahead and both sides).
+    # Radar (unswbc 1.x protocol 3, 29 Sep). 1 = print PROTOCOL 3 and send one directional ping along the move just
+    # made; next turn's ECHOES line then says what the ray stopped on first -- kelp, a teammate's body or head, an
+    # enemy's body or head -- straight ahead of the head, beyond the 3 tiles in view (a ray always hits something on
+    # the ladder maps). Pings do nothing else: a bot that ignores sonar messages plays the same games. 0 = off
+    # (protocol 2, as up to mh4). The top ladder team pings every turn; the second never does.
     "radar": 0,
-    "radar_dive": 0,           # 1 = no dive into a line whose ray stopped on a dragon (an occupied corridor)
-    "radar_head": 0.0,         # penalty for moving along a line whose ray stopped on an enemy head
+    "radar_dive": 0,           # 1 = no dive straight ahead when the ray ahead hit a dragon (an occupied corridor)
+    "radar_head": 0.0,         # penalty for moving straight on when the ray ahead hit an enemy head
     # Top-team style, from 450 replays of the ladder's top 3 (Cutlery, cheji bt, forgot to mention; tools/scout.py,
     # 29 Sep). All three stop ordinary splits around round 300, so attrition shrinks the swarm (cheji: 45 dragons at
     # round 300, 7 at 400) while the survivors eat the corpses: 57-75% of their longest dragon's pearls after round
@@ -317,6 +301,18 @@ DEFAULTS = {
 }
 
 
+# mh4 (29 Sep): mh3 + portals (learned pairs, known-map oracle, oracle_seen) + topstyle (stop splitting at 300,
+# turnaround splits all game, short dragons ram) + dragons of any length diving near fountains they have seen,
+# leaving dead ends by the turnaround split. mh5 (29 Sep): mh4 + feeding the king from round 250 (untuned settings).
+# mh6 (29 Sep): mh5 + splitting with enemy heads in view (split_enemy_dist 0). mh7 (29 Sep): mh6 + the food field
+# (food_pull 40): with no pearl in view, dragons head for the known map's fountains. See snapshots/README.md.
+DEFAULTS.update({"portals": 1, "map_oracle": 1, "oracle_seen": 1,
+                 "split_r_end": 300, "boxed_r_end": 300, "boxed_rear_r": 0, "ram_len": 3, "ram": 1000.0,
+                 "dive_len": 99, "dive_trap": 0.0, "dive_scope": 2, "dive_radius": 6,
+                 "feed_r": 250, "feed_len": 8, "feed_dist": 3, "feed_min": 8, "feed_ratio": 1.5,
+                 "split_enemy_dist": 0, "food_pull": 40.0})
+
+
 _KNOWN = {}
 
 
@@ -361,10 +357,6 @@ class Brain:
         self.body = []  # own head-to-tail cells, reconstructed from the head trail
         self.own = 0  # bitboard of self.body
         self.tail = None
-        self.path = None  # cells crossed by the sprint sent last turn, in order (update_body inserts them all)
-        self.pinged = ()  # directions of the radar rays sent last turn (DEFAULTS "radar")
-        self.proto3 = False  # PROTOCOL 3 already sent
-        self.lines = {}  # this turn's decoded radar: direction -> what its ray stopped on (see radar_lines)
         tpu = self.p["tiles_per_unit"]
         self.target = unit_limit if tpu <= 0 else max(2, min(unit_limit, n // tpu))  # preferred team size
         self.cd1 = 0  # tiles that showed pearl countdown 1 last turn (for dive_scope 2's fountain detection)
@@ -411,17 +403,9 @@ class Brain:
         if self.debug:
             self.dbg["act"] = action
         if self.p["radar"]:
-            # rays leave the head after the action, so "ahead" is the new facing (a sprint's last step); a split or
-            # anything else keeps the old one
-            first = action[:action.index(b"\n")]
-            f = LETTERS.find(first[-1:]) if first.startswith(b"MOVE ") else (t.dir if t is not None and t.dir >= 0
-                                                                               else 0)
-            self.pinged = (f,) if self.p["radar"] == 1 else (f, (f + 1) % 4, (f + 3) % 4)
-            if not self.proto3:
-                self.proto3 = True
-                action += b"PROTOCOL 3\n"
-            msg = self.king_msg or 0  # rally: each ray also carries the king's head
-            action += b"".join(b"SONAR %c %d\n" % (LETTERS[d], msg) for d in self.pinged)
+            # ping along the move (the new facing); a split or anything else keeps the old facing
+            letter = action[5:6] if action.startswith(b"MOVE ") else (LETTERS[t.dir:t.dir + 1] if t and t.dir >= 0 else b"N")
+            action += b"PROTOCOL 3\nSONAR " + letter + b" %d\n" % (self.king_msg or 0)
         elif self.king_msg is not None:
             action += b"SONAR %d\n" % self.king_msg  # the last SONAR line wins
         return action
@@ -541,18 +525,7 @@ class Brain:
                 own |= 1 << c
             self.own = own
         else:
-            sprint = self.path and self.path[-1] == hidx and hidx != body[0]
-            if sprint:
-                # every tile the sprint crossed joins the body, and a later step may re-enter a tile the tail left on
-                # an earlier one, so the trimmed tail can share a tile with the new front: rebuild the bits
-                for c in self.path:
-                    body.insert(0, c)
-                del body[length:]
-                own = 0
-                for c in body:
-                    own |= 1 << c
-                self.own = own
-            elif hidx != body[0]:
+            if hidx != body[0]:
                 body.insert(0, hidx)
                 self.own |= 1 << hidx
             while len(body) > length:
@@ -668,149 +641,28 @@ class Brain:
             return pearls >= p["split_food_ratio"] * (mates + 1)
         return pearls >= p["split_pearls"]
 
-    def sprint_paths(self, hx, hy, length, others, mine, heads, pm, vis, smax):
-        """Every multi-step move of 2..smax steps that the engine would carry out without killing us, applied the
-        way it applies one (rules, "Execution order"): a step after the first must be paid for (a dragon of length
-        2 cannot); the destination is checked against our own body as the last step left it, tail included, then
-        against other dragons; the head moves, a pearl there is eaten, the tail advances unless it was, and a step
-        after the first removes one more tail segment. A portal is crossed only when its pair is known and the
-        landing tile is in view. A path whose last step lands on an enemy head is kept as a ram (both die).
-        -> [(dirs, cells, length after, eaten pearls bitboard, rammed head cell or -1, own body bits after, tail
-        after or -1)]. With the body only partly known (a long dragon's first turns) no tile is ever freed."""
-        w_, h_ = self.W, self.H
-        kh, kv, ph, pv, link = self.kh, self.kv, self.ph, self.pv, self.link_dst
-        exact = len(self.body) >= length
-        out = []
-
-        def go(x, y, cell, L, body, bits, dirs, cells, eaten):
-            k = len(dirs)
-            if k and L <= 2:
-                return  # cannot pay for another step
-            for d in range(4):
-                if d == 0:
-                    nx, ny = x, (y - 1) % h_
-                    ek, ep = (kh >> cell) & 1, (ph >> cell) & 1
-                elif d == 1:
-                    nx, ny = (x + 1) % w_, y
-                    c2 = ny * w_ + nx
-                    ek, ep = (kv >> c2) & 1, (pv >> c2) & 1
-                elif d == 2:
-                    nx, ny = x, (y + 1) % h_
-                    c2 = ny * w_ + nx
-                    ek, ep = (kh >> c2) & 1, (ph >> c2) & 1
-                else:
-                    nx, ny = (x - 1) % w_, y
-                    ek, ep = (kv >> cell) & 1, (pv >> cell) & 1
-                if ek:
-                    continue
-                dst = ny * w_ + nx
-                if ep:
-                    dst = link.get(cell * 4 + d)
-                    if dst is None or not (vis >> dst) & 1:
-                        continue
-                    nx, ny = dst % w_, dst // w_
-                b = 1 << dst
-                if bits & b:
-                    continue
-                if others & b:
-                    hd = heads.get(dst)
-                    if k and hd is not None and hd[0]:
-                        out.append((dirs + [d], cells + [dst], L, eaten, dst, bits, -1))
-                    continue
-                nb = [dst] + body if exact else body
-                nbits, nL, ne = bits | b, L, eaten
-                if (pm >> dst) & 1 and not (eaten >> dst) & 1:
-                    nL += 1
-                    ne |= b
-                elif exact:
-                    nbits &= ~(1 << nb.pop())
-                if k:
-                    nL -= 1
-                    if exact:
-                        nbits &= ~(1 << nb.pop())
-                nd, nc = dirs + [d], cells + [dst]
-                if k:
-                    out.append((nd, nc, nL, ne, -1, nbits, nb[-1] if exact else -1))
-                if k + 1 < smax:
-                    go(nx, ny, dst, nL, nb, nbits, nd, nc, ne)
-
-        body = self.body[:length] if exact else []
-        bits = 0
-        for c in body:
-            bits |= 1 << c
-        go(hx, hy, hy * w_ + hx, length, body, bits | mine | (0 if exact else self.own), [], [], 0)
-        return out
-
-    def radar_lines(self, echo, hx, hy, vis, occ, parts):
-        """Last turn's rays (self.pinged, cast from this very head after our action) decoded against this turn's
-        ECHOES counts -> {direction: kind}, kind 0 = kelp (the line is clear up to it, or the ray was lost), 1 ally,
-        2 ally head, 3 enemy, 4 enemy head, 5 some dragon (which kind is ambiguous), for every pinged line whose first
-        hit is known. A ray whose first hit lies in view is predicted from the view (this turn's, one round younger
-        than the ray: if the two disagree only the view is trusted); the rays that leave the view share what the
-        counts leave over."""
-        w_, h_ = self.W, self.H
-        kh, kv, ph, pv, link = self.kh, self.kv, self.ph, self.pv, self.link_dst
-        known, hidden, kinds = {}, [], None
-        for d in self.pinged:
-            x, y = hx, hy
-            cell = y * w_ + x
-            kind = -1
-            for _ in range(8):  # a straight line leaves the 7x7 view after 3 tiles; portals can bring it back
-                if d == 0:
-                    nx, ny = x, (y - 1) % h_
-                    ek, ep = (kh >> cell) & 1, (ph >> cell) & 1
-                elif d == 1:
-                    nx, ny = (x + 1) % w_, y
-                    ek, ep = (kv >> (ny * w_ + nx)) & 1, (pv >> (ny * w_ + nx)) & 1
-                elif d == 2:
-                    nx, ny = x, (y + 1) % h_
-                    ek, ep = (kh >> (ny * w_ + nx)) & 1, (ph >> (ny * w_ + nx)) & 1
-                else:
-                    nx, ny = (x - 1) % w_, y
-                    ek, ep = (kv >> cell) & 1, (pv >> cell) & 1
-                if ek:
-                    kind = 0
-                    break
-                nxt = ny * w_ + nx
-                if ep:
-                    nxt = link.get(cell * 4 + d, -1)
-                    if nxt < 0:
-                        break  # through a portal we have not mapped: out of sight
-                    nx, ny = nxt % w_, nxt // w_
-                if not (vis >> nxt) & 1:
-                    break
-                if (occ >> nxt) & 1:
-                    if kinds is None:
-                        kinds = {}
-                        for q in parts:
-                            enemy = q[0] != self.team
-                            kinds[int(q[3]) * w_ + int(q[2])] = (4 if enemy else 2) if q[5] == b"1" else \
-                                (3 if enemy else 1)
-                    kind = kinds.get(nxt, 1)
-                    break
-                x, y, cell = nx, ny, nxt
-            if kind >= 0:
-                known[d] = kind
+    def sprint_end(self, hx, hy, d, steps, occ, w_, h_):
+        """Final cell of a `steps`-tile straight sprint in direction d, if every edge and cell along the way is
+        clear (no kelp, no portal -- unlike a single plain move a sprint's far end is never checked by the engine
+        beyond legality, so treating a portal as a wall here, same as elsewhere, is the only safe choice -- and
+        no dragon part). None if any step is blocked."""
+        kh, kv, ph, pv = self.kh, self.kv, self.ph, self.pv
+        x, y = hx, hy
+        for _ in range(steps):
+            nx, ny = (x + DX[d]) % w_, (y + DY[d]) % h_
+            idx = ny * w_ + nx
+            if d == 0:
+                blocked = (kh >> (y * w_ + x)) & 1 or (ph >> (y * w_ + x)) & 1
+            elif d == 1:
+                blocked = (kv >> idx) & 1 or (pv >> idx) & 1
+            elif d == 2:
+                blocked = (kh >> idx) & 1 or (ph >> idx) & 1
             else:
-                hidden.append(d)
-        self.rhid = hidden  # (diagnostics) the lines that left the view
-        res = list(echo[:5])
-        for kind in known.values():
-            res[kind] -= 1
-        if min(res) < 0 or not hidden:
-            return known
-        n = sum(res)
-        if len(hidden) == 1:
-            if n <= 1:
-                known[hidden[0]] = res.index(1) if n else 0
-        elif res[0] == len(hidden) and n == res[0]:
-            for d in hidden:
-                known[d] = 0
-        elif res[0] == 0 and n == len(hidden):
-            kind = next((k for k in range(1, 5) if res[k] == n), 5)
-            for d in hidden:
-                known[d] = kind
-        return known
+                blocked = (kv >> (y * w_ + x)) & 1 or (pv >> (y * w_ + x)) & 1
+            if blocked or (occ >> idx) & 1:
+                return None
+            x, y = nx, ny
+        return y * w_ + x
 
     def exits(self, tidx, tx, ty, back, free):
         """Free, passable neighbours of cell (tx, ty), not counting the way back."""
@@ -894,7 +746,6 @@ class Brain:
 
         # visible dragons
         occ = 0
-        mine = 0  # our own visible segments
         heads = {}  # cell -> (is_enemy, dragon id) for heads other than ours
         segs = {}  # dragon id -> visible segment count
         own_back = {}  # head-ward neighbour cell -> own segment cell (only needed to seed the body)
@@ -908,8 +759,6 @@ class Brain:
             cell = y * w_ + x
             occ |= 1 << cell
             segs[pid] = segs.get(pid, 0) + 1
-            if pid == me:
-                mine |= 1 << cell
             if q[5] == b"1":
                 if pid != me:
                     enemy = q[0] != team
@@ -920,7 +769,6 @@ class Brain:
                 f = LETTERS.find(q[4])
                 own_back[((y + DY[f]) % h_) * w_ + (x + DX[f]) % w_] = cell
         self.update_body(hidx, length, own_back)
-        self.path = None
 
         # pearls in view; with portals on, also remembered (with their countdowns) for when they are out of view
         pm = 0
@@ -1115,10 +963,7 @@ class Brain:
         if self.want_split(t, heads, len(ok), hx, hy, w_, h_):
             action = b"SPLIT %d\n" % p["split_child"]
             return action + b"SONAR %d\n" % sonar_msg if sonar_msg is not None else action
-        # with one legal move a sprint can still ram, or get clear of an enemy's sprint reach
-        sprinting = p["sprint_max"] > 1 and (p["sprint_ram"] > 0 or p["sprint_threat"] > 0) and \
-            any(e for e, _ in heads.values())
-        if (len(ok) + len(unknown) == 1 and not rams and not sprinting) or self.over():
+        if (len(ok) + len(unknown) == 1 and not rams) or self.over():
             if self.debug:
                 self.dbg["risky"] = blind[ok[0]]
             action = MOVES[ok[0]]
@@ -1140,8 +985,9 @@ class Brain:
         tail = self.tail
         free_trap = free & self.seen if p["pessimistic"] else free
         dive = length <= p["dive_len"] and t.units >= p["dive_units"]
-        lines = self.lines = self.radar_lines(t.echo, hx, hy, vis, occ, t.parts) \
-            if p["radar"] and t.echo is not None and self.pinged else {}
+        echo = t.echo if p["radar"] else None  # last turn's ray, cast from this head along t.dir
+        ahead_dragon = echo is not None and (echo[1] or echo[2] or echo[3] or echo[4])
+        ahead_enemy_head = echo is not None and echo[4] > 0
         if dive and length >= 4:
             # a dragon this long can leave a dead end by the boxed split (with boxed_rear_r 0 a rear split: a U-turn
             # that costs a 2-long stub), so it dives only while that split is still legal
@@ -1171,20 +1017,6 @@ class Brain:
                     ex, ey = hc % w_, hc // w_
                     if min((ex - hx) % w_, (hx - ex) % w_) + min((ey - hy) % h_, (hy - ey) % h_) <= p["deny_radius"]:
                         sq.append((ex, ey, self.safe_moves(ex, ey, occ, -1)))
-
-        # tiles an enemy head can sprint-ram this turn beyond its four neighbours (those are head_risk's): through free
-        # tiles for up to min(3, length - 1) steps, the last one onto the target -- only enemies a trade hurts us against
-        threat = 0
-        if p["sprint_threat"] > 0 and length >= p["sprint_threat_len"] and not self.over():
-            freeo = self.full ^ occ
-            step = self._step
-            for hc, (enemy, pid) in heads.items():
-                e_len = segs.get(pid, 1)
-                if not enemy or e_len < 3 or length < e_len * p["trade_ratio"]:
-                    continue
-                near = step(1 << hc, self.full)
-                reach = self.layers(1 << hc, freeo, min(3, e_len - 1) - 1)[-1]
-                threat |= step(reach, self.full) & ~(near | (1 << hc))
 
         foe_heads = 0  # bitboard of enemy heads close enough to contest territory
         if p["voro"] > 0:
@@ -1238,7 +1070,7 @@ class Brain:
                 area = self.flood(fr, tidx, need)
                 if area < need:
                     tm = care
-                    guarded = p["radar_dive"] and lines.get(d, 0) >= 1  # a dragon down that line: occupied corridor
+                    guarded = p["radar_dive"] and ahead_dragon and d == t.dir  # the corridor ahead is occupied
                     if dive and not guarded and (p["dive_scope"] != 1 or (on_pearl and (not p["dive_fountain"]
                                                                                         or t.cds[NB_WIN[d]] == b"1"))):
                         tm *= p["dive_trap"]
@@ -1267,8 +1099,6 @@ class Brain:
                         s -= p["head_risk_small"] if small else p["head_risk"] * care
                     else:
                         s -= p["team_head_risk"] * care
-            if (threat >> tidx) & 1:
-                s -= p["sprint_threat"] * p["head_risk"] * care
             for px, py in predicted:  # a guess, not a fact: landing on or next to it is merely made less attractive
                 if (py == ty and (px - tx) % w_ in (1, w_ - 1)) or (px == tx and (py - ty) % h_ in (1, h_ - 1)):
                     s -= p["predict"]
@@ -1277,8 +1107,8 @@ class Brain:
                     s -= p["sonar_predict"]
             if d == t.dir:
                 s += p["straight"]
-            if lines.get(d) == 4:
-                s -= p["radar_head"]
+                if ahead_enemy_head:
+                    s -= p["radar_head"]
             if s > best_s:
                 best_d, best_s = d, s
         for d in unknown:  # nothing is known beyond it until we step through: a flat bet on what lies there
@@ -1291,85 +1121,55 @@ class Brain:
             self.dbg["risky"] = self.exploring or blind[best_d]
         action = MOVES[best_d]
 
-        # sprints (DEFAULTS "sprint_max"): every legal path of 2..sprint_max steps, scored at its end tile on the same
-        # core terms as a plain move (pearl field, trap room at the length left, dead end, adjacent heads, sprint
-        # threat) plus the pearls eaten on the way, minus the segments spent. The flood fill runs only for a path
-        # whose best case still beats the best move so far.
-        path, sram = None, None  # sram: ((enemy segments, -steps), dirs) of the best sprint ram
+        # sprint: try covering 2-3 tiles this turn instead of 1, in any of the same legal-first-step directions.
+        # Scored on the same core terms as a plain move (pearl value, trap room at the length left after paying
+        # the sprint cost, dead end, head risk) so it only wins when it is genuinely better, not just faster --
+        # the path is fully walked by sprint_end above, so this is never a blind gamble past the first tile.
         if p["sprint_max"] > 1 and not self.over():
-            others = occ ^ mine
-            for dirs, cells, L2, eaten, ram, bits, tl in self.sprint_paths(hx, hy, length, others, mine, heads, pm,
-                                                                          vis, p["sprint_max"]):
-                k = len(dirs)
-                if ram >= 0:
-                    e_segs = segs.get(heads[ram][1], 1)
-                    if p["sprint_ram"] > 0 and length <= p["ram_len"] and e_segs >= length + p["sprint_ram_margin"] \
-                            and t.rnd >= p["sprint_ram_r"]:
-                        if sram is None or (e_segs, -k) > sram[0]:
-                            sram = ((e_segs, -k), dirs)
-                    continue
-                tidx = cells[-1]
-                tx, ty = tidx % w_, tidx // w_
-                s = p["pearl_here"] * eaten.bit_count() - p["sprint_seg"] * (k - 1)
-                if p["sprint_contest"] > 0 and eaten:
-                    for c in cells:
-                        if (eaten >> c) & 1:
-                            cx, cy = c % w_, c // w_
-                            if any(e and min((hc % w_ - cx) % w_, (cx - hc % w_) % w_)
-                                   + min((hc // w_ - cy) % h_, (cy - hc // w_) % h_) <= 2
-                                   for hc, (e, _) in heads.items()):
-                                s += p["sprint_contest"]
-                for hc, (enemy, pid) in heads.items():
-                    ex, ey = hc % w_, hc // w_
-                    if (ey == ty and (ex - tx) % w_ in (1, w_ - 1)) or (ex == tx and (ey - ty) % h_ in (1, h_ - 1)):
-                        if enemy:
-                            small = length < segs.get(pid, 1) * p["trade_ratio"]
-                            s -= p["head_risk_small"] if small else p["head_risk"] * care
-                        else:
-                            s -= p["team_head_risk"] * care
-                if (threat >> tidx) & 1:
-                    s -= p["sprint_threat"] * p["head_risk"] * care
-                if all(d == t.dir for d in dirs):
-                    s += p["straight"]
-                if s + p["pearl_near"] * kk + p["area"] <= best_s:
-                    continue  # cannot win even with the best pearl field and no trap
-                if self.over():
-                    break
-                free2 = self.full ^ (others | bits)
-                rest = pm & ~eaten
-                if rest:
-                    lay2 = lay if not eaten and lay is not None else self.layers(rest, free2, kk)
-                    for i in range(1, len(lay2)):
-                        if (lay2[i] >> tidx) & 1:
-                            s += p["pearl_near"] * (kk + 1 - i)
-                            break
-                need2 = min(max(L2 + margin, p["need_floor"]), p["need_cap"])
-                fr = (free2 & self.seen if p["pessimistic"] else free2) | (1 << tidx)
-                if tl >= 0:
-                    fr |= 1 << tl  # vacated by the next move
-                area = self.flood(fr, tidx, need2)
-                if area < need2:
-                    s -= p["trap"] * care * (need2 - area) / need2
-                else:
-                    s += p["area"]
-                if p["dead_end"] and self.exits(tidx, tx, ty, (dirs[-1] + 2) % 4, free2) < 2:
-                    s -= p["dead_end"] * care
-                if s > best_s:
-                    best_s, path = s, (dirs, cells)
-        if path is not None:
-            action = b"MOVE " + bytes(LETTERS[d] for d in path[0]) + b"\n"
-            self.path = path[1]
-            self.exploring = False
+            for d in ok:
+                for steps in range(2, p["sprint_max"] + 1):
+                    eff_len = length - (steps - 1)
+                    if eff_len < 2:
+                        break
+                    tidx = self.sprint_end(hx, hy, d, steps, occ, w_, h_)
+                    if tidx is None:
+                        break  # further steps in this direction are blocked too
+                    tx = (hx + DX[d] * steps) % w_
+                    ty = (hy + DY[d] * steps) % h_
+                    s = 0.0
+                    on_pearl = (pm >> tidx) & 1
+                    if on_pearl:
+                        s += p["pearl_here"]
+                    elif lay is not None:
+                        for i in range(1, len(lay)):
+                            if (lay[i] >> tidx) & 1:
+                                s += p["pearl_near"] * (kk + 1 - i)
+                                break
+                    need_s = min(max(eff_len + margin, p["need_floor"]), p["need_cap"])
+                    area = self.flood(free_trap | (1 << tidx), tidx, need_s)
+                    if area < need_s:
+                        s -= p["trap"] * care * (need_s - area) / need_s
+                    else:
+                        s += p["area"]
+                    if p["dead_end"] and self.exits(tidx, tx, ty, (d + 2) % 4, free) < 2:
+                        s -= p["dead_end"] * care
+                    for hc, (enemy, pid) in heads.items():
+                        ex, ey = hc % w_, hc // w_
+                        if (ey == ty and (ex - tx) % w_ in (1, w_ - 1)) or \
+                                (ex == tx and (ey - ty) % h_ in (1, h_ - 1)):
+                            if enemy:
+                                small = length < segs.get(pid, 1) * p["trade_ratio"]
+                                s -= p["head_risk_small"] if small else p["head_risk"] * care
+                            else:
+                                s -= p["team_head_risk"] * care
+                    if d == t.dir:
+                        s += p["straight"]
+                    if s > best_s:
+                        best_s = s
+                        action = b"MOVE " + LETTERS[d:d + 1] * steps + b"\n"
 
         if rams and p["ram"] > best_s:
             action = MOVES[rams[0]]
-            self.path = None
-        elif sram is not None and p["sprint_ram"] > best_s:
-            action = b"MOVE " + bytes(LETTERS[d] for d in sram[1]) + b"\n"
-            self.path = None
-        if self.debug:
-            self.dbg["sprint"] = path
-            self.dbg["sram"] = sram
         return action + b"SONAR %d\n" % sonar_msg if sonar_msg is not None else action
 
     # ------------------------------------------------------------------ fallback

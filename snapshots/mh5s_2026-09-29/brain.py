@@ -62,25 +62,6 @@ DEFAULTS = {
                                 # scored with no pearl signal at all nearby (0 = off): otherwise "straight" is the
                                 # only directional preference, which can loop a dragon back through searched-empty
                                 # ground instead of pushing into new territory. Untuned.
-    # Food field (29 Sep). mh6's ladder openings: in the 23 of 95 games we were eliminated, the enemy's nearest head
-    # was closer than ours to 127 of the spawn pearls appearing before round 150 (ours: 55), and whoever is closer
-    # eats it 75-93% of the time. With no pearl in view a dragon had nothing pulling it anywhere but "straight", so it
-    # wandered empty ground (Devil's open ends) while theirs farmed the fountains. On a known map (map_oracle) this
-    # adds food_pull per step up known_maps.FIELDS -- the spawn rate around each tile, decayed 0.75 per move of maze
-    # distance, log-scaled so a step towards a lone fountain is one unit -- whenever no pearl is in view. 0 = off.
-    # Tried alongside it and dropped: "spread" (with no pearl in view, a bonus per step away from each teammate head
-    # in view, for maps where food lands anywhere) scored 40-52% vs mh6 at 15-120, Default included.
-    "food_pull": 0.0,
-    # Rallying on the king (29 Sep). mh6 lost 13 of 95 ladder games at round 500 on a shorter longest dragon while
-    # holding more total length (113 vs 69); the top teams' kings get 57-75% of their food from teammates dying next
-    # to them, but feeding (feed_r) only fires when a teammate happens to be within feed_dist. Sonar is the only way
-    # to say where the king is: from rally_r - rally_age on, a dragon at least feed_min long that has heard of no longer
-    # one pings its own head (proto.SONAR_KING) along its move, and every dragon relays the longest king it heard of
-    # in the last rally_age rounds. From rally_r on, a dragon at most feed_len long with no pearl in view adds
-    # rally_pull per step towards that head. 0 = off (no pings, the old protocol-2 bot).
-    "rally_r": 0,
-    "rally_pull": 0.0,
-    "rally_age": 30,
     # Sprinting: MOVE with 2+ direction letters (e.g. MOVE NNE) takes that many steps in one turn; every step after
     # the first costs a tail segment unless it eats a pearl, and a dragon of length 2 cannot pay for one (it dies
     # with no valid action). sprint_paths() applies each candidate path step by step exactly as the engine does
@@ -124,13 +105,6 @@ DEFAULTS = {
     "split_pearls": 1,         # ... and at least this many pearls are in view (food for the extra mouth)
     "split_r_end": 433,        # ... and it is before this round (late children do not pay back)
     "split_min_exits": 1,      # ... and the parent has at least this many safe moves (not cornered)
-    # ... and no enemy head is within this Manhattan distance (99 = none anywhere in view, as before). Ladder, 29 Sep:
-    # in the 25 games the ~1600 teams eliminated mh4/mh5, an enemy head was in view on 41% of our turns before round
-    # 150 and this rule blocked 65% of our split-ready turns; we split 2-5 times per 25 rounds to their 8-18 and were
-    # outnumbered 9 to 34 by round 150. The top 3 make 24-39% of their splits with an enemy head in view (we: 6%).
-    # 0 (never blocks), held out (seeds 9,300,000+, 200 games each): 54.5% vs mh5, topstyle 86.0 (mh5 85.5), portal_farmer
-    # 89.5 (91.0) -- level locally, where no opponent crowds us early the way those ladder teams do.
-    "split_enemy_dist": 99,
     # Local crowding/food, as an alternative to a flat team-size cap and pearl count that cannot tell a dragon
     # splitting into open space from one splitting into a knot of its own teammates (a big source of other-body
     # deaths in a large swarm). Both 0 = off (old behaviour): nearby teammates use `heads`, already built every
@@ -317,26 +291,17 @@ DEFAULTS = {
 }
 
 
-_KNOWN = {}
-
-
 def known_maps():
     """MAPS from the known_maps.py beside this file (not via sys.path, so a snapshot loaded from another folder
     reads its own copy); {} if there is none."""
-    if not _KNOWN:
-        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "known_maps.py")
-        try:
-            with open(path) as f:
-                exec(f.read(), _KNOWN)
-        except OSError:
-            _KNOWN["MAPS"] = {}
-    return _KNOWN.get("MAPS", {})
-
-
-def known_field(name):
-    """The known map's food field (known_maps.FIELDS, one byte per cell), or None if this copy has none."""
-    known_maps()
-    return _KNOWN.get("FIELDS", {}).get(name)
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "known_maps.py")
+    try:
+        with open(path) as f:
+            ns = {}
+            exec(f.read(), ns)
+        return ns["MAPS"]
+    except OSError:
+        return {}
 
 
 class Brain:
@@ -383,9 +348,6 @@ class Brain:
         self.exploring = False  # the last move stepped into an unknown portal
         self.oracle = None  # map_oracle: None while undecided, False for an unknown map, else the known map's name
         self.cands = None  # known maps still consistent with what this dragon has seen
-        self.field = None  # food_pull: the known map's food field (bytes, one per cell)
-        self.kinfo = None  # rally: (x, y, length, round) of the longest teammate heard of (maybe this dragon)
-        self.king_msg = None  # rally: this turn's SONAR_KING payload
         self.hseen = self.vseen = 0  # cells whose north / west edge has been in view
         self.errors = 0
         self.t0 = 0
@@ -399,7 +361,6 @@ class Brain:
         """Returns the action bytes (e.g. b'MOVE N\\n'); never raises."""
         self.t0 = _pc()
         t = None
-        self.king_msg = None
         try:
             t = proto.parse_turn(block)
             action = self.decide(t)
@@ -420,10 +381,7 @@ class Brain:
             if not self.proto3:
                 self.proto3 = True
                 action += b"PROTOCOL 3\n"
-            msg = self.king_msg or 0  # rally: each ray also carries the king's head
-            action += b"".join(b"SONAR %c %d\n" % (LETTERS[d], msg) for d in self.pinged)
-        elif self.king_msg is not None:
-            action += b"SONAR %d\n" % self.king_msg  # the last SONAR line wins
+            action += b"".join(b"SONAR %c 0\n" % LETTERS[d] for d in self.pinged)
         return action
 
     def over(self):
@@ -609,8 +567,6 @@ class Brain:
         self.okh = self.full ^ (kh | ph)
         self.okv = self.full ^ (kv | pv)
         self.spawns |= spawns
-        if self.p["food_pull"]:
-            self.field = known_field(name)
         if self.p["oracle_seen"]:
             self.seen = self.full
         self.link_dst, self.lmap, self.lsrc = {}, {}, 0  # pairs learned so far are among these
@@ -640,13 +596,8 @@ class Brain:
         if p["split_len_max"] > 0 and length >= p["split_len_max"]:
             return False  # already a real investment: a length floor alone never stops a big dragon from
             # splitting itself away the instant local conditions (pearls, room, no cap yet) allow it
-        if n_ok < p["split_min_exits"]:
-            return False  # cornered
-        rd = p["split_enemy_dist"]
-        for hc, (enemy, _) in heads.items():  # an enemy head close enough to punish a turn spent standing still
-            if enemy and min((hc % w_ - hx) % w_, (hx - hc % w_) % w_) + \
-                    min((hc // w_ - hy) % h_, (hy - hc // w_) % h_) <= rd:
-                return False
+        if n_ok < p["split_min_exits"] or any(e for e, _ in heads.values()):
+            return False  # cornered, or an enemy head is in view
         # Local crowding/food: a flat pearl count and team-size cap don't know whether this particular spot
         # already has teammates piling into it (the source of most other-body deaths in a big swarm) or has
         # enough food nearby to feed one more mouth. Both are opt-in (0 = old behaviour, unaffected).
@@ -1086,20 +1037,6 @@ class Brain:
 
         if self.founder is None:
             self.founder = t.rnd == 0
-        if p["rally_r"] and t.rnd >= p["rally_r"] - p["rally_age"]:
-            age = p["rally_age"]
-            ki = self.kinfo if self.kinfo is not None and t.rnd - self.kinfo[3] <= age else None
-            for m in t.msgs:  # untrusted: an enemy value that passes the check is at worst one bad hint
-                kind, mx, my, ml, mr = proto.unpack_sonar(m)
-                if kind == proto.SONAR_KING and mx < w_ and my < h_ and t.rnd - age <= mr <= t.rnd \
-                        and (ki is None or (ml, mr) > (ki[2], ki[3])):
-                    ki = (mx, my, ml, mr)
-            # a dragon near the longest heard of claims it too (its own older, longer record may still be about)
-            if length >= p["feed_min"] and (ki is None or 5 * length >= 4 * ki[2]):
-                ki = (hx, hy, length, t.rnd)
-            self.kinfo = ki
-            if ki is not None:
-                self.king_msg = proto.pack_king_sonar(*ki)
         if p["feed_r"] and t.rnd >= p["feed_r"] and length <= p["feed_len"]:
             fed, rd = False, p["feed_dist"]
             for hc, (enemy, pid) in heads.items():
@@ -1194,24 +1131,12 @@ class Brain:
                     if min((ex - hx) % w_, (hx - ex) % w_) + min((ey - hy) % h_, (hy - ey) % h_) <= p["voro_radius"]:
                         foe_heads |= 1 << hc
 
-        fld = self.field if lay is None and not pm else None  # food_pull: only with no pearl in view
-        if fld is not None:
-            fpull, fhere = p["food_pull"] / 8, fld[hidx]
-        kx = ky = None  # rally: the king's head to close in on
-        if p["rally_r"] and t.rnd >= p["rally_r"] and length <= p["feed_len"] and lay is None and not pm \
-                and self.kinfo is not None and self.kinfo[2] > length:
-            kx, ky = self.kinfo[0], self.kinfo[1]
-            kd = min((kx - hx) % w_, (hx - kx) % w_) + min((ky - hy) % h_, (hy - ky) % h_)
         best_d, best_s = ok[0], -1e18
         for d in ok:
             tidx = dest[d]
             tx = tidx % w_
             ty = tidx // w_
             s = 0.0
-            if fld is not None:
-                s += fpull * (fld[tidx] - fhere)
-            if kx is not None:
-                s += p["rally_pull"] * (kd - min((kx - tx) % w_, (tx - kx) % w_) - min((ky - ty) % h_, (ty - ky) % h_))
             on_pearl = (pm >> tidx) & 1
             if blind[d]:  # out of view beyond a known portal: its pearl as remembered, or due by its countdown, or
                 # (a known map's spawn tile never seen yet) presumed there

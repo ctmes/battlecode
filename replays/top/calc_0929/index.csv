@@ -1,0 +1,61 @@
+match,at,map,seat,opponent,opponent_elo,result,ranked
+597779,2026-09-29T13:17:07.785Z,Portals,B,waddledee,1553,win,False
+597784,2026-09-29T13:16:21.636Z,Prisoners Dilemma,B,waddledee,1553,win,False
+597787,2026-09-29T13:16:13.287Z,Trauma,B,waddledee,1553,win,False
+597841,2026-09-29T13:15:58.991Z,Default,B,ouroboros,1525,win,False
+597686,2026-09-29T13:14:45.647Z,Trauma,B,C--,1886,win,False
+597786,2026-09-29T13:14:09.930Z,Devil,B,waddledee,1553,win,False
+597783,2026-09-29T13:14:07.502Z,Trophy,B,waddledee,1553,win,False
+597781,2026-09-29T13:14:03.737Z,Queen Of Spades,B,waddledee,1553,win,False
+597730,2026-09-29T13:13:17.013Z,Autarky,B,Drago et al,1837,win,False
+597391,2026-09-29T13:10:26.382Z,Autarky,B,STAR,1864,win,False
+597393,2026-09-29T13:09:27.609Z,Portals,B,STAR,1864,win,False
+597200,2026-09-29T13:08:38.297Z,Slithery Fight,B,dubu,1646,win,False
+595781,2026-09-29T13:08:23.854Z,Slithery Fight,A,SSS,2011,win,True
+597392,2026-09-29T13:08:03.063Z,Prisoners Dilemma,B,STAR,1864,win,False
+597394,2026-09-29T13:08:00.131Z,Trauma,B,STAR,1864,loss,False
+595764,2026-09-29T13:07:54.430Z,Schooltime,A,Cutlery,2109,loss,False
+595765,2026-09-29T13:07:54.162Z,Slithery Fight,A,Cutlery,2109,loss,False
+597175,2026-09-29T13:07:45.715Z,Slithery Fight,A,Cutlery,2109,loss,False
+597174,2026-09-29T13:07:35.939Z,Schooltime,A,Cutlery,2109,win,False
+595755,2026-09-29T13:07:14.268Z,Slithery Fight,A,Cutlery,2109,loss,False
+597395,2026-09-29T13:06:04.854Z,Devil,B,STAR,1864,win,False
+597196,2026-09-29T13:05:07.774Z,Portals,B,dubu,1646,win,False
+595757,2026-09-29T13:05:02.358Z,Trophy,A,Cutlery,2109,win,False
+597193,2026-09-29T13:04:49.685Z,Autarky,B,dubu,1646,win,False
+595748,2026-09-29T13:04:35.001Z,Autarky,A,Cutlery,2109,win,False
+595758,2026-09-29T13:04:28.893Z,Autarky,A,Cutlery,2109,win,False
+595756,2026-09-29T13:04:17.021Z,Trauma,A,Cutlery,2109,loss,False
+597168,2026-09-29T13:04:12.819Z,Autarky,A,Cutlery,2109,win,False
+597197,2026-09-29T13:04:07.677Z,Prisoners Dilemma,B,dubu,1646,win,False
+597199,2026-09-29T13:03:55.634Z,Schooltime,B,dubu,1646,win,False
+595766,2026-09-29T13:03:30.812Z,Trauma,A,Cutlery,2109,win,False
+595582,2026-09-29T13:03:26.564Z,Schooltime,B,Check Raise,1848,loss,False
+597201,2026-09-29T13:03:20.110Z,Trauma,B,dubu,1646,loss,False
+597176,2026-09-29T13:03:18.148Z,Trauma,A,Cutlery,2109,win,False
+595753,2026-09-29T13:03:11.602Z,Queen Of Spades,A,Cutlery,2109,win,False
+597194,2026-09-29T13:03:09.740Z,Default,B,dubu,1646,win,False
+597171,2026-09-29T13:02:59.322Z,Portals,A,Cutlery,2109,win,False
+595761,2026-09-29T13:02:53.333Z,Portals,A,Cutlery,2109,win,False
+597202,2026-09-29T13:02:31.617Z,Trophy,B,dubu,1646,loss,False
+595759,2026-09-29T13:02:20.764Z,Default,A,Cutlery,2109,win,False
+597198,2026-09-29T13:02:19.877Z,Queen Of Spades,B,dubu,1646,win,False
+595751,2026-09-29T13:02:09.522Z,Portals,A,Cutlery,2109,loss,False
+597169,2026-09-29T13:02:01.706Z,Default,A,Cutlery,2109,win,False
+597195,2026-09-29T13:01:45.400Z,Devil,B,dubu,1646,win,False
+595754,2026-09-29T13:01:32.754Z,Schooltime,A,Cutlery,2109,loss,False
+597173,2026-09-29T13:01:27.932Z,Queen Of Spades,A,Cutlery,2109,win,False
+595760,2026-09-29T13:01:26.458Z,Devil,A,Cutlery,2109,win,False
+597170,2026-09-29T13:01:26.030Z,Devil,A,Cutlery,2109,win,False
+595749,2026-09-29T13:00:57.189Z,Default,A,Cutlery,2109,loss,False
+595545,2026-09-29T13:00:42.600Z,Slithery Fight,B,STAR,1864,loss,False
+597177,2026-09-29T13:00:32.655Z,Trophy,A,Cutlery,2109,loss,False
+595767,2026-09-29T13:00:24.050Z,Trophy,A,Cutlery,2109,loss,False
+595763,2026-09-29T13:00:21.735Z,Queen Of Spades,A,Cutlery,2109,loss,False
+595750,2026-09-29T13:00:14.850Z,Devil,A,Cutlery,2109,win,False
+597172,2026-09-29T13:00:08.832Z,Prisoners Dilemma,A,Cutlery,2109,loss,False
+595762,2026-09-29T13:00:03.315Z,Prisoners Dilemma,A,Cutlery,2109,loss,False
+595752,2026-09-29T13:00:01.439Z,Prisoners Dilemma,A,Cutlery,2109,loss,False
+595583,2026-09-29T12:59:55.727Z,Slithery Fight,B,Check Raise,1848,loss,False
+595586,2026-09-29T12:59:27.627Z,Autarky,B,Drago et al,1837,win,False
+595541,2026-09-29T12:59:26.057Z,Schooltime,B,STAR,1864,win,False

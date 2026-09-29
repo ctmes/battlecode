@@ -101,23 +101,8 @@ def parse_turn(block):
 #                  kv/pv) | portal (1 bit: 0 = kelp, 1 = portal) | 14 bits unused. A relayed *fact*, not a
 #                  sighting: terrain never goes stale the way an enemy position does, so unlike SONAR_ENEMY this
 #                  is worth sending even with nobody obviously listening -- see brain.py's sonar_terrain.
-#   SONAR_KING:    length (7 bits, min(length, 127)) | round // 4 (7 bits) | check (4 bits): where our longest dragon's
-#                  head was, relayed dragon to dragon (brain.py's rally_r). The check (x + y + length + round // 4,
-#                  mod 16) keeps most enemy payloads from passing as one.
 SONAR_ENEMY = 0
 SONAR_TERRAIN = 1
-SONAR_KING = 2
-
-
-def _king_check(x, y, length, r4):
-    return (x + y + length + r4) & 15
-
-
-def pack_king_sonar(x, y, length, rnd):
-    """Our longest dragon's head at (x, y), `length` long, as of round `rnd`."""
-    length, r4 = min(length, 127), (rnd >> 2) & 127
-    return (SONAR_KING << 30) | ((x & 63) << 24) | ((y & 63) << 18) | (length << 11) | (r4 << 4) | \
-        _king_check(x & 63, y & 63, length, r4)
 
 
 def pack_enemy_sonar(x, y, length, facing):
@@ -133,16 +118,11 @@ def pack_terrain_sonar(x, y, vertical, portal):
 def unpack_sonar(value):
     """-> (kind, x, y, extra1, extra2). kind is None (all 0) for a kind this module does not know.
     SONAR_ENEMY: extra1/extra2 = length bucket (0-15), facing (0-3).
-    SONAR_TERRAIN: extra1/extra2 = vertical (0 = north edge, 1 = west edge), portal (0 = kelp, 1 = portal).
-    SONAR_KING: extra1/extra2 = length, round (a multiple of 4); kind None if the check does not match."""
+    SONAR_TERRAIN: extra1/extra2 = vertical (0 = north edge, 1 = west edge), portal (0 = kelp, 1 = portal)."""
     kind = value >> 30
     x, y = (value >> 24) & 63, (value >> 18) & 63
     if kind == SONAR_ENEMY:
         return kind, x, y, (value >> 14) & 15, (value >> 12) & 3
     if kind == SONAR_TERRAIN:
         return kind, x, y, (value >> 17) & 1, (value >> 16) & 1
-    if kind == SONAR_KING and value < 1 << 32:
-        length, r4 = (value >> 11) & 127, (value >> 4) & 127
-        if value & 15 == _king_check(x, y, length, r4):
-            return kind, x, y, length, r4 << 2
     return None, 0, 0, 0, 0

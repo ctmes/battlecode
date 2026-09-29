@@ -12,6 +12,7 @@ a pairing; more samples need more maps.
 """
 import concurrent.futures
 import functools
+
 import os
 import pathlib
 import random
@@ -49,6 +50,12 @@ UNMETERED = os.environ.get("BC_UNMETERED") == "1"
 def metered(params):
     """`params` with the self-metering switched off when BC_UNMETERED=1 (see UNMETERED)."""
     return {**(params or {}), "budget_ns": 10 ** 15} if UNMETERED else params
+
+
+# A worker leaks ~21 MB a game inside the 1.x engine's host bindings, and neither a fresh EngineModule nor gc.collect()
+# gets it back: tuning workers reached 3.5 GB within 250 games and mh5_run1 died of std::bad_alloc, then MemoryError
+# (29 Sep). So each worker process is replaced after BC_MAX_TASKS games (exiting frees it all; ~1 GB at most at 40).
+MAX_TASKS = int(os.environ.get("BC_MAX_TASKS", "40"))
 
 
 def _init():
@@ -115,10 +122,19 @@ def _opponent(spec, seed):
 
 def play_job(job):
     t0 = time.perf_counter()
-    me = CountingPlayer("me", metered(job.mine) or None)
-    foe = _opponent(job.opp, job.map[0] if isinstance(job.map, tuple) and isinstance(job.map[0], int) else 0)
-    res, deaths, errors = arena.play(_engine, map_bytes(job.map), *((me, foe) if job.side == "A" else (foe, me)),
-                                     seed=job.seed)
+    for attempt in range(2):
+        me = CountingPlayer("me", metered(job.mine) or None)
+        foe = _opponent(job.opp, job.map[0] if isinstance(job.map, tuple) and isinstance(job.map[0], int) else 0)
+        try:
+            res, deaths, errors = arena.play(_engine, map_bytes(job.map), *((me, foe) if job.side == "A" else (foe, me)),
+                                             seed=job.seed)
+            break
+        except RuntimeError:
+            # the 1.x engine's own failure (std::bad_alloc in a worker that has played many games) killed mh5_run1 in
+            # generation 2: replay the game once on a fresh engine (same seed and fresh players: the same game)
+            if attempt:
+                raise
+            _init()
     a = job.side == "A"
     score = 0.5 if res.winner is None else float(res.winner == job.side)
     causes = dict(Counter(arena.DEATH.get(reason, reason) for n, _, _, reason in deaths if n == "me"))
@@ -131,20 +147,25 @@ def play_job(job):
 class League:
     def __init__(self, workers=None):
         self.workers = workers or max(1, (os.cpu_count() or 2) - 2)
-        self.pool = concurrent.futures.ProcessPoolExecutor(self.workers, initializer=_init)
 
     def __enter__(self):
         return self
 
     def __exit__(self, *exc):
-        self.pool.shutdown(cancel_futures=True)
+        pass
 
     def run(self, jobs):
-        """Results in job order. The biggest boards start first so the batch has a short tail."""
+        """Results in job order. The biggest boards start first so the batch has a short tail. Every workers x
+        MAX_TASKS jobs get a fresh pool, so no worker plays more than about MAX_TASKS games (see MAX_TASKS; Python's
+        own max_tasks_per_child hung here)."""
         order = sorted(range(len(jobs)), key=lambda i: -map_area(jobs[i].map))
         out = [None] * len(jobs)
-        for i, r in zip(order, self.pool.map(play_job, [jobs[i] for i in order], chunksize=1)):
-            out[i] = r
+        step = self.workers * MAX_TASKS if MAX_TASKS else len(order)
+        for k in range(0, len(order), max(step, 1)):
+            part = order[k:k + step]
+            with concurrent.futures.ProcessPoolExecutor(self.workers, initializer=_init) as pool:
+                for i, r in zip(part, pool.map(play_job, [jobs[i] for i in part], chunksize=1)):
+                    out[i] = r
         return out
 
 

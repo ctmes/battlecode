@@ -1,11 +1,14 @@
 """Writes bot/known_maps.py: the ladder's own maps (maps/ladder/*.map, recovered from ladder replays by
 tools/replay_maps.py) in the Brain's terms, so a dragon that recognises its map can know every portal pair, every
-kelp edge and every pearl-spawning tile from its first turn (bot/brain.py DEFAULTS "map_oracle").
+kelp edge and every pearl-spawning tile from its first turn (bot/brain.py DEFAULTS "map_oracle"), and how much food
+lies around each tile (FIELDS, for DEFAULTS "food_pull").
 
     .venv\\Scripts\\python.exe tools\\gen_known_maps.py [--check]
 
 --check only verifies that bot/known_maps.py matches the maps (exit 1 if it is stale).
 """
+import collections
+import math
 import pathlib
 import sys
 
@@ -20,9 +23,51 @@ MAPS[(width, height)] = ((name, kh, kv, ph, pv, pairs, spawns), ...). kh/kv/ph/p
 cell order (y * width + x): a kh/kv bit is kelp on that tile's north/west edge, ph/pv a portal, spawns the tiles that
 ever spawn a pearl. pairs holds the portal pairs as (edge key, edge key), an edge key being cell * 2 + (1 for the west
 edge, 0 for the north edge).
+
+FIELDS[name] = bytes, one per cell in the same order (only maps whose food is concentrated -- see MIN_CONCENTRATION in
+the generator): how much pearl spawning lies around that tile, as
+8 * log(F) / log(1 / GAMMA) above the map's floor, where F sums every spawn tile's rate (2 / (min_gap + max_gap) pearls
+per round) times GAMMA ** (its distance in moves, through kelp and portals). Near one fountain, a step towards it adds
+about 8; the floor is 31 steps' decay below the map's best tile, so the byte never saturates.
 """
 MAPS = {
 '''
+GAMMA = 0.75
+DEPTH = 40  # moves searched out from each spawn tile
+# A map gets a field only if its busiest 10% of tiles make at least this share of its pearls. Where food lands
+# anywhere (Default 43%, Trophy 54%) the field only measures open ground, and pulling towards it lost there (bench,
+# 29 Sep: food_pull 40-320 vs mh6, Default 8-50%, Trophy 17-58%, while Devil and Prisoners Dilemma went 92-100%).
+MIN_CONCENTRATION = 0.6
+
+
+def field(m):
+    rate = {(x, y): 2.0 / (lo + hi) for (x, y), (lo, hi) in m.tiles.items() if hi > 0}
+    rs = sorted(rate.values(), reverse=True)
+    if sum(rs[:m.w * m.h // 10]) < MIN_CONCENTRATION * sum(rs):
+        return None
+    f = collections.Counter()
+    for src, r in rate.items():
+        dist = {src: 0}
+        todo = collections.deque([src])
+        while todo:
+            c = todo.popleft()
+            d = dist[c]
+            f[c] += r * GAMMA ** d
+            if d < DEPTH:
+                for k in range(4):
+                    n = m.step(c[0], c[1], k)
+                    if n is not None and n not in dist:
+                        dist[n] = d + 1
+                        todo.append(n)
+    top = max(f.values(), default=1.0)
+    floor = math.log(top) + 31 * math.log(GAMMA)
+    out = bytearray(m.w * m.h)
+    for y in range(m.h):
+        for x in range(m.w):
+            v = f.get((x, y), 0.0)
+            q = 8 * (math.log(v) - floor) / -math.log(GAMMA) if v > 0 else 0
+            out[y * m.w + x] = max(0, min(255, round(q)))
+    return bytes(out)
 
 
 def entry(m):
@@ -47,16 +92,23 @@ def entry(m):
 
 
 def render():
-    by_size = {}
+    by_size, fields = {}, {}
     for p in sorted((ROOT / "maps" / "ladder").glob("*.map")):
         m = GameMap.loads(p.read_text())
         by_size.setdefault((m.w, m.h), []).append((p.stem, *entry(m)))
+        f = field(m)
+        if f is not None:
+            fields[p.stem] = f
     out = [HEADER]
     for size in sorted(by_size):
         out.append(f"    {size}: (\n")
         for name, kh, kv, ph, pv, pairs, spawns in by_size[size]:
             out.append(f"        ({name!r}, {kh:#x}, {kv:#x}, {ph:#x}, {pv:#x}, {pairs!r}, {spawns:#x}),\n")
         out.append("    ),\n")
+    out.append("}\n")
+    out.append("FIELDS = {\n")
+    for name in sorted(fields):
+        out.append(f"    {name!r}: bytes.fromhex({fields[name].hex()!r}),\n")
     out.append("}\n")
     return "".join(out)
 

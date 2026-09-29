@@ -53,3 +53,13 @@ so that an opponent never changes when bot/brain.py does. Never edit a snapshot;
   blocked 65% of our split-ready turns before round 150 and we were outnumbered 9 to 34 by round 150; the top 3 make
   24-39% of their splits with an enemy head in view (we: 6%). Held out (seeds 9,300,000-9,300,009, 200 games each):
   54.5% vs mh5, topstyle 86.0 (mh5 85.5), portal_farmer 89.5 (91.0) -- level locally, where nobody crowds us early.
+- `mh7_2026-09-29/`: a complete, submittable bot folder whose DEFAULTS are mh7 = mh6 + the food field (food_pull 40):
+  with no pearl in view, a dragon on a known map gets 40 per step up known_maps.FIELDS, the spawn rate around each
+  tile decayed 0.75 per move of maze distance (tools/gen_known_maps.py; Default and Trophy, where food lands anywhere,
+  get no field). Built from bot/brain.py, which also carries rally_r (a sonar relay of the king's head; off here,
+  inconclusive on the bench). Plays mh6 game for game with food_pull 0 (40/40). Why: in mh6's 23 ladder eliminations
+  the enemy's nearest head was closer than ours to 127 of the spawn pearls appearing before round 150 (ours: 55) --
+  our dragons wandered empty ground while theirs farmed the fountains. Held out (seeds 9,400,000-9,400,009, 200 games
+  each): mh6 68.5% [62-75], mh5 71.5, mh4 82.0, topstyle 94.0 (mh6 86.0), portal_farmer 96.0 (mh6 89.5), farmer 98.0;
+  no map below 50% vs anyone, Devil 90-100%, Prisoners Dilemma 100%. Judge sandbox (Slithery Fight, rally on too):
+  p99 15.2M, max 18.6M points per turn (mh6 18.2M).
