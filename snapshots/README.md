@@ -25,3 +25,13 @@ so that an opponent never changes when bot/brain.py does. Never edit a snapshot;
 - `mh3p_2026-09-29/`: mh3 plus portal support (DEFAULTS "portals", "map_oracle", "oracle_seen"), with its own copy of
   known_maps.py (brain.py reads it from its own folder). Unswbc 1.2.2, the real ladder maps x seeds 9,000,000-9,000,009,
   200 games per opponent: 72.2% vs mh3, 93.0% vs live, 74.0% vs farmer, 65.0% vs portal, 68.5% vs portal_farmer.
+- `mh4_2026-09-29/`: a complete, submittable bot folder (main.py, brain.py, proto.py, known_maps.py, bot.toml) whose
+  DEFAULTS are mh4: mh3 + portals (portals, map_oracle, oracle_seen) + topstyle (split_r_end 300, boxed_r_end 300,
+  boxed_rear_r 0, ram_len 3, ram 1000) + diving near fountains at any length (dive_len 99, dive_trap 0, dive_scope 2,
+  dive_radius 6). Built from the merged bot/brain.py (main + branch `portals`), which reproduces mh3, mh3p, topstyle
+  and farmer game for game. Unswbc 1.2.2, the real ladder maps x fresh held-out seeds 9,100,000-9,100,009, both
+  seats, 200 games per opponent (mh3 on the same games in brackets): mh3 91.0% (50), mh2 96.5 (70.5), live 97.5
+  (87.0), mh3p 74.5 (29.5), topstyle 83.0 (21.5), farmer 92.0 (45.0), portal_farmer 89.0 (41.5), portal 82.0 (42.0),
+  v3 98.0 (84.0), grower_frozen 92.5 (81.5). Longest dragon at round 500 about 21-27 vs mh3's 10-12. Every map >= 69%
+  (Devil 69, Trauma 80). Judge sandbox: at most 18.4M points a turn (Portals, Schooltime).
+
