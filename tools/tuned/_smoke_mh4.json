@@ -1,0 +1,79 @@
+{
+ "names": [
+  "split_r_end",
+  "dive_radius"
+ ],
+ "params": {
+  "split_r_end": 343
+ },
+ "state": {
+  "m": [
+   0.6071184959919891,
+   0.35631141223511886
+  ],
+  "sigma": 0.12926690395131687,
+  "C": [
+   0.8755087492436358,
+   0.7803135774487528
+  ],
+  "ps": [
+   0.5574623275511821,
+   0.11958171395724257
+  ],
+  "pc": [
+   0.6670267128759243,
+   0.1430844626422674
+  ],
+  "gen": 1
+ },
+ "history": [
+  {
+   "gen": 0,
+   "best": 0.45,
+   "avg": 0.42500000000000004,
+   "mean": 0.5,
+   "sigma": 0.12926690395131687,
+   "mean_params": {
+    "split_r_end": 300
+   },
+   "mean_vs": {
+    "mh4": 0.5
+   },
+   "mean_deaths_per_k": 29.78,
+   "errors": 0
+  }
+ ],
+ "args": {
+  "cmd": "run",
+  "name": "_smoke_mh4",
+  "generations": 1,
+  "pop": 2,
+  "maps": 0,
+  "max_side": 32,
+  "seed": 1,
+  "sigma": 0.15,
+  "vs": "mh4",
+  "params": "split_r_end,dive_radius",
+  "start": "",
+  "no_bundled": true,
+  "ladder": 0,
+  "seeds": 1,
+  "base": "tools/tuned/mh4_base.json",
+  "resume": false,
+  "workers": 3
+ },
+ "base": {
+  "portals": 1,
+  "map_oracle": 1,
+  "oracle_seen": 1,
+  "split_r_end": 300,
+  "boxed_r_end": 300,
+  "boxed_rear_r": 0,
+  "ram_len": 3,
+  "ram": 1000.0,
+  "dive_len": 99,
+  "dive_trap": 0.0,
+  "dive_scope": 2,
+  "dive_radius": 6
+ }
+}

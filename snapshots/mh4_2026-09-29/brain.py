@@ -244,6 +244,12 @@ DEFAULTS = {
     "oracle_seen": 0,           # on in mh4
     "budget_ns": 60_000_000,   # self-metering: skip optional work past this (points on the judge)
 }
+# mh4 (29 Sep): mh3 + portals (learned pairs, known-map oracle, oracle_seen) + topstyle (stop splitting at 300,
+# turnaround splits all game, short dragons ram) + dragons of any length diving near fountains they have seen,
+# leaving dead ends by the turnaround split. See snapshots/README.md for its bench numbers.
+DEFAULTS.update({"portals": 1, "map_oracle": 1, "oracle_seen": 1,
+                 "split_r_end": 300, "boxed_r_end": 300, "boxed_rear_r": 0, "ram_len": 3, "ram": 1000.0,
+                 "dive_len": 99, "dive_trap": 0.0, "dive_scope": 2, "dive_radius": 6})
 
 
 def known_maps():

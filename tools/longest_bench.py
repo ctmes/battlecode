@@ -57,10 +57,11 @@ def play(job):
     import league
     import replay_parse
     import tune
-    label, params, opp, spec, side, extra = job
+    label, params, opp, spec, side, seed, extra = job
     me = arena.BrainPlayer("me", {**(params or {}), **extra} or None)
     foe = league._opponent(with_budget(tune.opponent(opp), extra), 0)
-    res, deaths, errors = arena.play(_engine, league.map_bytes(spec), *((me, foe) if side == "A" else (foe, me)))
+    res, deaths, errors = arena.play(_engine, league.map_bytes(spec), *((me, foe) if side == "A" else (foe, me)),
+                                     seed=seed)
     data = _engine.replay("a", "b")
     r = replay_parse.parse(data)
     f = forage.analyse(data, ladder_maps.variant(spec[1], spec[2]).dumps())
@@ -87,18 +88,30 @@ def main():
     ap.add_argument("--holdout", action="store_true")
     ap.add_argument("--workers", type=int, default=None)
     ap.add_argument("--wall-budget", action="store_true", help="keep the 60M wall-clock budget_ns (nondeterministic under load)")
+    ap.add_argument("--maps", default="", help="comma list of ladder-pool map names to keep (default: all)")
+    ap.add_argument("--seeds", type=int, default=0,
+                    help="play the ladder maps as played, with this many engine seeds each, instead of variants "
+                         "(unswbc >= 1.0; the judge seeds every match); --holdout takes the seeds from 1,000,000 up")
     args = ap.parse_args()
     cands = json.loads(pathlib.Path(args.candidates).read_text())
-    maps = ladder_maps.holdout_specs(args.variants - 1) if args.holdout else \
-        [("ladder", n, v) for n in ladder_maps.POOL for v in range(1, args.variants + 1)]
+    if args.seeds:
+        base = 1_000_000 if args.holdout else 0
+        games = [(("ladder", n, 0), base + s) for n in ladder_maps.POOL for s in range(1, args.seeds + 1)]
+    else:
+        games = [(m, None) for m in (ladder_maps.holdout_specs(args.variants - 1) if args.holdout else
+                                     [("ladder", n, v) for n in ladder_maps.POOL for v in range(1, args.variants + 1)])]
+    if args.maps:
+        keep = set(args.maps.split(","))
+        games = [g for g in games if g[0][1] in keep]
     opps = [o for o in args.vs.split(",") if o]
     extra = {} if args.wall_budget else NO_BUDGET
-    jobs = [(lab, p, o, m, s, extra) for lab, p in cands.items() for o in opps for m in maps for s in "AB"]
+    jobs = [(lab, p, o, m, s, seed, extra) for lab, p in cands.items() for o in opps for m, seed in games for s in "AB"]
     workers = args.workers or 12
     with concurrent.futures.ProcessPoolExecutor(workers, initializer=_init) as ex:
         res = list(ex.map(play, jobs, chunksize=2))
-    print(f"{len(res)} games, {len(maps)} maps x 2 sides per pairing ({'holdout' if args.holdout else 'training variants'}"
-          f", {'wall-clock budget' if args.wall_budget else 'no budget cutoff'})\n")
+    kind = "engine seeds on the maps as played" if args.seeds else "variants"
+    print(f"{len(res)} games, {len(games)} maps x 2 sides per pairing ({'holdout' if args.holdout else 'training'} "
+          f"{kind}, {'wall-clock budget' if args.wall_budget else 'no budget cutoff'})\n")
     print(f"{'candidate':14s} {'vs':14s} {'score':>18s} {'fountain/other':>15s} {'longest@500 us/them':>20s} "
           f"{'tiebreak losses':>16s} {'eliminated':>11s} {'errors':>6s} | {'eat/100 us/them':>15s} "
           f"{'fountain/game':>14s} {'deaths/1000 us/them':>20s}")

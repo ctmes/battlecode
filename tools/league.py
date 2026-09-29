@@ -30,13 +30,25 @@ import opponents  # noqa: E402
 from brain import Brain  # noqa: E402
 from unswbc.engine import EngineModule  # noqa: E402
 
-Job = namedtuple("Job", "map side mine opp")
+# seed: the engine's pearl sequence for this game (unswbc >= 1.0 seeds every match the way the judge does); None =
+# the engine default, the only sequence unswbc 0.3.x has
+Job = namedtuple("Job", "map side mine opp seed", defaults=(None,))
 # score: 1 win / 0.5 draw / 0 loss for `mine`; the rest describes my team; cost is seconds of wall time.
 # causes: {arena.DEATH name: count} for this job's deaths -- aggregate win rate alone can be too noisy to tell
 # whether a change is doing what it's meant to (see the sonar work); the death-cause mix is the more direct signal.
 Result = namedtuple("Result", "score deaths turns errors rounds my_len opp_len my_dragons opp_dragons cost causes")
 
 _engine = None
+# BC_UNMETERED=1 switches off every Brain's wall-clock self-metering (budget_ns). On the judge the meter reads CPU
+# points, and a Brain turn costs at most ~16M of the 60M budget (sandbox, Portals, 19k turns), so it never fires there;
+# locally it reads the wall clock and does fire under load, flipping whole games: the same 120 games scored 62.5% and
+# 70.0% in two runs on 28 Sep. Unmetered, games are reproducible and match the judge.
+UNMETERED = os.environ.get("BC_UNMETERED") == "1"
+
+
+def metered(params):
+    """`params` with the self-metering switched off when BC_UNMETERED=1 (see UNMETERED)."""
+    return {**(params or {}), "budget_ns": 10 ** 15} if UNMETERED else params
 
 
 def _init():
@@ -93,19 +105,20 @@ class FrozenBrainPlayer:
 
 def _opponent(spec, seed):
     if spec[0] == "brain":
-        return arena.BrainPlayer("opp", spec[1] or None)
+        return arena.BrainPlayer("opp", metered(spec[1]) or None)
     if spec[0] == "frozen":
         dir_path, params = spec[1]
         brain_cls, _ = frozen_brain.load(dir_path)
-        return FrozenBrainPlayer("opp", brain_cls, params or None)
+        return FrozenBrainPlayer("opp", brain_cls, metered(params) or None)
     return opponents.OPPONENTS[spec[1]](seed=seed)
 
 
 def play_job(job):
     t0 = time.perf_counter()
-    me = CountingPlayer("me", job.mine or None)
+    me = CountingPlayer("me", metered(job.mine) or None)
     foe = _opponent(job.opp, job.map[0] if isinstance(job.map, tuple) and isinstance(job.map[0], int) else 0)
-    res, deaths, errors = arena.play(_engine, map_bytes(job.map), *((me, foe) if job.side == "A" else (foe, me)))
+    res, deaths, errors = arena.play(_engine, map_bytes(job.map), *((me, foe) if job.side == "A" else (foe, me)),
+                                     seed=job.seed)
     a = job.side == "A"
     score = 0.5 if res.winner is None else float(res.winner == job.side)
     causes = dict(Counter(arena.DEATH.get(reason, reason) for n, _, _, reason in deaths if n == "me"))

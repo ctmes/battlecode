@@ -35,7 +35,9 @@ class BrainPlayer:
         return self.brains[did].act(block)
 
 
-def play(engine, map_bytes, pa, pb):
+def play(engine, map_bytes, pa, pb, seed=None):
+    """One game. `seed` picks the engine's pearl sequence (unswbc >= 1.0, which seeds every match the way the judge
+    does); None plays the engine's default, the only sequence unswbc 0.3.x has."""
     owner, deaths, errors = {}, [], []
 
     def bot_spawn(did, init):
@@ -59,13 +61,15 @@ def play(engine, map_bytes, pa, pb):
         if owner[did].name == "me":
             br = owner[did].brains.get(did)
             dbg = getattr(br, "dbg", None)
-            # a fatal move while a safe one existed would be a legality bug (boxed-in deaths are not)
-            if dbg is not None and reason in "WSO" and 0 in dbg["status"]:
+            # a fatal move while a safe one existed would be a legality bug (boxed-in deaths are not, and nor is a
+            # deliberate step through a portal whose landing tile was out of view)
+            if dbg is not None and reason in "WSO" and 0 in dbg["status"] and not dbg.get("risky"):
                 errors.append(f"LEGALITY BUG: dragon {did} round {rnd} {DEATH[reason]} with a safe move available: {dbg}")
             if DEBUG_DEATHS:
                 print(f"   death: dragon {did} round {rnd} reason {DEATH.get(reason, reason)}  {dbg}")
 
-    res = engine.run(map_bytes, bot_reply, on_death, bot_spawn, lambda line: None, 0)
+    res = engine.run(map_bytes, bot_reply, on_death, bot_spawn, lambda line: None, 0,
+                     **({} if seed is None else {"seed": seed}))
     return res, deaths, errors
 
 

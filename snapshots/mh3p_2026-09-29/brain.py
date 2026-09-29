@@ -25,7 +25,6 @@ DOT7, DOT8 = proto.DOT7, proto.DOT8
 MOVES = (b"MOVE N\n", b"MOVE E\n", b"MOVE S\n", b"MOVE W\n")
 WIN_R = [t // 7 for t in range(49)]
 WIN_C = [t % 7 for t in range(49)]
-NB_WIN = (17, 25, 31, 23)  # window tile of the head's N, E, S, W neighbour (the head is tile 24)
 # Per direction N,E,S,W (matching the `kelp`/`port` tuples in decide()): the (tile, vertical) an edge in that
 # direction is stored under, in the same terms learn_edges()/kh/kv/ph/pv already use (a kh/kv bit at a tile means
 # kelp on that tile's own north/west edge) -- so a relayed edge lands on the exact bit a receiver's own vision
@@ -184,46 +183,17 @@ DEFAULTS = {
     # losses 303 -> 248, no eliminations, no errors. On from round 0 it lengthened the longest more but did not win more.
     "boxed_rear_len": 5,       # boxed-in split of a dragon at least this long gives the child all but 2 segments
     "boxed_rear_r": 433,       # ... from this round on (0 = always; boxed_rear_len 0 = off)
-    # Dive: short dragons take trapped pearls. On six ladder maps nearly all the pearls spawn on "fountains" (pearl
-    # gap 1-1: a pearl every round the tile is free), and all but Devil's sit on dead-end branches of the kelp graph,
-    # so the trap check vetoes them (~90% of the adjacent pearls we pass up; 95-100% of those vetoes are real traps).
-    # Ladder opponents eat 3-15x our fountain pearls, die 3x as often (92% of their dead are shorter than 4) and eat
-    # 90% of their own dead back. A fountain always shows countdown 1 (other spawning tiles: ~1% of sightings).
-    # Ladder opponents' long dragons also rear-split (child = all but 2) in 69% of their long-parent splits all game long:
-    # a U-turn out of a dead end. With boxed_rear_r 0, a dragon 4+ long diving into a fountain branch gets out the
-    # same way, so dive_len above 3 lets long dragons dive too (only while that boxed split is legal).
-    "dive_len": 0,             # dragons at most this long dive (0 = off)
-    "dive_trap": 0.0,          # ... with the trap penalty multiplied by this
-    "dive_scope": 1,           # 0 = on every move (reckless), 1 = only a move onto a pearl, 2 = on every move while
-                                # a fountain this dragon has seen is within dive_radius (fountain: a tile showing
-                                # countdown 1 on two turns running, which no other tile did in 3M sightings)
-    "dive_fountain": 0,        # scope 1 only: 1 = only onto a pearl on a tile showing countdown 1 (a fountain)
-    "dive_units": 0,           # ... and only while the team has at least this many dragons
-    "dive_radius": 6,          # scope 2: Manhattan distance to a known fountain
-    # Top-team style, from 450 replays of the ladder's top 3 (Cutlery, cheji bt, forgot to mention; tools/scout.py,
-    # 29 Sep). All three stop ordinary splits around round 300, so attrition shrinks the swarm (cheji: 45 dragons at
-    # round 300, 7 at 400) while the survivors eat the corpses: 57-75% of their longest dragon's pearls after round
-    # 300 are their own dead, and it ends 32-43 long against our 10.5 -- though we hold more total length, in 33
-    # dragons. They also ram enemy heads with 2-3-long dragons, 22-25 times a game, more often than they are rammed.
-    # "topstyle" = split_r_end 300, boxed_r_end 300, boxed_rear_r 0, ram_len 3, ram 1000, dive_len 3, dive_trap 0,
-    # dive_scope 0. On the 1.x engine, the 10 ladder maps x held-out seeds 9,000,000+ x both seats (200 games per
-    # opponent, tools/bench1x.py): 75.5% [69-81] vs mh3, 73.0% vs farmer, 58.2% vs portal_farmer; longest dragon at
-    # round 500 15.2 vs mh3's 11.0. Screened on seeds 1-6 (120 games vs mh3): each part alone 51-64%, round 300 beat
-    # 250 and 350, ram 300-3000 all alike; a "feed" mechanism (short dragons dying next to a long teammate) added nothing.
-    "boxed_r_end": 0,          # from this round on a boxed-in dragon splits only for a rear split (0 = off)
-    "ram_len": 0,              # dragons at most this long may move onto an adjacent enemy head, killing both (0 = off)
-    "ram": 0.0,                # ... when that enemy shows at least as many segments: a move scored at this
     # Portals. 0 = off: portals are walls, as in every version up to mh3 ({"portals": 0} plays mh3 exactly: 80/80
     # games, unmetered). On, a dragon remembers each portal's id, and once it has seen both edges with one id (in
     # practice: by stepping through, since the far side then comes into view) the pair is a link in its legality, trap
     # flood fill, pearl field and dead-end checks. On Portals and Trauma each team starts in a region whose pearls are
     # mostly behind portals (Portals: 4 spawn tiles in our 208-tile half, 32 more in 2x2 rooms reached only by portal;
     # Trauma: 10 in our 264-tile field, 110 in the maze behind it). 2026-09-29, unswbc 1.2.2 engine, the real ladder
-    # maps x seeds 1-10, 200 games per opponent, mh3 -> learned portals -> + map_oracle + oracle_seen (all three on):
+    # maps x seeds 1-10, 200 games per opponent, mh3 -> learned portals -> + map_oracle + oracle_seen (these DEFAULTS):
     # vs mh3 50 -> 71.5 -> 72.5%, live 81.7 -> 93.5 -> 94.5%, farmer 48.5 -> 67.0 -> 69.0%, and against the opponents
     # that are handed the true map and use portals (tools/bench1x.py): portal 40.0 -> 58.0 -> 68.0%, portal_farmer
     # 42.8 -> 62.5 -> 72.0%. Judge cost: at most 18.0M points a turn (sandbox, Schooltime, 47,728 turns).
-    "portals": 0,               # on in mh4 (snapshots/mh4_2026-09-29)
+    "portals": 1,
     "portal_unknown": 150.0,   # score of stepping into a portal whose far side is still unknown (exploring)
     "portal_blind": 100.0,     # penalty for a known portal whose landing tile is out of view (unseen occupancy)
     # A dragon that stepped into an unknown portal and landed in a walled-in pocket with no pearl-spawning tile stops
@@ -238,10 +208,10 @@ DEFAULTS = {
     # exactly one is left it loads that whole map: every portal pair, kelp edge and spawn tile, so no portal is ever
     # a blind bet. No candidate left (a new or changed map, or a mirrored bench variant) = learn as usual. Every
     # founder of every ladder map, and every split child, knows its map on its first turn. Needs "portals".
-    "map_oracle": 0,            # on in mh4
+    "map_oracle": 1,
     # ... and count the whole known map as seen, so trap checks stop fearing ground this dragon has not looked at yet.
     # Without it the oracle did worse than learning (52 vs 58% vs portal): known portals led into "unseen" traps.
-    "oracle_seen": 0,           # on in mh4
+    "oracle_seen": 1,
     "budget_ns": 60_000_000,   # self-metering: skip optional work past this (points on the judge)
 }
 
@@ -283,8 +253,6 @@ class Brain:
         self.tail = None
         tpu = self.p["tiles_per_unit"]
         self.target = unit_limit if tpu <= 0 else max(2, min(unit_limit, n // tpu))  # preferred team size
-        self.cd1 = 0  # tiles that showed pearl countdown 1 last turn (for dive_scope 2's fountain detection)
-        self.founts = []  # (x, y) of tiles seen at countdown 1 on two turns running: fountains
         self.founder = None  # True when alive at round 0 (decided on the first turn)
         self.king = None  # a founder that never splits (see DEFAULTS "king_first"); decided on the first turn
         # portals (DEFAULTS "portals"): an edge key is cell * 2 + (1 for the cell's west edge, 0 for its north edge)
@@ -632,19 +600,6 @@ class Brain:
         self.seen |= vis
         if self.oracle is None and p["map_oracle"] and p["portals"]:
             self.recognise(x0, y0)
-        if p["dive_len"] and p["dive_scope"] == 2:  # before any early return, so no turn breaks the two-turn test
-            cds, c1 = t.cds, 0
-            for i in range(49):
-                if cds[i] == b"1":
-                    c1 |= 1 << (((y0 + WIN_R[i]) % h_) * w_ + (x0 + WIN_C[i]) % w_)
-            new = c1 & self.cd1
-            while new:
-                low = new & -new
-                c = low.bit_length() - 1
-                if (c % w_, c // w_) not in self.founts:
-                    self.founts.append((c % w_, c // w_))
-                new ^= low
-            self.cd1 = c1
         if self.king is None:  # before any early return, so a boxed-in first turn still decides it
             self.king = t.rnd == 0 and ((p["king_first"] > 0 and self.id < p["king_first"])
                                         or (p["king_len"] > 0 and length >= p["king_len"]))
@@ -742,9 +697,6 @@ class Brain:
                 hd = heads.get(nidx[d])
                 status[d] = DEAD if hd is None else (TRADE_ENEMY if hd[0] else TRADE_TEAM)
         ok = [d for d in range(4) if status[d] == OK]
-        rams = []  # head-on trades a short dragon may take: onto an enemy head at least as long as it looks
-        if p["ram_len"] and length <= p["ram_len"]:
-            rams = [d for d in range(4) if status[d] == TRADE_ENEMY and segs.get(heads[dest[d]][1], 1) >= length]
         if self.debug:
             self.dbg = {"rnd": t.rnd, "pos": (hx, hy), "dir": t.dir, "len": length, "status": list(status),
                         "kelp": kelp, "port": port, "body": list(self.body[:8]), "tail": self.tail,
@@ -761,11 +713,9 @@ class Brain:
             if p["boxed_split"] and child >= 2 and length - child >= 2 and t.units < cap:
                 # rear split: leave 2 segments at the boxed head and hand the rest to the child, which leaves from the
                 # old tail facing away, so a long dragon loses 2 once instead of 2 every round it stays boxed in
-                rear = p["boxed_rear_len"] and length >= p["boxed_rear_len"] and t.rnd >= p["boxed_rear_r"]
-                # late on, only a rear split (which keeps the body) is worth another dragon: a short one boxed in
-                # dies where it is and its teammates eat it, so the swarm shrinks into fewer, longer dragons
-                if rear or not p["boxed_r_end"] or t.rnd < p["boxed_r_end"]:
-                    return b"SPLIT %d\n" % (length - 2 if rear else child)
+                if p["boxed_rear_len"] and length >= p["boxed_rear_len"] and t.rnd >= p["boxed_rear_r"]:
+                    child = length - 2
+                return b"SPLIT %d\n" % child
             if p["spare_team"]:
                 best = min(range(4), key=lambda d: (SPARE_RANK[status[d]], d != t.dir))
             else:
@@ -842,7 +792,7 @@ class Brain:
         if self.want_split(t, heads, len(ok), hx, hy, w_, h_):
             action = b"SPLIT %d\n" % p["split_child"]
             return action + b"SONAR %d\n" % sonar_msg if sonar_msg is not None else action
-        if (len(ok) + len(unknown) == 1 and not rams) or self.over():
+        if len(ok) + len(unknown) == 1 or self.over():
             if self.debug:
                 self.dbg["risky"] = blind[ok[0]]
             action = MOVES[ok[0]]
@@ -863,15 +813,6 @@ class Brain:
         need = min(max(length + margin, p["need_floor"]), p["need_cap"])
         tail = self.tail
         free_trap = free & self.seen if p["pessimistic"] else free
-        dive = length <= p["dive_len"] and t.units >= p["dive_units"]
-        if dive and length >= 4:
-            # a dragon this long can leave a dead end by the boxed split (with boxed_rear_r 0 a rear split: a U-turn
-            # that costs a 2-long stub), so it dives only while that split is still legal
-            dive = t.units < self.limit - (p["boxed_reserve"] if length < p["boxed_long"] else 0)
-        if dive and p["dive_scope"] == 2:
-            r = p["dive_radius"]
-            dive = any(min((fx - hx) % w_, (hx - fx) % w_) + min((fy - hy) % h_, (hy - fy) % h_) <= r
-                       for fx, fy in self.founts)
 
         # enemy heads close enough to squeeze: (cell, area they need, how short of it they already are)
         foes = []
@@ -933,11 +874,7 @@ class Brain:
                     fr |= 1 << tail  # the tail cell is vacated by this move
                 area = self.flood(fr, tidx, need)
                 if area < need:
-                    tm = care
-                    if dive and (p["dive_scope"] != 1 or (on_pearl and (not p["dive_fountain"]
-                                                                        or t.cds[NB_WIN[d]] == b"1"))):
-                        tm *= p["dive_trap"]
-                    s -= p["trap"] * tm * (need - area) / need
+                    s -= p["trap"] * care * (need - area) / need
                 else:
                     s += p["area"]
                 if p["dead_end"] and self.exits(tidx, tx, ty, (d + 2) % 4, free) < 2:
@@ -1029,8 +966,6 @@ class Brain:
                         best_s = s
                         action = b"MOVE " + LETTERS[d:d + 1] * steps + b"\n"
 
-        if rams and p["ram"] > best_s:
-            action = MOVES[rams[0]]
         return action + b"SONAR %d\n" % sonar_msg if sonar_msg is not None else action
 
     # ------------------------------------------------------------------ fallback

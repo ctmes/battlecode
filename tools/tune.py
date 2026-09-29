@@ -18,6 +18,7 @@ import pathlib
 import random
 import sys
 import time
+from collections import namedtuple
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
@@ -70,6 +71,12 @@ SPACE = {
     "sprint_max": (1, 3, "int"),
     # sonar_terrain is deliberately absent: brain.py only tests it for > 0, so its magnitude does nothing and CMA
     # would be tuning noise. Decide it by a direct on/off A/B instead.
+    # mh4's mechanisms (29 Sep), each range clear of its 0 = off: topstyle's late consolidation and rams, the dive,
+    # the turnaround split, and the portal exploration bets.
+    "boxed_r_end": (150, 480, "int"), "ram": (100, 3000, "log"), "ram_len": (2, 5, "int"),
+    "dive_len": (3, 40, "int"), "dive_trap": (0, 1, "lin"), "dive_radius": (2, 14, "int"),
+    "boxed_rear_len": (4, 10, "int"), "boxed_reserve": (0, 8, "int"),
+    "portal_unknown": (0, 400, "lin"), "portal_blind": (0, 300, "lin"),
 }
 # Parameters whose "off" value (0) lies outside their range: encoded as the range's top, decoded back to 0 there.
 OFF_AT_TOP = {"split_len_max"}
@@ -107,6 +114,10 @@ OPPONENTS = {
     "topstyle": ("frozen", (str(ROOT / "snapshots" / "topstyle_2026-09-29"),
                             {"split_r_end": 300, "boxed_r_end": 300, "boxed_rear_r": 0, "ram_len": 3, "ram": 1000.0,
                              "dive_len": 3, "dive_trap": 0.0, "dive_scope": 0})),
+    # mh3 + portals (learned pairs, known-map oracle, oracle_seen), 29 Sep; not submitted as of this snapshot
+    "mh3p": ("frozen", (str(ROOT / "snapshots" / "mh3p_2026-09-29"), {})),
+    # mh3 + portals + topstyle + diving near fountains (any length); a submittable bot folder, DEFAULTS = mh4
+    "mh4": ("frozen", (str(ROOT / "snapshots" / "mh4_2026-09-29"), {})),
     "v3": ("frozen", (str(ROOT / "snapshots" / "brain_2026-09-27"),
                       {"grow_care_len": 1, "grow_care_mult": 1.9346, "grow_care_margin": 1})),
     "tuned_0927": ("frozen", (str(ROOT / "snapshots" / "brain_2026-09-27"),
@@ -115,6 +126,17 @@ OPPONENTS = {
                                "grow_care_margin": 3, "split_len_max": 41, "split_mate_cap": 3,
                                "split_food_ratio": 0.1705})),  # vs_manual_run1's final mean
     "grower": ("bot", "grower"),
+    # the grower, but it walks through portals (see tools/opponents.py PortalGrower): the only local opponent that
+    # reaches the pearls behind portals on Portals and Trauma, as the ladder's opponents do
+    "portal_grower": ("bot", "portal_grower"),
+    # Brains that use portals (bot/brain.py "portals"), following the live DEFAULTS like grower_brain does: the
+    # sparring bot above is too weak to matter (mh3 beat it 99%), and every frozen Brain treats portals as walls
+    # (portal params pinned to the first working version, so they stay put while the DEFAULTS are tuned)
+    "portal_brain": ("brain", {"portals": 1, "portal_unknown": 150.0, "portal_blind": 100.0, "portal_learn": 0,
+                               "map_oracle": 0}),
+    "grower_portal": ("brain", {"founder_units": 10, "split_units": 10, "split_r_end": 150, "grow_mod": 0,
+                                "portals": 1, "portal_unknown": 150.0, "portal_blind": 100.0, "portal_learn": 0,
+                                "map_oracle": 0}),
     # grower_brain above follows the live DEFAULTS (so since 28 Sep it splits when boxed in too); this is the
     # original, pinned to the 27 Sep code, for comparisons across time.
     "grower_frozen": ("frozen", (str(ROOT / "snapshots" / "brain_2026-09-27"),
@@ -248,14 +270,20 @@ def bundled(max_side):
     return out
 
 
+# A map played with a given engine seed (unswbc >= 1.0 only: the ladder's own maps x the judge's per-match seeds)
+SeededMap = namedtuple("SeededMap", "spec seed")
+
+
 def play_all(lg, candidates, maps, vs):
-    """candidates: list of param dicts. Returns per candidate {opponent name: [Result]}, in job order per opponent."""
+    """candidates: list of param dicts; maps: map specs or SeededMaps. Returns per candidate {opponent name:
+    [Result]}, in job order per opponent."""
     jobs, index = [], []
     for c, params in enumerate(candidates):
         for name, _ in vs:
             for m in maps:
+                spec, seed = (m.spec, m.seed) if isinstance(m, SeededMap) else (m, None)
                 for side in "AB":
-                    jobs.append(Job(m, side, params, opponent(name)))
+                    jobs.append(Job(spec, side, params, opponent(name), seed))
                     index.append((c, name))
     per = [{name: [] for name, _ in vs} for _ in candidates]
     for (c, name), r in zip(index, lg.run(jobs)):
@@ -269,7 +297,8 @@ def fitness(per_opp, vs):
 
 
 RUN_DEFAULTS = {"generations": 20, "pop": 16, "maps": 10, "max_side": 32, "seed": 1000, "sigma": 0.15,
-                "vs": "defaults:2,old:2", "params": "", "start": "", "no_bundled": False, "ladder": 0}
+                "vs": "defaults:2,old:2", "params": "", "start": "", "no_bundled": False, "ladder": 0,
+                "seeds": 0, "base": ""}
 
 
 def run(args):
@@ -285,16 +314,18 @@ def run(args):
             setattr(args, key, (saved["args"].get(key, fallback) if saved else fallback))  # .get: older runs
     vs = parse_vs(args.vs)
     names = saved["names"] if saved else (args.params.split(",") if args.params else list(SPACE))
-    start = json.loads(pathlib.Path(args.start).read_text())["params"] if args.start else {}
+    # base: fixed settings under every candidate (e.g. mh4's), so only `names` move; also the default start point
+    base = json.loads(pathlib.Path(args.base).read_text())["params"] if args.base else {}
+    start = json.loads(pathlib.Path(args.start).read_text())["params"] if args.start else base
     es = SepCMA(encode(start, names), args.sigma, args.pop)
     history = []
     if saved:
         es.load(saved["state"])
         history = saved["history"]
     anchors = bundled(args.max_side) if not args.no_bundled else []
-    n_ladder = args.ladder * len(ladder_maps.POOL)
+    n_ladder = (args.ladder + args.seeds) * len(ladder_maps.POOL)
     print(f"tuning {len(names)} parameters, population {args.pop}, {args.maps} generated + {len(anchors)} bundled + "
-          f"{n_ladder} ladder-variant maps x 2 sides x {len(vs)} opponents = "
+          f"{n_ladder} ladder maps ({'engine seeds' if args.seeds else 'variants'}) x 2 sides x {len(vs)} opponents = "
           f"{(args.maps + len(anchors) + n_ladder) * 2 * len(vs)} games per candidate", flush=True)
     with League(args.workers) as lg:
         while es.gen < args.generations:
@@ -302,9 +333,12 @@ def run(args):
             g = es.gen
             maps = [(args.seed + g * args.maps + i, 10, args.max_side) for i in range(args.maps)] + anchors
             maps += ladder_maps.train_specs(args.ladder, g) if args.ladder else []  # fresh variants, never held-out ones
+            # the maps as played with fresh engine seeds; ship decisions use 9,000,000 up (tools/bench1x.py)
+            maps += [SeededMap(("ladder", n, 0), args.seed + g * args.seeds + i)
+                     for n in ladder_maps.POOL for i in range(args.seeds)]
             points = es.ask(random.Random(f"tune/{args.name}/{g}"))
             mean_params = decode(es.m, names)  # the last candidate is the mean this generation started from
-            per = play_all(lg, [decode(p, names) for p in points] + [mean_params], maps, vs)
+            per = play_all(lg, [{**base, **decode(p, names)} for p in points] + [{**base, **mean_params}], maps, vs)
             fit = [fitness(p, vs) for p in per]
             es.tell(fit[:-1])
             mean_sum = {n: summarize(per[-1][n]) for n, _ in vs}
@@ -319,7 +353,7 @@ def run(args):
                   f"{h['mean_vs']}  deaths/k {h['mean_deaths_per_k']}  sigma {es.sigma:.3f}  "
                   f"{time.perf_counter() - t0:.0f}s ({games / (time.perf_counter() - t0):.1f} games/s)", flush=True)
             path.write_text(json.dumps({"names": names, "params": changed(decode(es.m, names)), "state": es.state(),
-                                        "history": history, "args": vars(args)}, indent=1))
+                                        "history": history, "args": vars(args), "base": base}, indent=1))
     print(f"\nwrote {path}\nparameters that differ from DEFAULTS: {changed(decode(es.m, names))}")
 
 
@@ -385,6 +419,10 @@ def main():
     r.add_argument("--no-bundled", action="store_true", default=None)
     r.add_argument("--ladder", type=int, default=None,
                    help="fresh variants of each ladder-pool map per generation (tools/ladder_maps.py); 0 = none")
+    r.add_argument("--seeds", type=int, default=None,
+                   help="engine seeds per ladder-pool map per generation, maps as played (needs unswbc >= 1.0: .venv-1x)")
+    r.add_argument("--base", default=None, help="tuned-format .json of fixed params under every candidate (and the "
+                                                "start point unless --start)")
     r.add_argument("--resume", action="store_true")
     r.add_argument("--workers", type=int, default=None, help="always auto-detected when omitted, even on --resume")
     a = sub.add_parser("average", help="average the last few generation means of a run into NAME_avgK.json")

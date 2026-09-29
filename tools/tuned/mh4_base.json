@@ -1,0 +1,4 @@
+{"params": {"portals": 1, "map_oracle": 1, "oracle_seen": 1,
+            "split_r_end": 300, "boxed_r_end": 300, "boxed_rear_r": 0, "ram_len": 3, "ram": 1000.0,
+            "dive_len": 99, "dive_trap": 0.0, "dive_scope": 2, "dive_radius": 6},
+ "source": "mh4 (snapshots/mh4_2026-09-29): the fixed settings under every candidate of an mh4 tuning run (--base)"}

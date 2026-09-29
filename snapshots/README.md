@@ -22,3 +22,6 @@ so that an opponent never changes when bot/brain.py does. Never edit a snapshot;
   mh3: 20 of 20 games identical). tune.py's "topstyle" opponent plays it the way the ladder's top 3 do
   (tools/scout.py): split_r_end=300, boxed_r_end=300, boxed_rear_r=0, ram_len=3, ram=1000 and the farmer's dive.
   bench1x, held-out seeds 9,000,000+, 200 games each: 75.5% vs mh3, 73.0% vs farmer, 58.2% vs portal_farmer.
+- `mh3p_2026-09-29/`: mh3 plus portal support (DEFAULTS "portals", "map_oracle", "oracle_seen"), with its own copy of
+  known_maps.py (brain.py reads it from its own folder). Unswbc 1.2.2, the real ladder maps x seeds 9,000,000-9,000,009,
+  200 games per opponent: 72.2% vs mh3, 93.0% vs live, 74.0% vs farmer, 65.0% vs portal, 68.5% vs portal_farmer.

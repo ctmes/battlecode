@@ -317,6 +317,24 @@ class Grower(Chaser):
         return super().act(dragon, t)
 
 
+@register
+class PortalGrower(Grower):
+    """A grower that walks through portals like ordinary edges (it never knows where one leads). Every Brain up to
+    mh3 treats portals as walls, so without this the bench had no opponent that uses them: on Portals and Trauma
+    each team's founders start in a region whose pearls are mostly behind portals, and the ladder's opponents,
+    which do use them, out-ate us about 9:1 and 5:1 there while every local Brain opponent was penned in too."""
+
+    name = "portal_grower"
+
+    def act(self, dragon, t):
+        if t.length >= self.split_at and t.units < min(dragon.limit, self.cap) and t.rnd < self.split_deadline:
+            return b"SPLIT %d\n" % (t.length // 2)
+        kelp, blocked, portal = look(t, dragon.w, dragon.h)
+        pool = [d for d in range(4) if not kelp[d] and (portal[d] or not blocked[d])] or [0, 1, 2, 3]
+        ps = pearls(t)
+        return MOVES[toward(pool, ps, t.dir)] if ps else cruise(dragon, t, pool)
+
+
 _MANUAL_HEURISTICS = pathlib.Path(__file__).resolve().parents[1] / "manual-heuristics"
 if _MANUAL_HEURISTICS.is_dir():
     snapshot_opponent("manual_heuristics", _MANUAL_HEURISTICS)
