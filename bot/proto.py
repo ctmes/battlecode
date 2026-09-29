@@ -9,6 +9,7 @@ Turn block (text), one per dragon-turn:
     NUM_PARTS m / m lines "team id x y facing isHead"
     8 horizontal-edge rows of 7 tokens, then 7 vertical-edge rows of 8 tokens ('.' empty, 'w' kelp, n portal id)
 A dragon's very first payload is prefixed by a 4-line init block (id, team, "MAP w h", unit limit).
+Protocol 3 (opted into by printing PROTOCOL 3 in a reply) adds an ECHOES line between the messages and the tiles.
 """
 import sys
 
@@ -47,7 +48,7 @@ def parse_init(text):
 
 
 class Turn:
-    __slots__ = ("rnd", "dir", "length", "units", "msgs", "hx", "hy", "flags", "cds", "parts", "edges")
+    __slots__ = ("rnd", "dir", "length", "units", "msgs", "echo", "hx", "hy", "flags", "cds", "parts", "edges")
 
 
 def parse_turn(block):
@@ -60,6 +61,12 @@ def parse_turn(block):
     n = int(ls[4].split()[1])
     t.msgs = [int(x) for x in ls[5:5 + n]]
     j = 5 + n
+    # protocol 3 only (a bot that printed PROTOCOL 3, and its split children): "ECHOES kelp ally ally_head enemy
+    # enemy_head" before the tiles, counting what last turn's sonar rays stopped on (no direction, no distance)
+    t.echo = None
+    if ls[j].startswith(b"ECHOES"):
+        t.echo = tuple(int(x) for x in ls[j].split()[1:6])
+        j += 1
     toks = b" ".join(ls[j:j + 49]).split()
     t.hx = int(toks[96])  # tile 24 (the head), token x
     t.hy = int(toks[97])

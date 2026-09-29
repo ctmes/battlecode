@@ -15,6 +15,8 @@ A directory is a fetch_replays --out folder (index.csv's seat column is that tea
 in <dir>/scout.json, so a rerun only reads new replays.
 
     .venv\\Scripts\\python.exe tools\\scout.py replays/top/cutlery replays/top/cheji replays/ladder [--since ISO]
+    .venv\\Scripts\\python.exe tools\\scout.py mh3=replays/ladder@2026-09-28T11:03,2026-09-29T03:25 \\
+        mh4=replays/ladder@2026-09-29T03:25     # two versions of one team, told apart by time
 """
 import argparse
 import collections
@@ -426,16 +428,19 @@ def by_map(games):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("dirs", nargs="+", help="fetch_replays --out folders; label = folder name")
+    ap.add_argument("dirs", nargs="+", help="fetch_replays --out folders, each as [label=]dir[@since[,until]] (ISO "
+                                            "times); the label defaults to the folder name")
     ap.add_argument("--since", default="", help="ISO time; applies to every folder unless given as dir@ISO")
     ap.add_argument("--opponents", action="store_true", help="also print each folder's opponents, pooled")
     args = ap.parse_args()
     cols = {}
     maps = {}
     for spec in args.dirs:
-        folder, _, since = spec.partition("@")
-        games = load(folder, since or args.since)
-        label = pathlib.Path(folder).name
+        label, _, rest = spec.rpartition("=")
+        folder, _, window = rest.partition("@")
+        since, _, until = window.partition(",")
+        games = load(folder, since or args.since, until or "9999")
+        label = label or pathlib.Path(folder).name
         bad = sum(g["mismatch"] for r, g in games)
         upd = sum(g["updates"] for r, g in games)
         print(f"{label}: {len(games)} games, body tracking mismatches {bad}/{upd}", file=sys.stderr)

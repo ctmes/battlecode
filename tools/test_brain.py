@@ -123,10 +123,38 @@ def test_ram_takes_a_head_on_trade_only_when_enabled_and_even():
     print("ok: a short dragon rams an adjacent enemy head at least as long, only when enabled")
 
 
+def test_radar_parses_echoes_pings_ahead_and_guards_straight_dives():
+    import proto
+    # a 3-long dragon heading north; the pearl straight ahead sits in a one-tile kelp pocket (a certain trap)
+    edges = {(0, -1, "h"): "w", (0, -1, "v"): "w", (1, -1, "v"): "w"}
+    parts = [("A", 1, 0, 0, "N", 1), ("A", 1, 0, 1, "N", 0), ("A", 1, 0, 2, "N", 0)]
+
+    def block(echo=None):
+        b = render_block(0, {(0, -1)}, {}, edges, parts, length=3, units=5)
+        if echo is None:
+            return b
+        ls = b.split(b"\n")
+        return b"\n".join(ls[:5] + [b"ECHOES " + b" ".join(b"%d" % v for v in echo)] + ls[5:])
+
+    t0, t1 = proto.parse_turn(block()), proto.parse_turn(block((1, 0, 0, 0, 0)))
+    assert t0.echo is None and t1.echo == (1, 0, 0, 0, 0)
+    assert (t1.hx, t1.hy, t1.flags, t1.cds, t1.parts, t1.edges) == (t0.hx, t0.hy, t0.flags, t0.cds, t0.parts, t0.edges)
+
+    dive = {"dive_len": 3, "dive_trap": 0.0, "dive_scope": 1, "radar": 1, "radar_dive": 1}
+    out = Brain(1, b"A", W, H, 64, dive).act(block((1, 0, 0, 0, 0)))  # the ray ahead hit kelp: the pocket is empty
+    assert out == MOVES[0] + b"PROTOCOL 3\nSONAR N 0\n", out
+    out = Brain(1, b"A", W, H, 64, dive).act(block((0, 0, 0, 1, 0)))  # it hit an enemy body: no dive
+    assert not out.startswith(MOVES[0]) and out.endswith(b"0\n") and b"PROTOCOL 3\nSONAR " in out, out
+    assert Brain(1, b"A", W, H, 64, {}).act(block()) != MOVES[0]  # radar off: no dive, no PROTOCOL line
+    assert b"PROTOCOL" not in Brain(1, b"A", W, H, 64, {}).act(block())
+    print("ok: radar parses ECHOES, pings along the move and keeps a dive out of an occupied line ahead")
+
+
 if __name__ == "__main__":
     test_fallback_portal_edge_ignores_irrelevant_landing_tile_occupancy()
     test_fallback_kelp_still_blocks_and_normal_occupancy_still_blocks()
     test_dive_takes_a_trapped_pearl_only_when_enabled_and_gated()
     test_fountain_detection_needs_countdown_one_on_two_turns_running()
+    test_radar_parses_echoes_pings_ahead_and_guards_straight_dives()
     test_boxed_r_end_keeps_only_rear_splits_late()
     test_ram_takes_a_head_on_trade_only_when_enabled_and_even()

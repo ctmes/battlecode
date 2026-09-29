@@ -200,6 +200,14 @@ DEFAULTS = {
     "dive_fountain": 0,        # scope 1 only: 1 = only onto a pearl on a tile showing countdown 1 (a fountain)
     "dive_units": 0,           # ... and only while the team has at least this many dragons
     "dive_radius": 6,          # scope 2: Manhattan distance to a known fountain
+    # Radar (unswbc 1.x protocol 3, 29 Sep). 1 = print PROTOCOL 3 and send one directional ping along the move just
+    # made; next turn's ECHOES line then says what the ray stopped on first -- kelp, a teammate's body or head, an
+    # enemy's body or head -- straight ahead of the head, beyond the 3 tiles in view (a ray always hits something on
+    # the ladder maps). Pings do nothing else: a bot that ignores sonar messages plays the same games. 0 = off
+    # (protocol 2, as up to mh4). The top ladder team pings every turn; the second never does.
+    "radar": 0,
+    "radar_dive": 0,           # 1 = no dive straight ahead when the ray ahead hit a dragon (an occupied corridor)
+    "radar_head": 0.0,         # penalty for moving straight on when the ray ahead hit an enemy head
     # Top-team style, from 450 replays of the ladder's top 3 (Cutlery, cheji bt, forgot to mention; tools/scout.py,
     # 29 Sep). All three stop ordinary splits around round 300, so attrition shrinks the swarm (cheji: 45 dragons at
     # round 300, 7 at 400) while the survivors eat the corpses: 57-75% of their longest dragon's pearls after round
@@ -311,15 +319,21 @@ class Brain:
     def act(self, block):
         """Returns the action bytes (e.g. b'MOVE N\\n'); never raises."""
         self.t0 = _pc()
+        t = None
         try:
-            action = self.decide(proto.parse_turn(block))
+            t = proto.parse_turn(block)
+            action = self.decide(t)
         except Exception:  # noqa: BLE001 - a crash would kill the dragon
             if self.strict:
                 raise
             self.errors += 1
-            return self.fallback(block)
+            action = self.fallback(block)
         if self.debug:
             self.dbg["act"] = action
+        if self.p["radar"]:
+            # ping along the move (the new facing); a split or anything else keeps the old facing
+            letter = action[5:6] if action.startswith(b"MOVE ") else (LETTERS[t.dir:t.dir + 1] if t and t.dir >= 0 else b"N")
+            action += b"PROTOCOL 3\nSONAR " + letter + b" 0\n"
         return action
 
     def over(self):
@@ -864,6 +878,9 @@ class Brain:
         tail = self.tail
         free_trap = free & self.seen if p["pessimistic"] else free
         dive = length <= p["dive_len"] and t.units >= p["dive_units"]
+        echo = t.echo if p["radar"] else None  # last turn's ray, cast from this head along t.dir
+        ahead_dragon = echo is not None and (echo[1] or echo[2] or echo[3] or echo[4])
+        ahead_enemy_head = echo is not None and echo[4] > 0
         if dive and length >= 4:
             # a dragon this long can leave a dead end by the boxed split (with boxed_rear_r 0 a rear split: a U-turn
             # that costs a 2-long stub), so it dives only while that split is still legal
@@ -934,8 +951,9 @@ class Brain:
                 area = self.flood(fr, tidx, need)
                 if area < need:
                     tm = care
-                    if dive and (p["dive_scope"] != 1 or (on_pearl and (not p["dive_fountain"]
-                                                                        or t.cds[NB_WIN[d]] == b"1"))):
+                    guarded = p["radar_dive"] and ahead_dragon and d == t.dir  # the corridor ahead is occupied
+                    if dive and not guarded and (p["dive_scope"] != 1 or (on_pearl and (not p["dive_fountain"]
+                                                                                        or t.cds[NB_WIN[d]] == b"1"))):
                         tm *= p["dive_trap"]
                     s -= p["trap"] * tm * (need - area) / need
                 else:
@@ -970,6 +988,8 @@ class Brain:
                     s -= p["sonar_predict"]
             if d == t.dir:
                 s += p["straight"]
+                if ahead_enemy_head:
+                    s -= p["radar_head"]
             if s > best_s:
                 best_d, best_s = d, s
         for d in unknown:  # nothing is known beyond it until we step through: a flat bet on what lies there
