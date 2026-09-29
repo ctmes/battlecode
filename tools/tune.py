@@ -98,6 +98,15 @@ OPPONENTS = {
     "mh2": ("frozen", (str(ROOT / "snapshots" / "mh2_2026-09-28"), {})),  # v2 + boxed_split, submitted 28 Sep 06:40Z
     # mh2 + spare_team + boxed_reserve + rear split, submitted 28 Sep
     "mh3": ("frozen", (str(ROOT / "snapshots" / "mh3_2026-09-28"), {})),
+    # mh3 whose short dragons ignore the trap check: forages like the ladder (7.7 pearls per 100 dragon-turns, 27
+    # deaths per 1000, eats fountains) where every other local opponent eats 3-4.6 like we do (tools/forage.py)
+    "farmer": ("frozen", (str(ROOT / "snapshots" / "farmer_2026-09-29"),
+                          {"dive_len": 3, "dive_trap": 0.0, "dive_scope": 0})),
+    # the farmer playing like the ladder's top 3 (tools/scout.py): stops splitting at round 300, turns around all
+    # game, rams enemy heads with short dragons. 75.5% vs mh3 on held-out seeds (bot/brain.py DEFAULTS comment)
+    "topstyle": ("frozen", (str(ROOT / "snapshots" / "topstyle_2026-09-29"),
+                            {"split_r_end": 300, "boxed_r_end": 300, "boxed_rear_r": 0, "ram_len": 3, "ram": 1000.0,
+                             "dive_len": 3, "dive_trap": 0.0, "dive_scope": 0})),
     "v3": ("frozen", (str(ROOT / "snapshots" / "brain_2026-09-27"),
                       {"grow_care_len": 1, "grow_care_mult": 1.9346, "grow_care_margin": 1})),
     "tuned_0927": ("frozen", (str(ROOT / "snapshots" / "brain_2026-09-27"),

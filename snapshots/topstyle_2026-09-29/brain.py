@@ -187,27 +187,16 @@ DEFAULTS = {
     # so the trap check vetoes them (~90% of the adjacent pearls we pass up; 95-100% of those vetoes are real traps).
     # Ladder opponents eat 3-15x our fountain pearls, die 3x as often (92% of their dead are shorter than 4) and eat
     # 90% of their own dead back. A fountain always shows countdown 1 (other spawning tiles: ~1% of sightings).
-    # Ladder opponents' long dragons also rear-split (child = all but 2) in 69% of their long-parent splits all game long:
-    # a U-turn out of a dead end. With boxed_rear_r 0, a dragon 4+ long diving into a fountain branch gets out the
-    # same way, so dive_len above 3 lets long dragons dive too (only while that boxed split is legal).
     "dive_len": 0,             # dragons at most this long dive (0 = off)
     "dive_trap": 0.0,          # ... with the trap penalty multiplied by this
-    "dive_scope": 1,           # 0 = on every move (reckless), 1 = only a move onto a pearl, 2 = on every move while
-                                # a fountain this dragon has seen is within dive_radius (fountain: a tile showing
-                                # countdown 1 on two turns running, which no other tile did in 3M sightings)
-    "dive_fountain": 0,        # scope 1 only: 1 = only onto a pearl on a tile showing countdown 1 (a fountain)
+    "dive_scope": 1,           # 0 = on every move (reckless), 1 = only a move onto a pearl
+    "dive_fountain": 0,        # 1 = only onto a pearl on a tile showing countdown 1 (a fountain)
     "dive_units": 0,           # ... and only while the team has at least this many dragons
-    "dive_radius": 6,          # scope 2: Manhattan distance to a known fountain
     # Top-team style, from 450 replays of the ladder's top 3 (Cutlery, cheji bt, forgot to mention; tools/scout.py,
     # 29 Sep). All three stop ordinary splits around round 300, so attrition shrinks the swarm (cheji: 45 dragons at
     # round 300, 7 at 400) while the survivors eat the corpses: 57-75% of their longest dragon's pearls after round
     # 300 are their own dead, and it ends 32-43 long against our 10.5 -- though we hold more total length, in 33
     # dragons. They also ram enemy heads with 2-3-long dragons, 22-25 times a game, more often than they are rammed.
-    # "topstyle" = split_r_end 300, boxed_r_end 300, boxed_rear_r 0, ram_len 3, ram 1000, dive_len 3, dive_trap 0,
-    # dive_scope 0. On the 1.x engine, the 10 ladder maps x held-out seeds 9,000,000+ x both seats (200 games per
-    # opponent, tools/bench1x.py): 75.5% [69-81] vs mh3, 73.0% vs farmer, 58.2% vs portal_farmer; longest dragon at
-    # round 500 15.2 vs mh3's 11.0. Screened on seeds 1-6 (120 games vs mh3): each part alone 51-64%, round 300 beat
-    # 250 and 350, ram 300-3000 all alike; a "feed" mechanism (short dragons dying next to a long teammate) added nothing.
     "boxed_r_end": 0,          # from this round on a boxed-in dragon splits only for a rear split (0 = off)
     "ram_len": 0,              # dragons at most this long may move onto an adjacent enemy head, killing both (0 = off)
     "ram": 0.0,                # ... when that enemy shows at least as many segments: a move scored at this
@@ -239,8 +228,6 @@ class Brain:
         self.tail = None
         tpu = self.p["tiles_per_unit"]
         self.target = unit_limit if tpu <= 0 else max(2, min(unit_limit, n // tpu))  # preferred team size
-        self.cd1 = 0  # tiles that showed pearl countdown 1 last turn (for dive_scope 2's fountain detection)
-        self.founts = []  # (x, y) of tiles seen at countdown 1 on two turns running: fountains
         self.founder = None  # True when alive at round 0 (decided on the first turn)
         self.king = None  # a founder that never splits (see DEFAULTS "king_first"); decided on the first turn
         self.errors = 0
@@ -499,19 +486,6 @@ class Brain:
         length = t.length
         self.learn_edges(t)
         self.seen |= self.window((hx - 3) % w_, (hy - 3) % h_)
-        if p["dive_len"] and p["dive_scope"] == 2:  # before any early return, so no turn breaks the two-turn test
-            cds, x0, y0, c1 = t.cds, (hx - 3) % w_, (hy - 3) % h_, 0
-            for i in range(49):
-                if cds[i] == b"1":
-                    c1 |= 1 << (((y0 + WIN_R[i]) % h_) * w_ + (x0 + WIN_C[i]) % w_)
-            new = c1 & self.cd1
-            while new:
-                low = new & -new
-                c = low.bit_length() - 1
-                if (c % w_, c // w_) not in self.founts:
-                    self.founts.append((c % w_, c // w_))
-                new ^= low
-            self.cd1 = c1
         if self.king is None:  # before any early return, so a boxed-in first turn still decides it
             self.king = t.rnd == 0 and ((p["king_first"] > 0 and self.id < p["king_first"])
                                         or (p["king_len"] > 0 and length >= p["king_len"]))
@@ -685,14 +659,6 @@ class Brain:
         tail = self.tail
         free_trap = free & self.seen if p["pessimistic"] else free
         dive = length <= p["dive_len"] and t.units >= p["dive_units"]
-        if dive and length >= 4:
-            # a dragon this long can leave a dead end by the boxed split (with boxed_rear_r 0 a rear split: a U-turn
-            # that costs a 2-long stub), so it dives only while that split is still legal
-            dive = t.units < self.limit - (p["boxed_reserve"] if length < p["boxed_long"] else 0)
-        if dive and p["dive_scope"] == 2:
-            r = p["dive_radius"]
-            dive = any(min((fx - hx) % w_, (hx - fx) % w_) + min((fy - hy) % h_, (hy - fy) % h_) <= r
-                       for fx, fy in self.founts)
 
         # enemy heads close enough to squeeze: (cell, area they need, how short of it they already are)
         foes = []
@@ -750,7 +716,7 @@ class Brain:
                 area = self.flood(fr, tidx, need)
                 if area < need:
                     tm = care
-                    if dive and (p["dive_scope"] != 1 or (on_pearl and (not p["dive_fountain"]
+                    if dive and (p["dive_scope"] == 0 or (on_pearl and (not p["dive_fountain"]
                                                                         or t.cds[NB_WIN[d]] == b"1"))):
                         tm *= p["dive_trap"]
                     s -= p["trap"] * tm * (need - area) / need

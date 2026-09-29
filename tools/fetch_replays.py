@@ -25,7 +25,7 @@ PAUSE = 0.5  # seconds between requests: be polite to a shared competition serve
 
 def fetch(path):
     req = urllib.request.Request(SITE + path, headers={"User-Agent": "unswbc-replay-fetch"})
-    with urllib.request.urlopen(req, timeout=60) as reply:
+    with urllib.request.urlopen(req, timeout=300) as reply:
         return reply.read()
 
 

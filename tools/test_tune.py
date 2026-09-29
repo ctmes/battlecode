@@ -86,7 +86,10 @@ def test_wilson():
 
 def test_league_is_deterministic_and_side_symmetric():
     """Same parameters on both teams is one game seen from two seats: the two scores must add up to exactly 1."""
-    jobs = [Job(m, side, {}, ("brain", {})) for m in (SMALL, (7, 10, 20), (8, 10, 20)) for side in "AB"]
+    # budget_ns is wall time locally, so with the machine under load the 60M default cuts turns short at random and
+    # the test would measure the load, not the league
+    nb = {"budget_ns": 10 ** 13}
+    jobs = [Job(m, side, nb, ("brain", nb)) for m in (SMALL, (7, 10, 20), (8, 10, 20)) for side in "AB"]
     with League(3) as lg:
         first, second = lg.run(jobs), lg.run(jobs)
     assert [r[:9] for r in first] == [r[:9] for r in second], "league runs are not reproducible"

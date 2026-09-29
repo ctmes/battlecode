@@ -1,0 +1,151 @@
+match,at,map,seat,opponent,opponent_elo,result,ranked
+502370,2026-09-28T16:09:56.015Z,Slithery Fight,A,Sabotage-d,2025,loss,True
+502335,2026-09-28T16:03:57.348Z,Slithery Fight,B,WaterCandle,1569,win,False
+502133,2026-09-28T16:02:01.255Z,Slithery Fight,B,Stockfish,1987,win,False
+502134,2026-09-28T16:00:30.107Z,Trauma,B,Stockfish,1987,win,False
+502091,2026-09-28T15:59:52.737Z,Schooltime,B,bread first search,2006,win,False
+502332,2026-09-28T15:59:49.529Z,Devil,B,WaterCandle,1569,win,False
+502132,2026-09-28T15:59:48.892Z,Schooltime,B,Stockfish,1987,win,False
+502331,2026-09-28T15:59:42.388Z,Trophy,B,WaterCandle,1569,win,False
+502126,2026-09-28T15:59:38.261Z,Autarky,B,Stockfish,1987,win,False
+502333,2026-09-28T15:59:35.384Z,Queen Of Spades,B,WaterCandle,1569,win,False
+502334,2026-09-28T15:59:33.325Z,Prisoners Dilemma,B,WaterCandle,1569,win,False
+502129,2026-09-28T15:59:13.239Z,Portals,B,Stockfish,1987,win,False
+502127,2026-09-28T15:59:02.243Z,Default,B,Stockfish,1987,loss,False
+502089,2026-09-28T15:58:54.992Z,Portals,B,bread first search,2006,win,False
+502090,2026-09-28T15:58:17.598Z,Autarky,B,bread first search,2006,win,False
+502131,2026-09-28T15:58:01.425Z,Queen Of Spades,B,Stockfish,1987,win,False
+502088,2026-09-28T15:57:47.926Z,Default,B,bread first search,2006,win,False
+502135,2026-09-28T15:57:37.979Z,Trophy,B,Stockfish,1987,loss,False
+502128,2026-09-28T15:57:36.913Z,Devil,B,Stockfish,1987,win,False
+502130,2026-09-28T15:57:35.090Z,Prisoners Dilemma,B,Stockfish,1987,win,False
+501859,2026-09-28T15:56:53.065Z,Slithery Fight,B,BANG,1784,win,False
+501673,2026-09-28T15:55:15.946Z,Slithery Fight,B,free trip to sydney pls,1913,win,True
+501562,2026-09-28T15:54:59.769Z,Slithery Fight,A,dev test 1 :P,1977,win,False
+501572,2026-09-28T15:54:44.812Z,Slithery Fight,A,dev test 1 :P,1977,win,False
+501678,2026-09-28T15:54:33.995Z,Slithery Fight,B,chaoliangUNSW,1602,win,False
+501855,2026-09-28T15:54:24.316Z,Portals,B,BANG,1784,win,False
+501717,2026-09-28T15:54:09.625Z,Portals,B,free trip to sydney pls,1913,win,True
+501860,2026-09-28T15:54:04.926Z,Trauma,B,BANG,1784,win,False
+501674,2026-09-28T15:53:49.935Z,Schooltime,B,free trip to sydney pls,1913,win,True
+501858,2026-09-28T15:53:42.123Z,Schooltime,B,BANG,1784,win,False
+501676,2026-09-28T15:53:29.409Z,Schooltime,B,chaoliangUNSW,1602,win,False
+501710,2026-09-28T15:53:23.541Z,Portals,B,free trip to sydney pls,1913,win,True
+501582,2026-09-28T15:53:11.929Z,Slithery Fight,A,dev test 1 :P,1977,loss,False
+501861,2026-09-28T15:53:01.867Z,Trophy,B,BANG,1784,win,False
+501718,2026-09-28T15:52:54.446Z,Trauma,B,free trip to sydney pls,1913,win,True
+501854,2026-09-28T15:52:52.926Z,Devil,B,BANG,1784,loss,False
+501852,2026-09-28T15:52:42.995Z,Autarky,B,BANG,1784,win,False
+501853,2026-09-28T15:52:38.611Z,Default,B,BANG,1784,win,False
+501709,2026-09-28T15:52:36.508Z,Trauma,B,free trip to sydney pls,1913,win,True
+501685,2026-09-28T15:52:34.393Z,Trauma,B,chaoliangUNSW,1602,win,False
+501711,2026-09-28T15:52:21.995Z,Default,B,free trip to sydney pls,1913,win,True
+501677,2026-09-28T15:52:20.611Z,Portals,B,chaoliangUNSW,1602,loss,False
+501856,2026-09-28T15:52:16.245Z,Prisoners Dilemma,B,BANG,1784,win,False
+501857,2026-09-28T15:52:13.496Z,Queen Of Spades,B,BANG,1784,win,False
+501571,2026-09-28T15:51:56.911Z,Schooltime,A,dev test 1 :P,1977,win,False
+501715,2026-09-28T15:51:44.871Z,Default,B,forgot to mention,2045,win,False
+501716,2026-09-28T15:51:31.823Z,Devil,B,free trip to sydney pls,1913,win,True
+501680,2026-09-28T15:51:22.302Z,Default,B,chaoliangUNSW,1602,win,False
+501684,2026-09-28T15:50:59.626Z,Devil,B,chaoliangUNSW,1602,win,False
+501719,2026-09-28T15:50:55.463Z,Prisoners Dilemma,B,free trip to sydney pls,1913,win,True
+501708,2026-09-28T15:50:46.856Z,Devil,B,free trip to sydney pls,1913,loss,True
+501683,2026-09-28T15:50:44.714Z,Autarky,B,chaoliangUNSW,1602,win,False
+501675,2026-09-28T15:50:42.793Z,Trophy,B,free trip to sydney pls,1913,win,True
+501712,2026-09-28T15:50:41.847Z,Prisoners Dilemma,B,free trip to sydney pls,1913,win,True
+501752,2026-09-28T15:50:38.199Z,Devil,B,forgot to mention,2045,win,False
+501738,2026-09-28T15:50:37.586Z,Autarky,B,forgot to mention,2045,loss,False
+501720,2026-09-28T15:50:34.313Z,Queen Of Spades,B,free trip to sydney pls,1913,win,True
+501558,2026-09-28T15:50:31.425Z,Portals,A,dev test 1 :P,1977,win,False
+501706,2026-09-28T15:50:29.571Z,Queen Of Spades,B,forgot to mention,2045,loss,False
+501672,2026-09-28T15:50:28.177Z,Prisoners Dilemma,B,free trip to sydney pls,1913,win,True
+501724,2026-09-28T15:50:27.800Z,Prisoners Dilemma,B,forgot to mention,2045,win,False
+501568,2026-09-28T15:50:26.627Z,Portals,A,dev test 1 :P,1977,win,False
+501671,2026-09-28T15:50:25.238Z,Queen Of Spades,B,free trip to sydney pls,1913,win,True
+501679,2026-09-28T15:50:25.039Z,Queen Of Spades,B,chaoliangUNSW,1602,win,False
+501682,2026-09-28T15:50:24.934Z,Prisoners Dilemma,B,chaoliangUNSW,1602,win,False
+501681,2026-09-28T15:50:21.631Z,Trophy,B,chaoliangUNSW,1602,loss,False
+501563,2026-09-28T15:50:12.896Z,Trauma,A,dev test 1 :P,1977,win,False
+501561,2026-09-28T15:50:09.026Z,Schooltime,A,dev test 1 :P,1977,win,False
+501578,2026-09-28T15:50:02.503Z,Portals,A,dev test 1 :P,1977,win,False
+501583,2026-09-28T15:50:02.410Z,Trauma,A,dev test 1 :P,1977,win,False
+501573,2026-09-28T15:50:00.404Z,Trauma,A,dev test 1 :P,1977,win,False
+501581,2026-09-28T15:49:53.509Z,Schooltime,A,dev test 1 :P,1977,win,False
+501431,2026-09-28T15:49:39.874Z,Slithery Fight,A,Cutlery,2155,loss,False
+501566,2026-09-28T15:49:15.609Z,Default,A,dev test 1 :P,1977,loss,False
+501565,2026-09-28T15:49:12.638Z,Autarky,A,dev test 1 :P,1977,loss,False
+501441,2026-09-28T15:49:04.824Z,Slithery Fight,B,C--,1920,win,False
+501575,2026-09-28T15:49:04.606Z,Autarky,A,dev test 1 :P,1977,loss,False
+501560,2026-09-28T15:48:59.985Z,Queen Of Spades,A,dev test 1 :P,1977,win,False
+501555,2026-09-28T15:48:53.588Z,Autarky,A,dev test 1 :P,1977,loss,False
+501430,2026-09-28T15:48:50.338Z,Schooltime,A,Cutlery,2155,loss,False
+501564,2026-09-28T15:48:44.794Z,Trophy,A,dev test 1 :P,1977,win,False
+501576,2026-09-28T15:48:43.099Z,Default,A,dev test 1 :P,1977,loss,False
+501574,2026-09-28T15:48:34.520Z,Trophy,A,dev test 1 :P,1977,loss,False
+501556,2026-09-28T15:48:30.523Z,Default,A,dev test 1 :P,1977,loss,False
+501580,2026-09-28T15:48:24.718Z,Queen Of Spades,A,dev test 1 :P,1977,win,False
+501584,2026-09-28T15:48:18.544Z,Trophy,A,dev test 1 :P,1977,loss,False
+501380,2026-09-28T15:48:12.197Z,Slithery Fight,B,Stockfish,1987,win,False
+501577,2026-09-28T15:48:07.025Z,Devil,A,dev test 1 :P,1977,win,False
+501567,2026-09-28T15:48:06.056Z,Devil,A,dev test 1 :P,1977,loss,False
+501519,2026-09-28T15:48:04.964Z,Portals,B,w daniel ma,1878,win,True
+501557,2026-09-28T15:47:56.974Z,Devil,A,dev test 1 :P,1977,loss,False
+501579,2026-09-28T15:47:56.786Z,Prisoners Dilemma,A,dev test 1 :P,1977,win,False
+501570,2026-09-28T15:47:54.536Z,Queen Of Spades,A,dev test 1 :P,1977,win,False
+501569,2026-09-28T15:47:53.727Z,Prisoners Dilemma,A,dev test 1 :P,1977,loss,False
+501559,2026-09-28T15:47:52.490Z,Prisoners Dilemma,A,dev test 1 :P,1977,win,False
+501474,2026-09-28T15:47:38.650Z,Portals,B,free trip to sydney pls,1913,win,False
+501379,2026-09-28T15:47:37.925Z,Schooltime,B,Stockfish,1987,win,False
+501517,2026-09-28T15:47:10.836Z,Default,B,w daniel ma,1878,win,True
+501515,2026-09-28T15:47:07.864Z,Trophy,B,w daniel ma,1878,win,True
+501490,2026-09-28T15:46:58.418Z,Portals,B,free trip to sydney pls,1913,loss,False
+501381,2026-09-28T15:46:42.275Z,Trauma,B,Stockfish,1987,win,False
+501518,2026-09-28T15:46:41.737Z,Queen Of Spades,B,w daniel ma,1878,win,True
+501442,2026-09-28T15:46:39.184Z,Trauma,B,C--,1920,win,False
+501440,2026-09-28T15:46:38.285Z,Schooltime,B,C--,1920,win,False
+501516,2026-09-28T15:46:35.139Z,Prisoners Dilemma,B,w daniel ma,1878,win,True
+501427,2026-09-28T15:46:32.670Z,Portals,A,Cutlery,2155,loss,False
+501437,2026-09-28T15:46:25.256Z,Portals,B,C--,1920,win,False
+501471,2026-09-28T15:46:22.575Z,Default,B,free trip to sydney pls,1913,win,False
+501424,2026-09-28T15:46:18.030Z,Autarky,A,Cutlery,2155,win,False
+501470,2026-09-28T15:46:13.048Z,Autarky,B,free trip to sydney pls,1913,win,False
+501486,2026-09-28T15:46:09.422Z,Autarky,B,free trip to sydney pls,1913,win,False
+501487,2026-09-28T15:45:50.710Z,Default,B,free trip to sydney pls,1913,win,False
+501432,2026-09-28T15:45:40.950Z,Trauma,A,Cutlery,2155,win,False
+501488,2026-09-28T15:45:35.165Z,Devil,B,free trip to sydney pls,1913,loss,False
+501376,2026-09-28T15:45:34.519Z,Portals,B,Stockfish,1987,win,False
+501434,2026-09-28T15:45:30.810Z,Autarky,B,C--,1920,win,False
+501435,2026-09-28T15:45:30.621Z,Default,B,C--,1920,win,False
+501443,2026-09-28T15:45:29.566Z,Trophy,B,C--,1920,win,False
+501472,2026-09-28T15:45:23.728Z,Devil,B,free trip to sydney pls,1913,win,False
+501374,2026-09-28T15:45:14.634Z,Default,B,Stockfish,1987,loss,False
+501469,2026-09-28T15:45:13.297Z,Default,B,Big Bobs Bots,1551,win,False
+501489,2026-09-28T15:45:10.601Z,Prisoners Dilemma,B,free trip to sydney pls,1913,loss,False
+501425,2026-09-28T15:45:08.680Z,Default,A,Cutlery,2155,win,False
+501473,2026-09-28T15:44:56.227Z,Prisoners Dilemma,B,free trip to sydney pls,1913,win,False
+501438,2026-09-28T15:44:49.642Z,Prisoners Dilemma,B,C--,1920,win,False
+501439,2026-09-28T15:44:48.576Z,Queen Of Spades,B,C--,1920,win,False
+501373,2026-09-28T15:44:46.067Z,Autarky,B,Stockfish,1987,win,False
+501429,2026-09-28T15:44:38.803Z,Queen Of Spades,A,Cutlery,2155,win,False
+501403,2026-09-28T15:44:34.927Z,Autarky,B,Big Bobs Bots,1551,win,False
+501436,2026-09-28T15:44:30.896Z,Devil,B,C--,1920,win,False
+501426,2026-09-28T15:44:28.754Z,Devil,A,Cutlery,2155,loss,False
+501433,2026-09-28T15:44:22.546Z,Trophy,A,Cutlery,2155,loss,False
+501428,2026-09-28T15:44:18.586Z,Prisoners Dilemma,A,Cutlery,2155,loss,False
+501378,2026-09-28T15:44:15.492Z,Queen Of Spades,B,Stockfish,1987,win,False
+501375,2026-09-28T15:44:01.087Z,Devil,B,Stockfish,1987,win,False
+501382,2026-09-28T15:43:50.630Z,Trophy,B,Stockfish,1987,loss,False
+501377,2026-09-28T15:43:48.536Z,Prisoners Dilemma,B,Stockfish,1987,win,False
+500693,2026-09-28T15:41:43.567Z,Slithery Fight,A,calc,2013,win,True
+500691,2026-09-28T15:41:38.964Z,Slithery Fight,A,calc,2013,loss,True
+501129,2026-09-28T15:41:37.885Z,Trauma,B,Candiru,1605,win,False
+501169,2026-09-28T15:41:34.932Z,Default,B,𓎼𓃭𓅱𓂋𓇌 𓏏𓅱 𓂋𓄿,1905,win,False
+500677,2026-09-28T15:41:20.902Z,Slithery Fight,A,calc,2013,win,True
+500659,2026-09-28T15:41:17.887Z,Slithery Fight,A,calc,2013,win,True
+501078,2026-09-28T15:41:05.501Z,Slithery Fight,B,Team SKKU,2032,loss,False
+500681,2026-09-28T15:40:24.161Z,Schooltime,A,calc,2013,win,True
+501127,2026-09-28T15:39:48.127Z,Autarky,B,Candiru,1605,win,False
+501126,2026-09-28T15:39:18.678Z,Prisoners Dilemma,B,Candiru,1605,win,False
+501079,2026-09-28T15:39:09.166Z,Trauma,B,Team SKKU,2032,win,False
+501128,2026-09-28T15:39:08.716Z,Devil,B,Candiru,1605,win,False
+501125,2026-09-28T15:38:59.822Z,Trophy,B,Candiru,1605,win,False

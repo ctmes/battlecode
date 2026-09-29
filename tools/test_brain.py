@@ -44,6 +44,89 @@ def test_fallback_kelp_still_blocks_and_normal_occupancy_still_blocks():
     print("ok: kelp still blocks outright, and a normal edge's occupied landing tile is still excluded")
 
 
+def test_dive_takes_a_trapped_pearl_only_when_enabled_and_gated():
+    # A 3-long dragon heading north; a pearl east of the head sits in a one-tile kelp pocket (kelp on the pocket's
+    # north, south and east edges), so stepping onto it is a certain trap: the default Brain refuses it.
+    edges = {(1, 0, "h"): "w", (1, 1, "h"): "w", (2, 0, "v"): "w"}
+    parts = [("A", 1, 0, 0, "N", 1), ("A", 1, 0, 1, "N", 0), ("A", 1, 0, 2, "N", 0)]
+
+    def act(params, cd=-1, units=5):
+        block = render_block(0, {(1, 0)}, {(1, 0): cd}, edges, parts, length=3, units=units)
+        return Brain(1, b"A", W, H, 64, params).act(block)
+
+    dive = {"dive_len": 3, "dive_trap": 0.0, "dive_scope": 1}
+    assert act({}) != MOVES[1], act({})
+    assert act(dive) == MOVES[1], act(dive)
+    assert act({**dive, "dive_len": 2}) != MOVES[1]  # too long to dive
+    assert act({**dive, "dive_fountain": 1}, cd=7) != MOVES[1]  # not a fountain
+    assert act({**dive, "dive_fountain": 1}, cd=1) == MOVES[1]  # a fountain always shows countdown 1
+    assert act({**dive, "dive_units": 10}, units=5) != MOVES[1]  # team too small to spend a dragon
+    assert act({**dive, "dive_units": 10}, units=10) == MOVES[1]
+    print("ok: dive takes a trapped pearl only when enabled, short enough, on a fountain if asked, with team to spare")
+
+    # a 5-long dragon relies on the boxed split to leave the pocket, so it dives only below the boxed split's cap
+    # (64 minus the 4 slots boxed_reserve keeps for dragons shorter than boxed_long 8)
+    long_parts = [("A", 1, 0, y, "N", 1 if y == 0 else 0) for y in range(5)]
+
+    def act5(units):
+        block = render_block(0, {(1, 0)}, {}, edges, long_parts, length=5, units=units)
+        return Brain(1, b"A", W, H, 64, {**dive, "dive_len": 5}).act(block)
+
+    assert act5(59) == MOVES[1], act5(59)
+    assert act5(60) != MOVES[1], act5(60)
+    print("ok: a long diver needs a legal boxed split to get back out")
+
+
+def test_fountain_detection_needs_countdown_one_on_two_turns_running():
+    # dive_scope 2 marks a tile as a fountain once it shows countdown 1 on consecutive turns: a (1,1) tile always
+    # does, any other spawning tile resets to a fresh draw after hitting 1 (see the DEFAULTS comment)
+    from test_encoder import HX, HY
+    parts = [("A", 1, 0, 0, "N", 1), ("A", 1, 0, 1, "N", 0), ("A", 1, 0, 2, "N", 0)]
+    b = Brain(1, b"A", W, H, 64, {"dive_len": 3, "dive_trap": 0.0, "dive_scope": 2})
+    b.act(render_block(0, set(), {(2, -1): 1, (-2, 2): 1}, {}, parts, rnd=7, length=3))
+    assert b.founts == [], b.founts
+    b.act(render_block(0, set(), {(2, -1): 1, (-2, 2): 4}, {}, parts, rnd=8, length=3))
+    assert b.founts == [((HX + 2) % W, (HY - 1) % H)], b.founts
+    print("ok: a tile is a fountain only after countdown 1 on two turns running")
+
+
+def test_boxed_r_end_keeps_only_rear_splits_late():
+    # boxed in: kelp north, west and east of the head, own body south
+    edges = {(0, 0, "h"): "w", (0, 0, "v"): "w", (1, 0, "v"): "w"}
+
+    def act(params, length, rnd):
+        parts = [("A", 1, 0, y, "N", 1 if y == 0 else 0) for y in range(length)]
+        return Brain(1, b"A", W, H, 64, params).act(render_block(0, set(), {}, edges, parts, rnd=rnd, length=length))
+
+    assert act({}, 4, 350) == b"SPLIT 2\n", act({}, 4, 350)  # mh3: a boxed split at any round
+    assert act({}, 5, 350) == b"SPLIT 2\n"  # ... and a rear split only from round 433
+    assert act({"boxed_rear_r": 0}, 5, 350) == b"SPLIT 3\n"
+    late = {"boxed_r_end": 300, "boxed_rear_r": 0}
+    assert act(late, 4, 299) == b"SPLIT 2\n"  # before boxed_r_end: unchanged
+    assert not act(late, 4, 300).startswith(b"SPLIT")  # a short dragon boxed in late dies where it is
+    assert act(late, 5, 300) == b"SPLIT 3\n"  # a rear split keeps the body, so it still happens
+    print("ok: from boxed_r_end on a boxed-in dragon splits only for a rear split")
+
+
+def test_ram_takes_a_head_on_trade_only_when_enabled_and_even():
+    def act(params, length=2, enemy_len=3):
+        parts = [("A", 1, 0, y, "N", 1 if y == 0 else 0) for y in range(length)]
+        parts += [("B", 2, 1 + i, 0, "W", 1 if i == 0 else 0) for i in range(enemy_len)]  # enemy head east of ours
+        return Brain(1, b"A", W, H, 64, params).act(render_block(0, set(), {}, {}, parts, length=length))
+
+    ram = {"ram_len": 3, "ram": 1000.0}
+    assert act({}) != MOVES[1], act({})  # mh3 never moves onto a head
+    assert act(ram) == MOVES[1], act(ram)
+    assert act(ram, enemy_len=1) != MOVES[1]  # it shows fewer segments than we have: not an even trade
+    assert act(ram, length=4) != MOVES[1]  # too long to throw away
+    assert act({**ram, "ram": 10.0}) != MOVES[1]  # a better move outscores a weak ram
+    print("ok: a short dragon rams an adjacent enemy head at least as long, only when enabled")
+
+
 if __name__ == "__main__":
     test_fallback_portal_edge_ignores_irrelevant_landing_tile_occupancy()
     test_fallback_kelp_still_blocks_and_normal_occupancy_still_blocks()
+    test_dive_takes_a_trapped_pearl_only_when_enabled_and_gated()
+    test_fountain_detection_needs_countdown_one_on_two_turns_running()
+    test_boxed_r_end_keeps_only_rear_splits_late()
+    test_ram_takes_a_head_on_trade_only_when_enabled_and_even()
