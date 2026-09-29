@@ -140,6 +140,8 @@ OPPONENTS = {
     "mh6": ("frozen", (str(ROOT / "snapshots" / "mh6_2026-09-29"), {})),
     # mh6 + the food field (food_pull 40: with no pearl in view, head for the known map's fountains); DEFAULTS = mh7
     "mh7": ("frozen", (str(ROOT / "snapshots" / "mh7_2026-09-29"), {})),
+    # mh7 + sonar (radar 2: three rays a turn, each carrying the king's head for the rally relay from round 250)
+    "mh8": ("frozen", (str(ROOT / "snapshots" / "mh8_2026-09-29"), {})),
     # mh5 that sprint-rams any enemy head 2-3 steps away with its dragons up to 3 long, as the ladder's top 3 do
     # (11-38% of their sprints are rams; 323 of them hit mh4 in 55 ladder games). Frozen code: mh5 + sprints + radar
     # (snapshots/mh5s_2026-09-29, DEFAULTS = the base, all new mechanisms off)
