@@ -35,3 +35,21 @@ so that an opponent never changes when bot/brain.py does. Never edit a snapshot;
   v3 98.0 (84.0), grower_frozen 92.5 (81.5). Longest dragon at round 500 about 21-27 vs mh3's 10-12. Every map >= 69%
   (Devil 69, Trauma 80). Judge sandbox: at most 18.4M points a turn (Portals, Schooltime).
 
+- `mh4feed_2026-09-29/`: bot/brain.py + proto.py + known_maps.py with feed_r/feed_len/feed_min/feed_dist/feed_ratio
+  (off by default; DEFAULTS are the base, not mh4). tune.py's "mh4feed" plays it as mh4 + feeding the king (feed_r 250,
+  feed_len 8, feed_dist 3, feed_min 8, feed_ratio 1.5): a dragon at most 8 long within 3 of a teammate's head showing
+  8+ segments (and 1.5x its length), with no enemy head that close, dies on the spot so the long one eats its pearls.
+  Reproduces mh4 game for game with the feed off (20/20). Unswbc 1.2.2, real ladder maps x fresh held-out seeds
+  9,200,000-9,200,009, both seats, 200 games per opponent (mh4 on the same games in brackets): mh4 58.0% (50),
+  topstyle 86.0 (82.0), portal_farmer 91.0 (87.5); longest dragon at round 500 about 28-30 vs mh4's 22-24.
+- `mh5_2026-09-29/`: a complete, submittable bot folder (main.py, brain.py, proto.py, known_maps.py, bot.toml) whose
+  DEFAULTS are mh5 = mh4 + feeding the king (feed_r 250, feed_len 8, feed_dist 3, feed_min 8, feed_ratio 1.5; screened,
+  not tuned). Built from mh4's own brain.py plus only the feed code and settings (proto.py, known_maps.py, main.py and
+  bot.toml are mh4's), so it does not carry bot/brain.py's later work (radar). Plays mh4feed game for game (20/20) and,
+  with feed_r 0, mh4 (20/20); its bench numbers are mh4feed's above.
+- `mh6_2026-09-29/`: a complete, submittable bot folder whose DEFAULTS are mh6 = mh5 + split_enemy_dist 0 (a split is
+  no longer refused just because an enemy head is in view). mh5's files plus only that change; plays mh5 game for game
+  with split_enemy_dist 99 (20/20). Why: in the 25 ladder games the ~1600 teams eliminated mh4/mh5 (29 Sep), that rule
+  blocked 65% of our split-ready turns before round 150 and we were outnumbered 9 to 34 by round 150; the top 3 make
+  24-39% of their splits with an enemy head in view (we: 6%). Held out (seeds 9,300,000-9,300,009, 200 games each):
+  54.5% vs mh5, topstyle 86.0 (mh5 85.5), portal_farmer 89.5 (91.0) -- level locally, where nobody crowds us early.

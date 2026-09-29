@@ -150,6 +150,40 @@ def test_radar_parses_echoes_pings_ahead_and_guards_straight_dives():
     print("ok: radar parses ECHOES, pings along the move and keeps a dive out of an occupied line ahead")
 
 
+def test_feed_dies_next_to_a_long_teammate_only_when_enabled_and_safe():
+    feed = {"feed_r": 250, "feed_len": 8, "feed_dist": 3, "feed_min": 8, "feed_ratio": 1.5}
+    me = [("A", 1, 0, 0, "N", 1), ("A", 1, 0, 1, "N", 0), ("A", 1, 0, 2, "N", 0)]
+
+    def mate(dx, dy, n, pid):  # a teammate n long, head at (dx, dy), body trailing east
+        return [("A", pid, dx + i, dy, "W", 1 if i == 0 else 0) for i in range(n)]
+
+    def act(params, parts, rnd=300):
+        return Brain(1, b"A", W, H, 64, params).act(render_block(0, set(), {}, {}, parts, rnd=rnd, length=3))
+
+    near = me + mate(-3, -3, 3, 7) + mate(1, -2, 8, 9)  # teammate 9: head 3 away, 8 segments in view
+    assert act({}, near) != b"SPLIT 1\n"  # off by default
+    assert act(feed, near) == b"SPLIT 1\n", act(feed, near)
+    assert act(feed, near, rnd=249) != b"SPLIT 1\n"  # before feed_r
+    assert act({**feed, "feed_dist": 2}, near) != b"SPLIT 1\n"  # out of range
+    assert act({**feed, "feed_min": 9}, near) != b"SPLIT 1\n"  # not long enough to feed
+    assert act(feed, near + [("B", 20, -2, 1, "E", 1)]) != b"SPLIT 1\n"  # an enemy head as close would eat first
+    print("ok: a short dragon feeds a long teammate within range, only when enabled, late, and with no enemy near")
+
+
+def test_split_enemy_dist_only_blocks_splits_near_an_enemy_head():
+    # a 4-long split child with a pearl in view (so it wants to split) and an enemy head 3 away
+    parts = [("A", 1, 0, y, "N", 1 if y == 0 else 0) for y in range(4)] + [("B", 20, 3, 0, "S", 1), ("B", 20, 3, -1, "S", 0)]
+
+    def act(params):
+        return Brain(1, b"A", W, H, 64, params).act(render_block(0, {(-2, -2)}, {}, {}, parts, length=4, units=5))
+
+    assert not act({}).startswith(b"SPLIT"), act({})  # default: any enemy head in view blocks it
+    assert act({"split_enemy_dist": 0}) == b"SPLIT 2\n", act({"split_enemy_dist": 0})
+    assert act({"split_enemy_dist": 2}) == b"SPLIT 2\n"  # the head is 3 away
+    assert not act({"split_enemy_dist": 3}).startswith(b"SPLIT")
+    print("ok: split_enemy_dist blocks a split only when an enemy head is that close")
+
+
 if __name__ == "__main__":
     test_fallback_portal_edge_ignores_irrelevant_landing_tile_occupancy()
     test_fallback_kelp_still_blocks_and_normal_occupancy_still_blocks()
@@ -158,3 +192,5 @@ if __name__ == "__main__":
     test_radar_parses_echoes_pings_ahead_and_guards_straight_dives()
     test_boxed_r_end_keeps_only_rear_splits_late()
     test_ram_takes_a_head_on_trade_only_when_enabled_and_even()
+    test_feed_dies_next_to_a_long_teammate_only_when_enabled_and_safe()
+    test_split_enemy_dist_only_blocks_splits_near_an_enemy_head()

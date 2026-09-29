@@ -1,0 +1,128 @@
+"""Lean UNSW Battlecode protocol layer: one read per turn, no helper.py, no enum.
+
+The starter helper costs ~11.8M CPU points to import (three Enum classes) and ~10M per full parse; this
+module parses one turn into plain ints/bytes for ~1M (see the Points lab results in the plan).
+
+Turn block (text), one per dragon-turn:
+    ROUND n / DIR d / LENGTH l / UNIT_COUNT u / NUM_MSGS k / k message lines
+    49 tile lines "x y hasPearl pearlIn" (row-major 7x7 window, tile 24 = head)
+    NUM_PARTS m / m lines "team id x y facing isHead"
+    8 horizontal-edge rows of 7 tokens, then 7 vertical-edge rows of 8 tokens ('.' empty, 'w' kelp, n portal id)
+A dragon's very first payload is prefixed by a 4-line init block (id, team, "MAP w h", unit limit).
+Protocol 3 (opted into by printing PROTOCOL 3 in a reply) adds an ECHOES line between the messages and the tiles.
+"""
+import sys
+
+LETTERS = b"NESW"
+DX = (0, 1, 0, -1)  # N, E, S, W; y grows downwards
+DY = (-1, 0, 1, 0)
+DOT7 = b". . . . . . ."
+DOT8 = b". . . . . . . ."
+
+
+def read_block():
+    """Reads until the blank-line terminator; returns b'' at EOF."""
+    rb = sys.stdin.buffer
+    buf = rb.read1(65536)
+    while buf and not buf.endswith(b"\n\n"):
+        more = rb.read1(65536)
+        if not more:
+            break
+        buf += more
+    return buf
+
+
+def split_payload(buf):
+    """First payload of a dragon = init lines + first turn block -> (init or None, block)."""
+    k = buf.find(b"ROUND")
+    if k > 0:
+        return buf[:k], buf[k:]
+    return None, buf
+
+
+def parse_init(text):
+    """-> (dragon_id, team_letter_bytes, width, height, unit_limit)"""
+    ls = [x for x in text.split(b"\n") if x]
+    size = ls[2].split()
+    return int(ls[0].split()[1]), ls[1].split()[1], int(size[1]), int(size[2]), int(ls[3].split()[1])
+
+
+class Turn:
+    __slots__ = ("rnd", "dir", "length", "units", "msgs", "echo", "hx", "hy", "flags", "cds", "parts", "edges")
+
+
+def parse_turn(block):
+    ls = block.strip().split(b"\n")
+    t = Turn()
+    t.rnd = int(ls[0].split()[1])
+    t.dir = LETTERS.find(ls[1].split()[1])
+    t.length = int(ls[2].split()[1])
+    t.units = int(ls[3].split()[1])
+    n = int(ls[4].split()[1])
+    t.msgs = [int(x) for x in ls[5:5 + n]]
+    j = 5 + n
+    # protocol 3 only (a bot that printed PROTOCOL 3, and its split children): "ECHOES kelp ally ally_head enemy
+    # enemy_head" before the tiles, counting what last turn's sonar rays stopped on (no direction, no distance)
+    t.echo = None
+    if ls[j].startswith(b"ECHOES"):
+        t.echo = tuple(int(x) for x in ls[j].split()[1:6])
+        j += 1
+    toks = b" ".join(ls[j:j + 49]).split()
+    t.hx = int(toks[96])  # tile 24 (the head), token x
+    t.hy = int(toks[97])
+    t.flags = toks[2::4]  # b"1" where a pearl lies, per window tile
+    t.cds = toks[3::4]  # pearl countdown per window tile (-1 = never)
+    m = int(ls[j + 49].split()[1])
+    t.parts = [x.split() for x in ls[j + 50:j + 50 + m]]
+    e = j + 50 + m
+    t.edges = ls[e:e + 15]
+    return t
+
+
+# ---------------------------------------------------------------------- sonar wire format (our own convention)
+# Sonar (see the docs) is a straight ray cast from the head after the turn's move, in whatever direction the dragon
+# ends up facing; it stops at kelp or the first dragon part -- teammate or enemy -- and delivers one raw uint32 to
+# whoever it hits. There is no addressing and no sender identity, so a payload only helps if it is self-contained:
+# every dragon on the map shares the same absolute coordinates, so packing an absolute (x, y) is interpretable by
+# any receiver regardless of where the message came from or who sent it. A received value may come from an enemy
+# (sonar passes through no team filter) or be a stray value that happens to parse, so treat it as untrusted input,
+# not a fact: bounds-check before using it as a board index.
+#
+# The payload also carries the sighted enemy's own reported facing, not just its position: brain.py's local
+# one-step prediction (extrapolate a visible enemy's own facing by one step) already proved itself correct and
+# cheap; carrying facing lets a receiver who never saw the enemy at all run the exact same extrapolation, which is
+# the one thing local prediction structurally cannot do (see the "deep dive" plan notes -- two earlier position-only
+# payloads both measured as no help).
+#
+# Layout (MSB first): kind (2 bits, room for 1 more kind later) | x (6 bits) | y (6 bits) | ... | x/y are 6 bits
+# because boards are at most 64 wide, and both kinds below share this coordinate layout.
+#   SONAR_ENEMY:   length bucket (4 bits, min(length, 15)) | facing (2 bits, N/E/S/W) | 12 bits unused.
+#   SONAR_TERRAIN: vertical (1 bit: 0 = the tile's north edge i.e. brain.py's kh/ph, 1 = its west edge i.e.
+#                  kv/pv) | portal (1 bit: 0 = kelp, 1 = portal) | 14 bits unused. A relayed *fact*, not a
+#                  sighting: terrain never goes stale the way an enemy position does, so unlike SONAR_ENEMY this
+#                  is worth sending even with nobody obviously listening -- see brain.py's sonar_terrain.
+SONAR_ENEMY = 0
+SONAR_TERRAIN = 1
+
+
+def pack_enemy_sonar(x, y, length, facing):
+    """An enemy sighting: absolute (x, y), a coarse size hint, and its own facing, as one uint32 sonar payload."""
+    return (SONAR_ENEMY << 30) | ((x & 63) << 24) | ((y & 63) << 18) | (min(length, 15) << 14) | ((facing & 3) << 12)
+
+
+def pack_terrain_sonar(x, y, vertical, portal):
+    """A learned edge: tile (x, y)'s north edge (vertical=0) or west edge (vertical=1) is kelp or a portal."""
+    return (SONAR_TERRAIN << 30) | ((x & 63) << 24) | ((y & 63) << 18) | ((vertical & 1) << 17) | ((portal & 1) << 16)
+
+
+def unpack_sonar(value):
+    """-> (kind, x, y, extra1, extra2). kind is None (all 0) for a kind this module does not know.
+    SONAR_ENEMY: extra1/extra2 = length bucket (0-15), facing (0-3).
+    SONAR_TERRAIN: extra1/extra2 = vertical (0 = north edge, 1 = west edge), portal (0 = kelp, 1 = portal)."""
+    kind = value >> 30
+    x, y = (value >> 24) & 63, (value >> 18) & 63
+    if kind == SONAR_ENEMY:
+        return kind, x, y, (value >> 14) & 15, (value >> 12) & 3
+    if kind == SONAR_TERRAIN:
+        return kind, x, y, (value >> 17) & 1, (value >> 16) & 1
+    return None, 0, 0, 0, 0

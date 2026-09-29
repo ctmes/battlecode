@@ -93,13 +93,7 @@ DEFAULTS = {
     "split_pearls": 1,         # ... and at least this many pearls are in view (food for the extra mouth)
     "split_r_end": 433,        # ... and it is before this round (late children do not pay back)
     "split_min_exits": 1,      # ... and the parent has at least this many safe moves (not cornered)
-    # ... and no enemy head is within this Manhattan distance (99 = none anywhere in view, as before). Ladder, 29 Sep:
-    # in the 25 games the ~1600 teams eliminated mh4/mh5, an enemy head was in view on 41% of our turns before round
-    # 150 and this rule blocked 65% of our split-ready turns; we split 2-5 times per 25 rounds to their 8-18 and were
-    # outnumbered 9 to 34 by round 150. The top 3 make 24-39% of their splits with an enemy head in view (we: 6%).
-    # 0 (never blocks), held out (seeds 9,300,000+, 200 games each): 54.5% vs mh5, topstyle 86.0 (mh5 85.5), portal_farmer
-    # 89.5 (91.0) -- level locally, where no opponent crowds us early the way those ladder teams do.
-    "split_enemy_dist": 99,
+    "split_enemy_dist": 99,    # ... and no enemy head is within this Manhattan distance (99 = none anywhere in view)
     # Local crowding/food, as an alternative to a flat team-size cap and pearl count that cannot tell a dragon
     # splitting into open space from one splitting into a knot of its own teammates (a big source of other-body
     # deaths in a large swarm). Both 0 = off (old behaviour): nearby teammates use `heads`, already built every
@@ -207,14 +201,6 @@ DEFAULTS = {
     "dive_fountain": 0,        # scope 1 only: 1 = only onto a pearl on a tile showing countdown 1 (a fountain)
     "dive_units": 0,           # ... and only while the team has at least this many dragons
     "dive_radius": 6,          # scope 2: Manhattan distance to a known fountain
-    # Radar (unswbc 1.x protocol 3, 29 Sep). 1 = print PROTOCOL 3 and send one directional ping along the move just
-    # made; next turn's ECHOES line then says what the ray stopped on first -- kelp, a teammate's body or head, an
-    # enemy's body or head -- straight ahead of the head, beyond the 3 tiles in view (a ray always hits something on
-    # the ladder maps). Pings do nothing else: a bot that ignores sonar messages plays the same games. 0 = off
-    # (protocol 2, as up to mh4). The top ladder team pings every turn; the second never does.
-    "radar": 0,
-    "radar_dive": 0,           # 1 = no dive straight ahead when the ray ahead hit a dragon (an occupied corridor)
-    "radar_head": 0.0,         # penalty for moving straight on when the ray ahead hit an enemy head
     # Top-team style, from 450 replays of the ladder's top 3 (Cutlery, cheji bt, forgot to mention; tools/scout.py,
     # 29 Sep). All three stop ordinary splits around round 300, so attrition shrinks the swarm (cheji: 45 dragons at
     # round 300, 7 at 400) while the survivors eat the corpses: 57-75% of their longest dragon's pearls after round
@@ -224,26 +210,14 @@ DEFAULTS = {
     # dive_scope 0. On the 1.x engine, the 10 ladder maps x held-out seeds 9,000,000+ x both seats (200 games per
     # opponent, tools/bench1x.py): 75.5% [69-81] vs mh3, 73.0% vs farmer, 58.2% vs portal_farmer; longest dragon at
     # round 500 15.2 vs mh3's 11.0. Screened on seeds 1-6 (120 games vs mh3): each part alone 51-64%, round 300 beat
-    # 250 and 350, ram 300-3000 all alike; a narrow "feed" (dragons <= 3 long, within 2) added nothing -- see "feed_r".
+    # 250 and 350, ram 300-3000 all alike; a "feed" mechanism (short dragons dying next to a long teammate) added nothing.
     "boxed_r_end": 0,          # from this round on a boxed-in dragon splits only for a rear split (0 = off)
     "ram_len": 0,              # dragons at most this long may move onto an adjacent enemy head, killing both (0 = off)
     "ram": 0.0,                # ... when that enemy shows at least as many segments: a move scored at this
-    # Feeding the king. The ladder's top 3 grow their longest dragon on teammates who kill themselves next to it: after
-    # round 300 their king's line eats 22-28 own-team corpse pearls a game, 80-94% of them from deliberate "no action"
-    # deaths, the teammate's head a median 2-4 from the king's when it died, often 6+ long (cheji: 54%). mh4's king eats
-    # 11, mostly its own turnaround stubs, and loses to turnarounds what it gains farming fountain slots (see the notes).
-    # From feed_r on, a dragon at most feed_len long whose head is within feed_dist of the head of a teammate showing
-    # at least max(feed_min, feed_ratio x its length) segments, with no enemy head that close, dies on the spot (an
-    # illegal SPLIT 1, as Cutlery does) so the long one eats the ceil(length/2) pearls it drops. 0 = off.
-    # mh4 + feed (feed_r 250, feed_len 8, feed_dist 3, feed_min 8, feed_ratio 1.5), 1.x engine, the 10 ladder maps x
-    # fresh held-out seeds 9,200,000-9,200,009 x both seats: 58.0% [51-65] vs mh4 (200 games), longest dragon at round
-    # 500 28.5 vs 23.8; best on Slithery Fight 85%, Portals 70%, Trauma 70%. Same seeds vs topstyle 86.0% (mh4 82.0),
-    # vs portal_farmer 91.0% (mh4 87.5), tiebreak losses 21 -> 12 and 14 -> 6. Why (80 games vs mh4): not a richer diet
-    # -- the king's line eats as much after round 300 (41.2 vs 43.5), with the same own-corpse share (36 vs 37%) -- but
-    # fewer turnarounds (8.4 vs 12.5): the feeders are the short teammates crowding its pocket, so it is boxed in less.
-    # Screened on seeds 1-6 (120 games each):
-    # feeding from 300 with dragons <= 6 55.8%; pulling would-be feeders towards the long teammate ("gather") and
-    # leaving it the pearls near its head ("yield") added nothing, nor did limiting diving to dragons <= 6 (48.5% held out).
+    # Feeding the king: from feed_r on, a dragon at most feed_len long whose head is within feed_dist of the head of a
+    # teammate showing at least max(feed_min, feed_ratio x its length) segments, with no enemy head that close, dies on
+    # the spot (an illegal SPLIT 1, as the ladder's Cutlery does) so the long one eats the pearls it drops. 0 = off.
+    # See bot/brain.py for the scouting behind it and the bench numbers.
     "feed_r": 0,
     "feed_len": 8,
     "feed_min": 8,
@@ -280,6 +254,16 @@ DEFAULTS = {
     "oracle_seen": 0,           # on in mh4
     "budget_ns": 60_000_000,   # self-metering: skip optional work past this (points on the judge)
 }
+# mh4 (29 Sep): mh3 + portals (learned pairs, known-map oracle, oracle_seen) + topstyle (stop splitting at 300,
+# turnaround splits all game, short dragons ram) + dragons of any length diving near fountains they have seen,
+# leaving dead ends by the turnaround split. mh5 (29 Sep): mh4 + feeding the king from round 250 (untuned settings).
+# mh6 (29 Sep): mh5 + splitting with enemy heads in view (split_enemy_dist 0), for the ladder's ~1600 teams that
+# crowd us in the opening. See snapshots/README.md for the bench numbers.
+DEFAULTS.update({"portals": 1, "map_oracle": 1, "oracle_seen": 1,
+                 "split_r_end": 300, "boxed_r_end": 300, "boxed_rear_r": 0, "ram_len": 3, "ram": 1000.0,
+                 "dive_len": 99, "dive_trap": 0.0, "dive_scope": 2, "dive_radius": 6,
+                 "feed_r": 250, "feed_len": 8, "feed_dist": 3, "feed_min": 8, "feed_ratio": 1.5,
+                 "split_enemy_dist": 0})
 
 
 def known_maps():
@@ -347,21 +331,15 @@ class Brain:
     def act(self, block):
         """Returns the action bytes (e.g. b'MOVE N\\n'); never raises."""
         self.t0 = _pc()
-        t = None
         try:
-            t = proto.parse_turn(block)
-            action = self.decide(t)
+            action = self.decide(proto.parse_turn(block))
         except Exception:  # noqa: BLE001 - a crash would kill the dragon
             if self.strict:
                 raise
             self.errors += 1
-            action = self.fallback(block)
+            return self.fallback(block)
         if self.debug:
             self.dbg["act"] = action
-        if self.p["radar"]:
-            # ping along the move (the new facing); a split or anything else keeps the old facing
-            letter = action[5:6] if action.startswith(b"MOVE ") else (LETTERS[t.dir:t.dir + 1] if t and t.dir >= 0 else b"N")
-            action += b"PROTOCOL 3\nSONAR " + letter + b" 0\n"
         return action
 
     def over(self):
@@ -923,9 +901,6 @@ class Brain:
         tail = self.tail
         free_trap = free & self.seen if p["pessimistic"] else free
         dive = length <= p["dive_len"] and t.units >= p["dive_units"]
-        echo = t.echo if p["radar"] else None  # last turn's ray, cast from this head along t.dir
-        ahead_dragon = echo is not None and (echo[1] or echo[2] or echo[3] or echo[4])
-        ahead_enemy_head = echo is not None and echo[4] > 0
         if dive and length >= 4:
             # a dragon this long can leave a dead end by the boxed split (with boxed_rear_r 0 a rear split: a U-turn
             # that costs a 2-long stub), so it dives only while that split is still legal
@@ -996,9 +971,8 @@ class Brain:
                 area = self.flood(fr, tidx, need)
                 if area < need:
                     tm = care
-                    guarded = p["radar_dive"] and ahead_dragon and d == t.dir  # the corridor ahead is occupied
-                    if dive and not guarded and (p["dive_scope"] != 1 or (on_pearl and (not p["dive_fountain"]
-                                                                                        or t.cds[NB_WIN[d]] == b"1"))):
+                    if dive and (p["dive_scope"] != 1 or (on_pearl and (not p["dive_fountain"]
+                                                                        or t.cds[NB_WIN[d]] == b"1"))):
                         tm *= p["dive_trap"]
                     s -= p["trap"] * tm * (need - area) / need
                 else:
@@ -1033,8 +1007,6 @@ class Brain:
                     s -= p["sonar_predict"]
             if d == t.dir:
                 s += p["straight"]
-                if ahead_enemy_head:
-                    s -= p["radar_head"]
             if s > best_s:
                 best_d, best_s = d, s
         for d in unknown:  # nothing is known beyond it until we step through: a flat bet on what lies there

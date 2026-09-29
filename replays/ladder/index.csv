@@ -1,59 +1,209 @@
 match,at,map,seat,opponent,opponent_elo,result,ranked
+572255,2026-09-29T08:34:49.733Z,Queen Of Spades,B,AllYouNeedIsKill,1602,loss,True
+572253,2026-09-29T08:34:31.405Z,Devil,B,AllYouNeedIsKill,1602,win,True
+572254,2026-09-29T08:27:09.130Z,Portals,B,AllYouNeedIsKill,1602,win,True
+572252,2026-09-29T08:17:00.133Z,Autarky,B,AllYouNeedIsKill,1602,loss,True
+572251,2026-09-29T08:11:28.802Z,Schooltime,B,AllYouNeedIsKill,1602,win,True
+571364,2026-09-29T07:49:58.163Z,Slithery Fight,A,ANON_TOKYO,1499,win,False
+571328,2026-09-29T07:49:51.559Z,Slithery Fight,A,aisakastrats,1606,loss,False
+571327,2026-09-29T07:49:21.631Z,Schooltime,A,aisakastrats,1606,win,False
+571422,2026-09-29T07:48:39.228Z,Slithery Fight,A,Silly Stamies,1624,win,False
+571363,2026-09-29T07:48:28.613Z,Schooltime,A,ANON_TOKYO,1499,win,False
+571321,2026-09-29T07:48:23.158Z,Autarky,A,aisakastrats,1606,loss,False
+571357,2026-09-29T07:48:21.424Z,Autarky,A,ANON_TOKYO,1499,loss,False
+571365,2026-09-29T07:48:21.317Z,Trauma,A,ANON_TOKYO,1499,loss,False
+571324,2026-09-29T07:48:06.575Z,Portals,A,aisakastrats,1606,loss,False
+571421,2026-09-29T07:48:00.384Z,Schooltime,A,Silly Stamies,1624,loss,False
+571346,2026-09-29T07:47:59.602Z,Slithery Fight,A,WaterCandle,1610,loss,False
+571360,2026-09-29T07:47:59.452Z,Portals,A,ANON_TOKYO,1499,win,False
+571381,2026-09-29T07:47:53.380Z,Schooltime,A,kfcvme50,1644,loss,False
+571345,2026-09-29T07:47:52.599Z,Schooltime,A,WaterCandle,1610,win,False
+571382,2026-09-29T07:47:50.870Z,Slithery Fight,A,kfcvme50,1644,win,False
+571418,2026-09-29T07:47:48.925Z,Portals,A,Silly Stamies,1624,win,False
+571416,2026-09-29T07:47:48.250Z,Default,A,Silly Stamies,1624,win,False
+571358,2026-09-29T07:47:43.006Z,Default,A,ANON_TOKYO,1499,win,False
+571415,2026-09-29T07:47:42.395Z,Autarky,A,Silly Stamies,1624,loss,False
+571424,2026-09-29T07:47:40.574Z,Trophy,A,Silly Stamies,1624,win,False
+571423,2026-09-29T07:47:39.402Z,Trauma,A,Silly Stamies,1624,win,False
+571420,2026-09-29T07:47:38.380Z,Queen Of Spades,A,Silly Stamies,1624,loss,False
+571339,2026-09-29T07:47:37.709Z,Autarky,A,WaterCandle,1610,loss,False
+571366,2026-09-29T07:47:36.833Z,Trophy,A,ANON_TOKYO,1499,loss,False
+571417,2026-09-29T07:47:36.470Z,Devil,A,Silly Stamies,1624,loss,False
+571340,2026-09-29T07:47:35.547Z,Default,A,WaterCandle,1610,win,False
+571342,2026-09-29T07:47:34.994Z,Portals,A,WaterCandle,1610,loss,False
+571330,2026-09-29T07:47:33.965Z,Trophy,A,aisakastrats,1606,loss,False
+571419,2026-09-29T07:47:33.555Z,Prisoners Dilemma,A,Silly Stamies,1624,loss,False
+571329,2026-09-29T07:47:32.068Z,Trauma,A,aisakastrats,1606,win,False
+571322,2026-09-29T07:47:31.172Z,Default,A,aisakastrats,1606,loss,False
+571378,2026-09-29T07:47:29.712Z,Portals,A,kfcvme50,1644,win,False
+571375,2026-09-29T07:47:27.302Z,Autarky,A,kfcvme50,1644,loss,False
+571341,2026-09-29T07:47:25.159Z,Devil,A,WaterCandle,1610,win,False
+571384,2026-09-29T07:47:23.549Z,Trophy,A,kfcvme50,1644,loss,False
+571383,2026-09-29T07:47:23.170Z,Trauma,A,kfcvme50,1644,win,False
+571359,2026-09-29T07:47:21.389Z,Devil,A,ANON_TOKYO,1499,win,False
+571325,2026-09-29T07:47:20.010Z,Prisoners Dilemma,A,aisakastrats,1606,loss,False
+571348,2026-09-29T07:47:19.085Z,Trophy,A,WaterCandle,1610,loss,False
+571379,2026-09-29T07:47:17.194Z,Prisoners Dilemma,A,kfcvme50,1644,loss,False
+571377,2026-09-29T07:47:15.681Z,Devil,A,kfcvme50,1644,loss,False
+571361,2026-09-29T07:47:15.269Z,Prisoners Dilemma,A,ANON_TOKYO,1499,loss,False
+571380,2026-09-29T07:47:15.168Z,Queen Of Spades,A,kfcvme50,1644,loss,False
+571343,2026-09-29T07:47:14.777Z,Prisoners Dilemma,A,WaterCandle,1610,win,False
+571376,2026-09-29T07:47:13.791Z,Default,A,kfcvme50,1644,loss,False
+571344,2026-09-29T07:47:13.576Z,Queen Of Spades,A,WaterCandle,1610,win,False
+571362,2026-09-29T07:47:13.452Z,Queen Of Spades,A,ANON_TOKYO,1499,loss,False
+571323,2026-09-29T07:47:11.216Z,Devil,A,aisakastrats,1606,win,False
+571347,2026-09-29T07:47:10.289Z,Trauma,A,WaterCandle,1610,loss,False
+571326,2026-09-29T07:47:08.445Z,Queen Of Spades,A,aisakastrats,1606,win,False
+567655,2026-09-29T07:35:41.507Z,Prisoners Dilemma,A,aisakastrats,1606,loss,True
+567656,2026-09-29T07:33:56.379Z,Devil,A,aisakastrats,1606,win,True
+570410,2026-09-29T07:29:00.661Z,Slithery Fight,A,Silly Stamies,1624,win,False
+570412,2026-09-29T07:28:07.238Z,Trophy,A,Silly Stamies,1624,loss,False
+570405,2026-09-29T07:28:07.180Z,Devil,A,Silly Stamies,1624,win,False
+570409,2026-09-29T07:28:06.483Z,Schooltime,A,Silly Stamies,1624,loss,False
+570406,2026-09-29T07:28:06.323Z,Portals,A,Silly Stamies,1624,win,False
+570403,2026-09-29T07:28:00.622Z,Autarky,A,Silly Stamies,1624,win,False
+570408,2026-09-29T07:28:00.188Z,Queen Of Spades,A,Silly Stamies,1624,win,False
+570411,2026-09-29T07:27:57.295Z,Trauma,A,Silly Stamies,1624,loss,False
+570404,2026-09-29T07:27:54.774Z,Default,A,Silly Stamies,1624,loss,False
+570407,2026-09-29T07:27:54.293Z,Prisoners Dilemma,A,Silly Stamies,1624,loss,False
+567654,2026-09-29T07:22:01.526Z,Default,A,aisakastrats,1606,loss,True
+567657,2026-09-29T07:15:08.527Z,Schooltime,A,aisakastrats,1606,loss,True
+567653,2026-09-29T07:04:57.287Z,Slithery Fight,A,aisakastrats,1606,loss,True
+562702,2026-09-29T06:32:03.408Z,Queen Of Spades,A,WaterCandle,1610,win,True
+562701,2026-09-29T06:31:00.384Z,Devil,A,WaterCandle,1610,loss,True
+562703,2026-09-29T06:28:52.981Z,Trophy,A,WaterCandle,1610,loss,True
+562704,2026-09-29T06:26:26.018Z,Portals,A,WaterCandle,1610,loss,True
+562705,2026-09-29T06:22:57.101Z,Trauma,A,WaterCandle,1610,loss,True
+560628,2026-09-29T05:27:20.589Z,Slithery Fight,B,Silly Stamies,1624,win,True
+560625,2026-09-29T05:26:42.023Z,Autarky,B,Silly Stamies,1624,win,True
+560627,2026-09-29T05:26:41.963Z,Trauma,B,Silly Stamies,1624,win,True
+560626,2026-09-29T05:26:36.653Z,Trophy,B,Silly Stamies,1624,win,True
+560624,2026-09-29T05:26:36.358Z,Default,B,Silly Stamies,1624,loss,True
+558257,2026-09-29T05:18:28.923Z,Queen Of Spades,B,kfcvme50,1644,loss,True
+558258,2026-09-29T05:17:29.951Z,Devil,B,kfcvme50,1644,loss,True
+558255,2026-09-29T05:10:54.113Z,Default,B,kfcvme50,1644,loss,True
+558259,2026-09-29T05:08:51.290Z,Autarky,B,kfcvme50,1644,loss,True
+558256,2026-09-29T05:03:56.914Z,Schooltime,B,kfcvme50,1644,loss,True
+556941,2026-09-29T04:44:21.087Z,Slithery Fight,A,Cutlery,2112,loss,False
+556940,2026-09-29T04:44:18.258Z,Schooltime,A,Cutlery,2112,loss,False
+556881,2026-09-29T04:43:33.916Z,Slithery Fight,A,vom,1624,loss,False
+556937,2026-09-29T04:43:33.907Z,Portals,A,Cutlery,2112,loss,False
+556936,2026-09-29T04:43:19.269Z,Devil,A,Cutlery,2112,loss,False
+556942,2026-09-29T04:43:17.524Z,Trauma,A,Cutlery,2112,win,False
+556943,2026-09-29T04:43:15.475Z,Trophy,A,Cutlery,2112,loss,False
+556911,2026-09-29T04:43:14.046Z,Slithery Fight,A,Stochastic Parrots,1608,loss,False
+556939,2026-09-29T04:43:13.856Z,Queen Of Spades,A,Cutlery,2112,loss,False
+556934,2026-09-29T04:43:11.758Z,Autarky,A,Cutlery,2112,loss,False
+556938,2026-09-29T04:43:09.514Z,Prisoners Dilemma,A,Cutlery,2112,win,False
+556880,2026-09-29T04:43:06.170Z,Schooltime,A,vom,1624,loss,False
+556935,2026-09-29T04:43:04.475Z,Default,A,Cutlery,2112,win,False
+556907,2026-09-29T04:42:47.680Z,Portals,A,Stochastic Parrots,1608,loss,False
+556913,2026-09-29T04:42:41.392Z,Trophy,A,Stochastic Parrots,1608,win,False
+556904,2026-09-29T04:42:39.096Z,Autarky,A,Stochastic Parrots,1608,win,False
+556905,2026-09-29T04:42:36.786Z,Default,A,Stochastic Parrots,1608,loss,False
+556908,2026-09-29T04:42:34.544Z,Prisoners Dilemma,A,Stochastic Parrots,1608,loss,False
+556912,2026-09-29T04:42:32.778Z,Trauma,A,Stochastic Parrots,1608,win,False
+556910,2026-09-29T04:42:31.019Z,Schooltime,A,Stochastic Parrots,1608,loss,False
+556906,2026-09-29T04:42:28.772Z,Devil,A,Stochastic Parrots,1608,win,False
+556909,2026-09-29T04:42:27.042Z,Queen Of Spades,A,Stochastic Parrots,1608,loss,False
+556875,2026-09-29T04:42:20.908Z,Default,A,vom,1624,win,False
+556874,2026-09-29T04:42:17.151Z,Autarky,A,vom,1624,loss,False
+556883,2026-09-29T04:42:16.537Z,Trophy,A,vom,1624,loss,False
+556882,2026-09-29T04:42:14.770Z,Trauma,A,vom,1624,loss,False
+556877,2026-09-29T04:42:09.002Z,Portals,A,vom,1624,win,False
+556879,2026-09-29T04:42:06.720Z,Queen Of Spades,A,vom,1624,win,False
+556876,2026-09-29T04:42:00.394Z,Devil,A,vom,1624,loss,False
+556878,2026-09-29T04:42:00.323Z,Prisoners Dilemma,A,vom,1624,win,False
+556177,2026-09-29T04:36:08.361Z,Schooltime,A,ANON_TOKYO,1499,win,True
+556175,2026-09-29T04:35:43.261Z,Slithery Fight,A,ANON_TOKYO,1499,win,True
+556179,2026-09-29T04:35:08.031Z,Trophy,A,ANON_TOKYO,1499,win,True
+556105,2026-09-29T04:35:02.562Z,Slithery Fight,A,ANON_TOKYO,1499,win,True
+556107,2026-09-29T04:34:58.559Z,Schooltime,A,ANON_TOKYO,1499,win,True
+556124,2026-09-29T04:34:44.147Z,Schooltime,A,ANON_TOKYO,1499,win,True
+556106,2026-09-29T04:34:11.384Z,Default,A,ANON_TOKYO,1499,win,True
+556108,2026-09-29T04:34:10.932Z,Trophy,A,ANON_TOKYO,1499,win,True
+556178,2026-09-29T04:34:10.475Z,Trauma,A,ANON_TOKYO,1499,win,True
+556176,2026-09-29T04:33:54.323Z,Queen Of Spades,A,ANON_TOKYO,1499,win,True
+556123,2026-09-29T04:33:51.454Z,Portals,A,ANON_TOKYO,1499,loss,True
+556120,2026-09-29T04:33:45.248Z,Autarky,A,ANON_TOKYO,1499,win,True
+556149,2026-09-29T04:33:42.417Z,Schooltime,A,Submarine.exe,1499,win,True
+556109,2026-09-29T04:33:40.536Z,Portals,A,ANON_TOKYO,1499,loss,True
+556148,2026-09-29T04:33:39.552Z,Devil,A,Submarine.exe,1499,win,True
+556145,2026-09-29T04:33:35.341Z,Default,A,Submarine.exe,1499,win,True
+556147,2026-09-29T04:33:27.267Z,Queen Of Spades,A,Submarine.exe,1499,win,True
+556146,2026-09-29T04:33:25.543Z,Prisoners Dilemma,A,Submarine.exe,1499,loss,True
+556122,2026-09-29T04:33:12.707Z,Queen Of Spades,A,ANON_TOKYO,1499,win,True
+556121,2026-09-29T04:33:03.870Z,Devil,A,ANON_TOKYO,1499,win,True
+553160,2026-09-29T04:26:21.516Z,Queen Of Spades,A,()______---------_______(),1513,win,True
+553158,2026-09-29T04:23:24.684Z,Portals,A,()______---------_______(),1513,win,True
+553156,2026-09-29T04:18:42.373Z,Default,A,()______---------_______(),1513,win,True
+553159,2026-09-29T04:13:46.482Z,Autarky,A,()______---------_______(),1513,loss,True
+554437,2026-09-29T04:11:12.585Z,Trophy,A,unemployed,1491,win,True
+554446,2026-09-29T04:10:07.326Z,Schooltime,A,low_cortisol,1484,win,True
+554438,2026-09-29T04:10:02.715Z,Default,A,unemployed,1491,win,True
+554441,2026-09-29T04:09:54.497Z,Schooltime,A,unemployed,1491,win,True
+554440,2026-09-29T04:09:49.994Z,Portals,A,unemployed,1491,win,True
+554445,2026-09-29T04:09:47.187Z,Default,A,low_cortisol,1484,win,True
+554443,2026-09-29T04:09:41.174Z,Trauma,A,low_cortisol,1484,loss,True
+554442,2026-09-29T04:09:37.906Z,Prisoners Dilemma,A,low_cortisol,1484,win,True
+554439,2026-09-29T04:09:36.354Z,Devil,A,unemployed,1491,win,True
+554444,2026-09-29T04:09:31.920Z,Trophy,A,low_cortisol,1484,loss,True
+553157,2026-09-29T04:04:55.919Z,Slithery Fight,A,()______---------_______(),1513,loss,True
 550558,2026-09-29T03:29:16.251Z,Slithery Fight,B,Zyra,1507,win,True
 550557,2026-09-29T03:28:22.593Z,Schooltime,B,Zyra,1507,win,True
 550554,2026-09-29T03:28:00.636Z,Autarky,B,Zyra,1507,win,True
 550555,2026-09-29T03:27:23.899Z,Default,B,Zyra,1507,loss,True
 550556,2026-09-29T03:27:21.851Z,Devil,B,Zyra,1507,loss,True
-550439,2026-09-29T03:27:14.009Z,Slithery Fight,A,unemployed,1509,win,False
-550419,2026-09-29T03:27:10.058Z,Slithery Fight,A,Zynx,1533,win,False
-550404,2026-09-29T03:26:53.792Z,Slithery Fight,A,ANON_TOKYO,1528,win,False
-550457,2026-09-29T03:26:36.794Z,Slithery Fight,A,Submarine.exe,1519,loss,False
-550459,2026-09-29T03:26:20.801Z,Trophy,A,Submarine.exe,1519,win,False
-550438,2026-09-29T03:26:18.515Z,Schooltime,A,unemployed,1509,win,False
-550456,2026-09-29T03:26:16.648Z,Schooltime,A,Submarine.exe,1519,win,False
-550429,2026-09-29T03:26:11.609Z,Slithery Fight,A,low_cortisol,1506,win,False
-550418,2026-09-29T03:26:08.439Z,Schooltime,A,Zynx,1533,loss,False
-550435,2026-09-29T03:26:08.377Z,Portals,A,unemployed,1509,win,False
-550433,2026-09-29T03:25:58.524Z,Default,A,unemployed,1509,win,False
-550441,2026-09-29T03:25:55.681Z,Trophy,A,unemployed,1509,loss,False
-550452,2026-09-29T03:25:54.439Z,Devil,A,Submarine.exe,1519,loss,False
-550453,2026-09-29T03:25:53.175Z,Portals,A,Submarine.exe,1519,win,False
-550412,2026-09-29T03:25:52.480Z,Autarky,A,Zynx,1533,loss,False
-550403,2026-09-29T03:25:51.707Z,Schooltime,A,ANON_TOKYO,1528,win,False
-550454,2026-09-29T03:25:50.820Z,Prisoners Dilemma,A,Submarine.exe,1519,win,False
-550432,2026-09-29T03:25:50.807Z,Autarky,A,unemployed,1509,win,False
-550450,2026-09-29T03:25:49.803Z,Autarky,A,Submarine.exe,1519,win,False
-550451,2026-09-29T03:25:46.887Z,Default,A,Submarine.exe,1519,win,False
-550398,2026-09-29T03:25:45.082Z,Default,A,ANON_TOKYO,1528,win,False
-550455,2026-09-29T03:25:45.082Z,Queen Of Spades,A,Submarine.exe,1519,win,False
-550458,2026-09-29T03:25:45.082Z,Trauma,A,Submarine.exe,1519,win,False
-550428,2026-09-29T03:25:44.568Z,Schooltime,A,low_cortisol,1506,win,False
-550440,2026-09-29T03:25:42.476Z,Trauma,A,unemployed,1509,win,False
-550400,2026-09-29T03:25:42.016Z,Portals,A,ANON_TOKYO,1528,loss,False
-550434,2026-09-29T03:25:40.035Z,Devil,A,unemployed,1509,win,False
-550426,2026-09-29T03:25:39.114Z,Prisoners Dilemma,A,low_cortisol,1506,win,False
-550397,2026-09-29T03:25:38.787Z,Autarky,A,ANON_TOKYO,1528,loss,False
-550422,2026-09-29T03:25:37.804Z,Autarky,A,low_cortisol,1506,loss,False
-550415,2026-09-29T03:25:36.386Z,Portals,A,Zynx,1533,win,False
-550436,2026-09-29T03:25:35.414Z,Prisoners Dilemma,A,unemployed,1509,loss,False
-550421,2026-09-29T03:25:33.673Z,Trophy,A,Zynx,1533,win,False
-550437,2026-09-29T03:25:32.829Z,Queen Of Spades,A,unemployed,1509,win,False
-550413,2026-09-29T03:25:31.707Z,Default,A,Zynx,1533,loss,False
-550420,2026-09-29T03:25:27.634Z,Trauma,A,Zynx,1533,loss,False
-550430,2026-09-29T03:25:27.290Z,Trauma,A,low_cortisol,1506,win,False
-550423,2026-09-29T03:25:25.303Z,Default,A,low_cortisol,1506,win,False
-550425,2026-09-29T03:25:23.614Z,Portals,A,low_cortisol,1506,win,False
-550406,2026-09-29T03:25:21.936Z,Trophy,A,ANON_TOKYO,1528,win,False
-550399,2026-09-29T03:25:20.240Z,Devil,A,ANON_TOKYO,1528,win,False
-550424,2026-09-29T03:25:18.936Z,Devil,A,low_cortisol,1506,win,False
-550416,2026-09-29T03:25:16.868Z,Prisoners Dilemma,A,Zynx,1533,loss,False
-550417,2026-09-29T03:25:15.621Z,Queen Of Spades,A,Zynx,1533,loss,False
-550427,2026-09-29T03:25:14.881Z,Queen Of Spades,A,low_cortisol,1506,win,False
-550402,2026-09-29T03:25:14.592Z,Queen Of Spades,A,ANON_TOKYO,1528,loss,False
-550431,2026-09-29T03:25:12.996Z,Trophy,A,low_cortisol,1506,win,False
-550414,2026-09-29T03:25:09.588Z,Devil,A,Zynx,1533,loss,False
-550401,2026-09-29T03:25:07.826Z,Prisoners Dilemma,A,ANON_TOKYO,1528,win,False
-550405,2026-09-29T03:25:07.369Z,Trauma,A,ANON_TOKYO,1528,win,False
+550439,2026-09-29T03:27:14.009Z,Slithery Fight,A,unemployed,1491,win,False
+550419,2026-09-29T03:27:10.058Z,Slithery Fight,A,Zynx,1644,win,False
+550404,2026-09-29T03:26:53.792Z,Slithery Fight,A,ANON_TOKYO,1499,win,False
+550457,2026-09-29T03:26:36.794Z,Slithery Fight,A,Submarine.exe,1499,loss,False
+550459,2026-09-29T03:26:20.801Z,Trophy,A,Submarine.exe,1499,win,False
+550438,2026-09-29T03:26:18.515Z,Schooltime,A,unemployed,1491,win,False
+550456,2026-09-29T03:26:16.648Z,Schooltime,A,Submarine.exe,1499,win,False
+550429,2026-09-29T03:26:11.609Z,Slithery Fight,A,low_cortisol,1484,win,False
+550418,2026-09-29T03:26:08.439Z,Schooltime,A,Zynx,1644,loss,False
+550435,2026-09-29T03:26:08.377Z,Portals,A,unemployed,1491,win,False
+550433,2026-09-29T03:25:58.524Z,Default,A,unemployed,1491,win,False
+550441,2026-09-29T03:25:55.681Z,Trophy,A,unemployed,1491,loss,False
+550452,2026-09-29T03:25:54.439Z,Devil,A,Submarine.exe,1499,loss,False
+550453,2026-09-29T03:25:53.175Z,Portals,A,Submarine.exe,1499,win,False
+550412,2026-09-29T03:25:52.480Z,Autarky,A,Zynx,1644,loss,False
+550403,2026-09-29T03:25:51.707Z,Schooltime,A,ANON_TOKYO,1499,win,False
+550454,2026-09-29T03:25:50.820Z,Prisoners Dilemma,A,Submarine.exe,1499,win,False
+550432,2026-09-29T03:25:50.807Z,Autarky,A,unemployed,1491,win,False
+550450,2026-09-29T03:25:49.803Z,Autarky,A,Submarine.exe,1499,win,False
+550451,2026-09-29T03:25:46.887Z,Default,A,Submarine.exe,1499,win,False
+550398,2026-09-29T03:25:45.082Z,Default,A,ANON_TOKYO,1499,win,False
+550455,2026-09-29T03:25:45.082Z,Queen Of Spades,A,Submarine.exe,1499,win,False
+550458,2026-09-29T03:25:45.082Z,Trauma,A,Submarine.exe,1499,win,False
+550428,2026-09-29T03:25:44.568Z,Schooltime,A,low_cortisol,1484,win,False
+550440,2026-09-29T03:25:42.476Z,Trauma,A,unemployed,1491,win,False
+550400,2026-09-29T03:25:42.016Z,Portals,A,ANON_TOKYO,1499,loss,False
+550434,2026-09-29T03:25:40.035Z,Devil,A,unemployed,1491,win,False
+550426,2026-09-29T03:25:39.114Z,Prisoners Dilemma,A,low_cortisol,1484,win,False
+550397,2026-09-29T03:25:38.787Z,Autarky,A,ANON_TOKYO,1499,loss,False
+550422,2026-09-29T03:25:37.804Z,Autarky,A,low_cortisol,1484,loss,False
+550415,2026-09-29T03:25:36.386Z,Portals,A,Zynx,1644,win,False
+550436,2026-09-29T03:25:35.414Z,Prisoners Dilemma,A,unemployed,1491,loss,False
+550421,2026-09-29T03:25:33.673Z,Trophy,A,Zynx,1644,win,False
+550437,2026-09-29T03:25:32.829Z,Queen Of Spades,A,unemployed,1491,win,False
+550413,2026-09-29T03:25:31.707Z,Default,A,Zynx,1644,loss,False
+550420,2026-09-29T03:25:27.634Z,Trauma,A,Zynx,1644,loss,False
+550430,2026-09-29T03:25:27.290Z,Trauma,A,low_cortisol,1484,win,False
+550423,2026-09-29T03:25:25.303Z,Default,A,low_cortisol,1484,win,False
+550425,2026-09-29T03:25:23.614Z,Portals,A,low_cortisol,1484,win,False
+550406,2026-09-29T03:25:21.936Z,Trophy,A,ANON_TOKYO,1499,win,False
+550399,2026-09-29T03:25:20.240Z,Devil,A,ANON_TOKYO,1499,win,False
+550424,2026-09-29T03:25:18.936Z,Devil,A,low_cortisol,1484,win,False
+550416,2026-09-29T03:25:16.868Z,Prisoners Dilemma,A,Zynx,1644,loss,False
+550417,2026-09-29T03:25:15.621Z,Queen Of Spades,A,Zynx,1644,loss,False
+550427,2026-09-29T03:25:14.881Z,Queen Of Spades,A,low_cortisol,1484,win,False
+550402,2026-09-29T03:25:14.592Z,Queen Of Spades,A,ANON_TOKYO,1499,loss,False
+550431,2026-09-29T03:25:12.996Z,Trophy,A,low_cortisol,1484,win,False
+550414,2026-09-29T03:25:09.588Z,Devil,A,Zynx,1644,loss,False
+550401,2026-09-29T03:25:07.826Z,Prisoners Dilemma,A,ANON_TOKYO,1499,win,False
+550405,2026-09-29T03:25:07.369Z,Trauma,A,ANON_TOKYO,1499,win,False
 548257,2026-09-29T03:16:59.325Z,Devil,B,ANON_TOKYO,1528,win,True
 548255,2026-09-29T03:15:07.029Z,Portals,B,ANON_TOKYO,1528,loss,True
 548256,2026-09-29T03:13:54.797Z,Trauma,B,ANON_TOKYO,1528,loss,True

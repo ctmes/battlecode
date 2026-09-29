@@ -93,13 +93,6 @@ DEFAULTS = {
     "split_pearls": 1,         # ... and at least this many pearls are in view (food for the extra mouth)
     "split_r_end": 433,        # ... and it is before this round (late children do not pay back)
     "split_min_exits": 1,      # ... and the parent has at least this many safe moves (not cornered)
-    # ... and no enemy head is within this Manhattan distance (99 = none anywhere in view, as before). Ladder, 29 Sep:
-    # in the 25 games the ~1600 teams eliminated mh4/mh5, an enemy head was in view on 41% of our turns before round
-    # 150 and this rule blocked 65% of our split-ready turns; we split 2-5 times per 25 rounds to their 8-18 and were
-    # outnumbered 9 to 34 by round 150. The top 3 make 24-39% of their splits with an enemy head in view (we: 6%).
-    # 0 (never blocks), held out (seeds 9,300,000+, 200 games each): 54.5% vs mh5, topstyle 86.0 (mh5 85.5), portal_farmer
-    # 89.5 (91.0) -- level locally, where no opponent crowds us early the way those ladder teams do.
-    "split_enemy_dist": 99,
     # Local crowding/food, as an alternative to a flat team-size cap and pearl count that cannot tell a dragon
     # splitting into open space from one splitting into a knot of its own teammates (a big source of other-body
     # deaths in a large swarm). Both 0 = off (old behaviour): nearby teammates use `heads`, already built every
@@ -237,11 +230,7 @@ DEFAULTS = {
     # illegal SPLIT 1, as Cutlery does) so the long one eats the ceil(length/2) pearls it drops. 0 = off.
     # mh4 + feed (feed_r 250, feed_len 8, feed_dist 3, feed_min 8, feed_ratio 1.5), 1.x engine, the 10 ladder maps x
     # fresh held-out seeds 9,200,000-9,200,009 x both seats: 58.0% [51-65] vs mh4 (200 games), longest dragon at round
-    # 500 28.5 vs 23.8; best on Slithery Fight 85%, Portals 70%, Trauma 70%. Same seeds vs topstyle 86.0% (mh4 82.0),
-    # vs portal_farmer 91.0% (mh4 87.5), tiebreak losses 21 -> 12 and 14 -> 6. Why (80 games vs mh4): not a richer diet
-    # -- the king's line eats as much after round 300 (41.2 vs 43.5), with the same own-corpse share (36 vs 37%) -- but
-    # fewer turnarounds (8.4 vs 12.5): the feeders are the short teammates crowding its pocket, so it is boxed in less.
-    # Screened on seeds 1-6 (120 games each):
+    # 500 28.5 vs 23.8; best on Slithery Fight 85%, Portals 70%, Trauma 70%. Screened on seeds 1-6 (120 games each):
     # feeding from 300 with dragons <= 6 55.8%; pulling would-be feeders towards the long teammate ("gather") and
     # leaving it the pearls near its head ("yield") added nothing, nor did limiting diving to dragons <= 6 (48.5% held out).
     "feed_r": 0,
@@ -565,13 +554,8 @@ class Brain:
         if p["split_len_max"] > 0 and length >= p["split_len_max"]:
             return False  # already a real investment: a length floor alone never stops a big dragon from
             # splitting itself away the instant local conditions (pearls, room, no cap yet) allow it
-        if n_ok < p["split_min_exits"]:
-            return False  # cornered
-        rd = p["split_enemy_dist"]
-        for hc, (enemy, _) in heads.items():  # an enemy head close enough to punish a turn spent standing still
-            if enemy and min((hc % w_ - hx) % w_, (hx - hc % w_) % w_) + \
-                    min((hc // w_ - hy) % h_, (hy - hc // w_) % h_) <= rd:
-                return False
+        if n_ok < p["split_min_exits"] or any(e for e, _ in heads.values()):
+            return False  # cornered, or an enemy head is in view
         # Local crowding/food: a flat pearl count and team-size cap don't know whether this particular spot
         # already has teammates piling into it (the source of most other-body deaths in a big swarm) or has
         # enough food nearby to feed one more mouth. Both are opt-in (0 = old behaviour, unaffected).

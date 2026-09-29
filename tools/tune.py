@@ -118,6 +118,16 @@ OPPONENTS = {
     "mh3p": ("frozen", (str(ROOT / "snapshots" / "mh3p_2026-09-29"), {})),
     # mh3 + portals + topstyle + diving near fountains (any length); a submittable bot folder, DEFAULTS = mh4
     "mh4": ("frozen", (str(ROOT / "snapshots" / "mh4_2026-09-29"), {})),
+    # mh4 + feeding the king (short dragons die next to a long teammate from round 250): 58.0% vs mh4 held out
+    "mh4feed": ("frozen", (str(ROOT / "snapshots" / "mh4feed_2026-09-29"),
+                           {"portals": 1, "map_oracle": 1, "oracle_seen": 1, "split_r_end": 300, "boxed_r_end": 300,
+                            "boxed_rear_r": 0, "ram_len": 3, "ram": 1000.0, "dive_len": 99, "dive_trap": 0.0,
+                            "dive_scope": 2, "dive_radius": 6, "feed_r": 250, "feed_len": 8, "feed_dist": 3,
+                            "feed_min": 8, "feed_ratio": 1.5})),
+    # mh4 + feeding, as a submittable bot folder (DEFAULTS = mh5, feed settings untuned); plays mh4feed exactly
+    "mh5": ("frozen", (str(ROOT / "snapshots" / "mh5_2026-09-29"), {})),
+    # mh5 + splitting with enemy heads in view (split_enemy_dist 0); a submittable bot folder, DEFAULTS = mh6
+    "mh6": ("frozen", (str(ROOT / "snapshots" / "mh6_2026-09-29"), {})),
     "v3": ("frozen", (str(ROOT / "snapshots" / "brain_2026-09-27"),
                       {"grow_care_len": 1, "grow_care_mult": 1.9346, "grow_care_margin": 1})),
     "tuned_0927": ("frozen", (str(ROOT / "snapshots" / "brain_2026-09-27"),

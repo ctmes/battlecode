@@ -64,7 +64,8 @@ def extract(data, map_text=None, hook=None):
 
     hook(kind, *args), if given, sees the game as it is tracked: ("init", state dict), ("eat", round, eater, pos,
     source), ("pearl_on", round, pos, source, id of the dragon whose death dropped it or None), ("split", round,
-    parent, child), ("death", round, id, reason, killer or None, split size asked for or None), ("end", round)."""
+    parent, child), ("death", round, id, reason, killer or None, split size asked for or None), ("move", round, id,
+    directions) before the move is applied, ("end", round)."""
     msg = rp.Message(unpack(data))
     root = msg.struct(0, 0)
     s, pw = root[0], root[3]
@@ -128,6 +129,8 @@ def extract(data, map_text=None, hook=None):
                 dirs = u16_list(msg, a, 0)
                 if cur in bodies and dirs:
                     T[team_of[cur]]["moves"][len(dirs)] += 1
+                    if hook:
+                        hook("move", rnd, cur, dirs)
         elif k == 3:
             e = msg.ptr(ev, 0)
             q = msg.ptr(e, 0)
