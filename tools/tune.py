@@ -74,7 +74,7 @@ SPACE = {
     # mh4's mechanisms (29 Sep), each range clear of its 0 = off: topstyle's late consolidation and rams, the dive,
     # the turnaround split, and the portal exploration bets.
     "boxed_r_end": (150, 480, "int"), "ram": (100, 3000, "log"), "ram_len": (2, 5, "int"),
-    "dive_len": (3, 40, "int"), "dive_trap": (0, 1, "lin"), "dive_radius": (2, 14, "int"),
+    "dive_len": (3, 99, "int"), "dive_trap": (0, 1, "lin"), "dive_radius": (2, 14, "int"),
     "boxed_rear_len": (4, 10, "int"), "boxed_reserve": (0, 8, "int"),
     "portal_unknown": (0, 400, "lin"), "portal_blind": (0, 300, "lin"),
     # mh5's feeding the king (29 Sep; screened, not tuned): feed_r is the round it starts
@@ -87,6 +87,14 @@ SPACE = {
     "sprint_threat": (0, 1.5, "lin"), "sprint_threat_len": (2, 16, "int"),
     # Radar (protocol 3): 0 off, 1 one ray ahead, 2 ahead and both sides; what the decoded lines are used for
     "radar": (0, 2, "int"), "radar_dive": (0, 1, "int"), "radar_head": (0, 600, "lin"),
+    # 29-30 Sep: mh6's split rule (99 = the old "no enemy head in view"), mh7's food field, and the sonar relay with
+    # what rides on it -- rally, the king guard, bodyguards -- plus hunting enemy kings (all screened, none tuned).
+    "split_enemy_dist": (0, 6, "int"), "food_pull": (0, 120, "lin"),
+    "rally_r": (150, 450, "int"), "rally_pull": (0, 300, "lin"), "rally_age": (10, 60, "int"),
+    "guard_len": (8, 30, "int"), "guard_care": (1.0, 12.0, "lin"), "guard_threat": (0, 3, "lin"),
+    "escort_r": (100, 400, "int"), "escort_len": (2, 6, "int"), "escort_pull": (0, 200, "lin"),
+    "escort_ring": (2, 7, "int"), "escort_block": (0, 400, "lin"),
+    "hunt": (0, 600, "lin"), "hunt_len": (6, 30, "int"),
 }
 # Parameters whose "off" value (0) lies outside their range: encoded as the range's top, decoded back to 0 there.
 OFF_AT_TOP = {"split_len_max"}
@@ -159,6 +167,17 @@ OPPONENTS = {
                            "dive_scope": 2, "dive_radius": 6, "feed_r": 250, "feed_len": 8, "feed_dist": 3,
                            "feed_min": 8, "feed_ratio": 1.5, "split_enemy_dist": 0, "food_pull": 40.0,
                            "sprint_max": 3, "sprint_ram": 1000.0, "sprint_ram_margin": -9})),
+    # mh7ram that also hunts: its dragons up to 3 long head for any enemy head showing 10+ segments (hunt 300) and
+    # ram it, plainly or by sprint -- the ladder snipes our longest dragon 0.46 times a game, the other bench opponents
+    # 0.10-0.13, so without this the bench cannot see what guard_len/escort are for. Frozen code: bot/ on 30 Sep
+    # (snapshots/mh7h_2026-09-30, DEFAULTS = the base)
+    "mh7hunt": ("frozen", (str(ROOT / "snapshots" / "mh7h_2026-09-30"),
+                           {"portals": 1, "map_oracle": 1, "oracle_seen": 1, "split_r_end": 300, "boxed_r_end": 300,
+                            "boxed_rear_r": 0, "ram_len": 3, "ram": 1000.0, "dive_len": 99, "dive_trap": 0.0,
+                            "dive_scope": 2, "dive_radius": 6, "feed_r": 250, "feed_len": 8, "feed_dist": 3,
+                            "feed_min": 8, "feed_ratio": 1.5, "split_enemy_dist": 0, "food_pull": 40.0,
+                            "sprint_max": 3, "sprint_ram": 1000.0, "sprint_ram_margin": -9,
+                            "hunt": 300.0, "hunt_len": 10})),
     "v3": ("frozen", (str(ROOT / "snapshots" / "brain_2026-09-27"),
                       {"grow_care_len": 1, "grow_care_mult": 1.9346, "grow_care_margin": 1})),
     "tuned_0927": ("frozen", (str(ROOT / "snapshots" / "brain_2026-09-27"),
@@ -339,7 +358,7 @@ def fitness(per_opp, vs):
 
 RUN_DEFAULTS = {"generations": 20, "pop": 16, "maps": 10, "max_side": 32, "seed": 1000, "sigma": 0.15,
                 "vs": "defaults:2,old:2", "params": "", "start": "", "no_bundled": False, "ladder": 0,
-                "seeds": 0, "base": "", "checkpoint": 0}
+                "seeds": 0, "base": "", "checkpoint": 0, "hours": 0}
 
 
 def run(args):
@@ -368,8 +387,12 @@ def run(args):
     print(f"tuning {len(names)} parameters, population {args.pop}, {args.maps} generated + {len(anchors)} bundled + "
           f"{n_ladder} ladder maps ({'engine seeds' if args.seeds else 'variants'}) x 2 sides x {len(vs)} opponents = "
           f"{(args.maps + len(anchors) + n_ladder) * 2 * len(vs)} games per candidate", flush=True)
+    t_start = time.time()
     with League(args.workers) as lg:
         while es.gen < args.generations:
+            if args.hours and time.time() - t_start > args.hours * 3600:
+                print(f"stopping: {args.hours} hours used (this session)", flush=True)
+                break
             t0 = time.perf_counter()
             g = es.gen
             maps = [(args.seed + g * args.maps + i, 10, args.max_side) for i in range(args.maps)] + anchors
@@ -472,6 +495,8 @@ def main():
                                                 "start point unless --start)")
     r.add_argument("--checkpoint", type=int, default=None,
                    help="every N generations also keep <name>_gen<N>.json, which later generations do not overwrite")
+    r.add_argument("--hours", type=float, default=None,
+                   help="start no new generation after this many hours of this session (0 = no limit)")
     r.add_argument("--resume", action="store_true")
     r.add_argument("--workers", type=int, default=None, help="always auto-detected when omitted, even on --resume")
     a = sub.add_parser("average", help="average the last few generation means of a run into NAME_avgK.json")

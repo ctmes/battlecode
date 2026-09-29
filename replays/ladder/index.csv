@@ -1,50 +1,81 @@
 match,at,map,seat,opponent,opponent_elo,result,ranked
-603382,2026-09-29T14:26:57.038Z,Portals,B,usagi,1678,win,True
-603379,2026-09-29T14:26:24.034Z,Devil,B,usagi,1678,win,True
-600876,2026-09-29T14:24:52.547Z,Trophy,A,Hydra,1621,win,True
-603232,2026-09-29T14:23:55.804Z,Queen Of Spades,B,R∞,1668,win,False
-600875,2026-09-29T14:21:11.760Z,Default,A,Hydra,1621,win,True
-602466,2026-09-29T14:11:50.476Z,Slithery Fight,A,UNSW Sigmas,1587,win,True
-602451,2026-09-29T14:11:37.591Z,Slithery Fight,A,UNSW Sigmas,1587,win,True
-602354,2026-09-29T14:11:18.933Z,Slithery Fight,A,aisakastrats,1584,loss,False
-602467,2026-09-29T14:10:31.698Z,Default,A,UNSW Sigmas,1587,win,True
-602465,2026-09-29T14:10:28.512Z,Trophy,A,UNSW Sigmas,1587,loss,True
-602468,2026-09-29T14:10:28.443Z,Autarky,A,UNSW Sigmas,1587,win,True
-602450,2026-09-29T14:10:20.328Z,Portals,A,UNSW Sigmas,1587,win,True
-602449,2026-09-29T14:10:19.637Z,Autarky,A,UNSW Sigmas,1587,win,True
-602464,2026-09-29T14:10:17.283Z,Devil,A,UNSW Sigmas,1587,loss,True
-602453,2026-09-29T14:10:09.446Z,Default,A,UNSW Sigmas,1587,win,True
-600877,2026-09-29T14:10:07.851Z,Schooltime,A,Hydra,1621,win,True
-602350,2026-09-29T14:10:02.392Z,Portals,A,aisakastrats,1584,loss,False
-602452,2026-09-29T14:09:58.076Z,Prisoners Dilemma,A,UNSW Sigmas,1587,win,True
-602344,2026-09-29T14:09:22.360Z,Slithery Fight,A,UNSW Sigmas,1587,win,False
-602347,2026-09-29T14:09:22.111Z,Autarky,A,aisakastrats,1584,win,False
-602329,2026-09-29T14:09:19.030Z,Slithery Fight,A,Quantify,1558,win,False
-602349,2026-09-29T14:09:12.788Z,Devil,A,aisakastrats,1584,win,False
-602355,2026-09-29T14:09:11.837Z,Trauma,A,aisakastrats,1584,loss,False
-602328,2026-09-29T14:08:57.807Z,Schooltime,A,Quantify,1558,win,False
-602352,2026-09-29T14:08:50.667Z,Queen Of Spades,A,aisakastrats,1584,loss,False
-602343,2026-09-29T14:08:48.093Z,Schooltime,A,UNSW Sigmas,1587,loss,False
-602351,2026-09-29T14:08:47.129Z,Prisoners Dilemma,A,aisakastrats,1584,loss,False
-602356,2026-09-29T14:08:46.141Z,Trophy,A,aisakastrats,1584,win,False
-602337,2026-09-29T14:08:38.299Z,Autarky,A,UNSW Sigmas,1587,win,False
-602340,2026-09-29T14:08:38.012Z,Portals,A,UNSW Sigmas,1587,win,False
-602348,2026-09-29T14:08:33.346Z,Default,A,aisakastrats,1584,win,False
-602353,2026-09-29T14:08:32.391Z,Schooltime,A,aisakastrats,1584,win,False
-602338,2026-09-29T14:08:31.276Z,Default,A,UNSW Sigmas,1587,loss,False
-602330,2026-09-29T14:08:30.824Z,Trauma,A,Quantify,1558,win,False
-602345,2026-09-29T14:08:29.619Z,Trauma,A,UNSW Sigmas,1587,win,False
-602323,2026-09-29T14:08:29.009Z,Default,A,Quantify,1558,win,False
-602341,2026-09-29T14:08:25.985Z,Prisoners Dilemma,A,UNSW Sigmas,1587,win,False
-602325,2026-09-29T14:08:24.145Z,Portals,A,Quantify,1558,win,False
-602342,2026-09-29T14:08:22.037Z,Queen Of Spades,A,UNSW Sigmas,1587,win,False
-602346,2026-09-29T14:08:20.714Z,Trophy,A,UNSW Sigmas,1587,win,False
-602339,2026-09-29T14:08:20.361Z,Devil,A,UNSW Sigmas,1587,win,False
-602324,2026-09-29T14:08:20.343Z,Devil,A,Quantify,1558,win,False
-602322,2026-09-29T14:08:16.809Z,Autarky,A,Quantify,1558,win,False
-602331,2026-09-29T14:08:14.668Z,Trophy,A,Quantify,1558,loss,False
-602326,2026-09-29T14:08:08.115Z,Prisoners Dilemma,A,Quantify,1558,loss,False
-602327,2026-09-29T14:08:07.027Z,Queen Of Spades,A,Quantify,1558,win,False
+605459,2026-09-29T15:18:50.127Z,Autarky,B,Lorem Ipsum,1662,win,True
+604340,2026-09-29T14:43:27.055Z,Slithery Fight,B,Quantify,1583,loss,True
+604342,2026-09-29T14:42:52.804Z,Trauma,B,Quantify,1583,win,True
+604341,2026-09-29T14:42:52.377Z,Portals,B,Quantify,1583,win,True
+604339,2026-09-29T14:42:47.034Z,Default,B,Quantify,1583,win,True
+604338,2026-09-29T14:42:34.987Z,Prisoners Dilemma,B,Quantify,1583,loss,True
+603846,2026-09-29T14:33:44.004Z,Slithery Fight,A,dubu,1649,win,False
+603843,2026-09-29T14:33:16.409Z,Autarky,A,dubu,1649,loss,False
+603844,2026-09-29T14:33:00.826Z,Prisoners Dilemma,A,dubu,1649,win,False
+603845,2026-09-29T14:32:55.416Z,Queen Of Spades,A,dubu,1649,win,False
+603847,2026-09-29T14:32:50.871Z,Trauma,A,dubu,1649,win,False
+600873,2026-09-29T14:32:18.256Z,Prisoners Dilemma,A,Hydra,1615,win,True
+603512,2026-09-29T14:29:54.319Z,Slithery Fight,A,R∞,1658,win,False
+603508,2026-09-29T14:29:22.420Z,Portals,A,R∞,1658,loss,False
+603506,2026-09-29T14:29:18.936Z,Default,A,R∞,1658,win,False
+603492,2026-09-29T14:29:13.430Z,Schooltime,A,UNSW Sigmas,1570,win,True
+603511,2026-09-29T14:29:11.925Z,Schooltime,A,R∞,1658,loss,False
+603505,2026-09-29T14:29:11.800Z,Autarky,A,R∞,1658,win,False
+603514,2026-09-29T14:29:11.341Z,Trophy,A,R∞,1658,win,False
+603513,2026-09-29T14:29:04.320Z,Trauma,A,R∞,1658,loss,False
+603510,2026-09-29T14:28:58.167Z,Queen Of Spades,A,R∞,1658,loss,False
+603509,2026-09-29T14:28:57.978Z,Prisoners Dilemma,A,R∞,1658,loss,False
+603489,2026-09-29T14:28:57.832Z,Trauma,A,UNSW Sigmas,1570,win,True
+603507,2026-09-29T14:28:56.677Z,Devil,A,R∞,1658,loss,False
+603488,2026-09-29T14:28:52.747Z,Portals,A,UNSW Sigmas,1570,win,True
+603381,2026-09-29T14:28:44.159Z,Schooltime,B,usagi,1657,win,True
+603490,2026-09-29T14:28:40.658Z,Autarky,A,UNSW Sigmas,1570,win,True
+603491,2026-09-29T14:28:40.128Z,Default,A,UNSW Sigmas,1570,win,True
+603378,2026-09-29T14:28:29.258Z,Trauma,B,usagi,1657,loss,True
+603380,2026-09-29T14:28:19.201Z,Default,B,usagi,1657,loss,True
+600874,2026-09-29T14:28:07.034Z,Devil,A,Hydra,1615,loss,True
+603382,2026-09-29T14:26:57.038Z,Portals,B,usagi,1657,win,True
+603379,2026-09-29T14:26:24.034Z,Devil,B,usagi,1657,win,True
+600876,2026-09-29T14:24:52.547Z,Trophy,A,Hydra,1615,win,True
+603232,2026-09-29T14:23:55.804Z,Queen Of Spades,B,R∞,1658,win,False
+600875,2026-09-29T14:21:11.760Z,Default,A,Hydra,1615,win,True
+602466,2026-09-29T14:11:50.476Z,Slithery Fight,A,UNSW Sigmas,1570,win,True
+602451,2026-09-29T14:11:37.591Z,Slithery Fight,A,UNSW Sigmas,1570,win,True
+602354,2026-09-29T14:11:18.933Z,Slithery Fight,A,aisakastrats,1574,loss,False
+602467,2026-09-29T14:10:31.698Z,Default,A,UNSW Sigmas,1570,win,True
+602465,2026-09-29T14:10:28.512Z,Trophy,A,UNSW Sigmas,1570,loss,True
+602468,2026-09-29T14:10:28.443Z,Autarky,A,UNSW Sigmas,1570,win,True
+602450,2026-09-29T14:10:20.328Z,Portals,A,UNSW Sigmas,1570,win,True
+602449,2026-09-29T14:10:19.637Z,Autarky,A,UNSW Sigmas,1570,win,True
+602464,2026-09-29T14:10:17.283Z,Devil,A,UNSW Sigmas,1570,loss,True
+602453,2026-09-29T14:10:09.446Z,Default,A,UNSW Sigmas,1570,win,True
+600877,2026-09-29T14:10:07.851Z,Schooltime,A,Hydra,1615,win,True
+602350,2026-09-29T14:10:02.392Z,Portals,A,aisakastrats,1574,loss,False
+602452,2026-09-29T14:09:58.076Z,Prisoners Dilemma,A,UNSW Sigmas,1570,win,True
+602344,2026-09-29T14:09:22.360Z,Slithery Fight,A,UNSW Sigmas,1570,win,False
+602347,2026-09-29T14:09:22.111Z,Autarky,A,aisakastrats,1574,win,False
+602329,2026-09-29T14:09:19.030Z,Slithery Fight,A,Quantify,1583,win,False
+602349,2026-09-29T14:09:12.788Z,Devil,A,aisakastrats,1574,win,False
+602355,2026-09-29T14:09:11.837Z,Trauma,A,aisakastrats,1574,loss,False
+602328,2026-09-29T14:08:57.807Z,Schooltime,A,Quantify,1583,win,False
+602352,2026-09-29T14:08:50.667Z,Queen Of Spades,A,aisakastrats,1574,loss,False
+602343,2026-09-29T14:08:48.093Z,Schooltime,A,UNSW Sigmas,1570,loss,False
+602351,2026-09-29T14:08:47.129Z,Prisoners Dilemma,A,aisakastrats,1574,loss,False
+602356,2026-09-29T14:08:46.141Z,Trophy,A,aisakastrats,1574,win,False
+602337,2026-09-29T14:08:38.299Z,Autarky,A,UNSW Sigmas,1570,win,False
+602340,2026-09-29T14:08:38.012Z,Portals,A,UNSW Sigmas,1570,win,False
+602348,2026-09-29T14:08:33.346Z,Default,A,aisakastrats,1574,win,False
+602353,2026-09-29T14:08:32.391Z,Schooltime,A,aisakastrats,1574,win,False
+602338,2026-09-29T14:08:31.276Z,Default,A,UNSW Sigmas,1570,loss,False
+602330,2026-09-29T14:08:30.824Z,Trauma,A,Quantify,1583,win,False
+602345,2026-09-29T14:08:29.619Z,Trauma,A,UNSW Sigmas,1570,win,False
+602323,2026-09-29T14:08:29.009Z,Default,A,Quantify,1583,win,False
+602341,2026-09-29T14:08:25.985Z,Prisoners Dilemma,A,UNSW Sigmas,1570,win,False
+602325,2026-09-29T14:08:24.145Z,Portals,A,Quantify,1583,win,False
+602342,2026-09-29T14:08:22.037Z,Queen Of Spades,A,UNSW Sigmas,1570,win,False
+602346,2026-09-29T14:08:20.714Z,Trophy,A,UNSW Sigmas,1570,win,False
+602339,2026-09-29T14:08:20.361Z,Devil,A,UNSW Sigmas,1570,win,False
+602324,2026-09-29T14:08:20.343Z,Devil,A,Quantify,1583,win,False
+602322,2026-09-29T14:08:16.809Z,Autarky,A,Quantify,1583,win,False
+602331,2026-09-29T14:08:14.668Z,Trophy,A,Quantify,1583,loss,False
+602326,2026-09-29T14:08:08.115Z,Prisoners Dilemma,A,Quantify,1583,loss,False
+602327,2026-09-29T14:08:07.027Z,Queen Of Spades,A,Quantify,1583,win,False
 591378,2026-09-29T12:35:07.575Z,Trophy,B,dubu,1623,loss,True
 591380,2026-09-29T12:32:25.525Z,Portals,B,dubu,1623,loss,True
 591379,2026-09-29T12:24:09.661Z,Default,B,dubu,1623,loss,True

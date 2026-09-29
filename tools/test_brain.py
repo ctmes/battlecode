@@ -11,6 +11,8 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "bot"))
 sys.path.insert(0, str(ROOT / "tools"))
 from brain import Brain, MOVES  # noqa: E402
+
+Brain.strict = True  # a crash inside decide() fails the test instead of falling back
 from test_encoder import H, HX, HY, W, render_block  # noqa: E402
 
 
@@ -357,28 +359,98 @@ def test_rally_relays_the_king_and_pulls_short_dragons_towards_it():
         kind, ux, uy, un, ur = proto.unpack_sonar(proto.pack_king_sonar(x, y, n, r))
         assert (kind, ux, uy, un, ur) == (proto.SONAR_KING, x, y, min(n, 127), r & ~3), (x, y, n, r)
     assert proto.unpack_sonar(proto.pack_king_sonar(5, 9, 20, 300) ^ 1)[0] is None  # a bad check is dropped
+    b_msg = proto.pack_king_sonar(5, 9, 20, 300, proto.king_salt(b"B"))
+    assert proto.unpack_sonar(b_msg, proto.king_salt(b"B"))[0] == proto.SONAR_KING
+    assert proto.unpack_sonar(b_msg, proto.king_salt(b"A"))[0] is None  # the other team's relay is not ours
     assert proto.unpack_sonar(2 ** 40)[0] is None  # a 64-bit value is nobody's king
     rally = {"rally_r": 350, "rally_pull": 200.0, "rally_age": 30, "feed_min": 8, "feed_len": 8}
     parts = [("A", 1, 0, y, "N", 1 if y == 0 else 0) for y in range(3)]  # 3 long, heading north
-    king_east = proto.pack_king_sonar((HX + 12) % W, HY, 20, 400)
+    A = proto.king_salt(b"A")  # the Brains below play team A
+    king_east = proto.pack_king_sonar((HX + 12) % W, HY, 20, 400, A)
 
     def act(params, length=3, msgs=(), rnd=400, body=parts):
         return Brain(1, b"A", W, H, 64, params).act(
             render_block(0, set(), {}, {}, body, rnd=rnd, length=length, msgs=msgs))
 
     assert act({}, msgs=(king_east,)) == MOVES[0]  # off by default: straight on, no ping
+    enemy_king = proto.pack_king_sonar((HX + 12) % W, HY, 20, 400, proto.king_salt(b"B"))
+    assert act(rally, msgs=(enemy_king,)) == MOVES[0]  # the other team's king: ignored
     a = act(rally, msgs=(king_east,))
     assert a.startswith(MOVES[1]) and a.endswith(b"SONAR %d\n" % king_east), a  # east to it, relaying it
     assert act(rally, msgs=(king_east,), rnd=340).startswith(MOVES[0])  # before rally_r: relays, no pull
-    assert act(rally, msgs=(proto.pack_king_sonar((HX + 12) % W, HY, 20, 360),)) == MOVES[0]  # 40 rounds stale
+    assert act(rally, msgs=(proto.pack_king_sonar((HX + 12) % W, HY, 20, 360, A),)) == MOVES[0]  # 40 rounds stale
     long_body = [("A", 1, 0, y, "N", 1 if y == 0 else 0) for y in range(3)]
     a = act(rally, length=10, body=long_body)  # 10 long, no king heard of: it is the king and says so
-    assert a.endswith(b"SONAR %d\n" % proto.pack_king_sonar(HX, HY, 10, 400)), a
+    assert a.endswith(b"SONAR %d\n" % proto.pack_king_sonar(HX, HY, 10, 400, A)), a
     a = act({**rally, "radar": 2}, msgs=(king_east,))  # with the radar on, every ray carries the king (protocol 3)
     assert a.startswith(MOVES[1]) and b"PROTOCOL 3\n" in a, a
     assert [x for x in a.split(b"\n") if x.startswith(b"SONAR")] == \
         [b"SONAR %c %d" % (c, king_east) for c in b"ESN"], a  # ahead (east), then right and left
     print("ok: rally relays the longest teammate's head by sonar and pulls short dragons towards it")
+
+
+def test_guard_keeps_the_king_off_a_pearl_next_to_an_enemy_head():
+    me = [("A", 1, 0, y, "N", 1 if y == 0 else 0) for y in range(4)]  # heading north, 20 long in all
+    foe = [("B", 9, 2, 0, "W", 1), ("B", 9, 3, 0, "W", 0)]  # a 2-long enemy head two east of ours
+
+    def act(params):
+        return Brain(1, b"A", W, H, 64, params).act(
+            render_block(0, {(1, 0)}, {}, {}, me + foe, rnd=300, length=20))  # the pearl is next to its head
+
+    guard = {"rally_r": 250, "guard_len": 12, "guard_care": 6.0}
+    assert act({}).startswith(MOVES[1]), act({})  # unguarded: takes the pearl beside the enemy head
+    assert not act(guard).startswith(MOVES[1]), act(guard)  # the king (no longer one heard of) keeps away
+    assert act({"guard_len": 12, "guard_care": 6.0}).startswith(MOVES[1]) is False  # relay off: any 12+ is guarded
+    assert act({**guard, "guard_len": 21}).startswith(MOVES[1])  # too short to be guarded
+    print("ok: guard makes the king pass up a pearl next to an enemy head, only when enabled")
+
+
+def test_escort_holds_a_ring_round_the_king_and_closes_on_enemies_near_it():
+    import proto
+    parts = [("A", 1, 0, y, "N", 1 if y == 0 else 0) for y in range(3)]  # 3 long, heading north
+    esc = {"escort_r": 200, "rally_age": 30, "feed_min": 8, "escort_len": 4, "escort_ring": 4}
+
+    def act(params, king, extra=()):
+        return Brain(1, b"A", W, H, 64, params).act(render_block(
+            0, set(), {}, {}, parts + list(extra), rnd=300, length=3, msgs=(proto.pack_king_sonar(*king, 20, 300, proto.king_salt(b"A")),)))
+
+    far_east = ((HX + 12) % W, HY)
+    assert act({}, far_east) == MOVES[0]  # off: straight on
+    assert act({**esc, "escort_pull": 200.0}, far_east).startswith(MOVES[1])  # east, towards the ring
+    south = (HX, (HY + 5) % H)  # the king 5 south; an enemy head 3 west and 2 south is within ring + 2 of it
+    foe = [("B", 9, -3, 2, "E", 1), ("B", 9, -3, 3, "E", 0)]
+    assert act({**esc, "escort_block": 300.0}, south, foe).startswith(MOVES[3])  # west, towards the enemy
+    print("ok: escorts hold a ring round the king heard of and close on enemy heads near it, only when enabled")
+
+
+def test_feed_ahead_dies_only_in_front_of_the_king():
+    feed = {"feed_r": 250, "feed_len": 8, "feed_dist": 3, "feed_min": 8, "feed_ratio": 1.5}
+    me = [("A", 1, 0, y, "N", 1 if y == 0 else 0) for y in range(3)]
+
+    def king(facing):  # a teammate head two north of ours, with 8 segments in view
+        body = [(0, -2), (1, -2), (1, -3), (2, -3), (2, -2), (3, -2), (3, -3), (-1, -3)]
+        return [("A", 7, x, y, facing, 1 if i == 0 else 0) for i, (x, y) in enumerate(body)]
+
+    def act(params, facing):
+        return Brain(1, b"A", W, H, 64, params).act(render_block(0, set(), {}, {}, me + king(facing), rnd=300, length=3))
+
+    assert act(feed, "N") == b"SPLIT 1\n"  # the plain rule feeds anywhere within feed_dist
+    assert act({**feed, "feed_ahead": 3}, "S") == b"SPLIT 1\n"  # it faces us: we are in its path
+    assert act({**feed, "feed_ahead": 3}, "N") != b"SPLIT 1\n"  # it faces away: not in its path
+    print("ok: feed_ahead feeds only in front of the long teammate's head")
+
+
+def test_hunt_closes_on_a_long_enemy_head():
+    me = [("A", 1, 0, y, "N", 1 if y == 0 else 0) for y in range(3)]  # 3 long, heading north
+    prey = [("B", 9, -3, 1 + i // 3, "E", 1 if i == 0 else 0) for i in range(12)]  # 12 segments, head 3 west
+
+    def act(params):
+        return Brain(1, b"A", W, H, 64, params).act(render_block(0, set(), {}, {}, me + prey, rnd=300, length=3))
+
+    assert act({}) == MOVES[0], act({})  # off: straight on
+    assert act({"hunt": 300.0, "hunt_len": 10, "ram_len": 3}) == MOVES[3], act({"hunt": 300.0, "hunt_len": 10, "ram_len": 3})  # west, at it
+    assert act({"hunt": 300.0, "hunt_len": 13, "ram_len": 3}) == MOVES[0]  # not long enough to be worth it
+    print("ok: hunt sends a short dragon at a long enemy head, only when enabled")
 
 
 if __name__ == "__main__":
@@ -398,3 +470,7 @@ if __name__ == "__main__":
     test_split_enemy_dist_only_blocks_splits_near_an_enemy_head()
     test_food_pull_steers_up_the_field_only_with_no_pearl_in_view()
     test_rally_relays_the_king_and_pulls_short_dragons_towards_it()
+    test_guard_keeps_the_king_off_a_pearl_next_to_an_enemy_head()
+    test_escort_holds_a_ring_round_the_king_and_closes_on_enemies_near_it()
+    test_feed_ahead_dies_only_in_front_of_the_king()
+    test_hunt_closes_on_a_long_enemy_head()

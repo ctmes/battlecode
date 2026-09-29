@@ -1122,8 +1122,7 @@ class Brain:
 
         if self.founder is None:
             self.founder = t.rnd == 0
-        escort_on = p["escort_r"] and (p["escort_pull"] > 0 or p["escort_block"] > 0)
-        relay_r = min(p["rally_r"] or 999, p["escort_r"] if escort_on else 999)  # the relay serves both
+        relay_r = min(p["rally_r"] or 999, p["escort_r"] or 999)  # the relay serves both
         if relay_r < 999 and t.rnd >= relay_r - p["rally_age"]:
             age = p["rally_age"]
             ki = self.kinfo if self.kinfo is not None and t.rnd - self.kinfo[3] <= age else None
@@ -1268,7 +1267,7 @@ class Brain:
         esc = None  # escort: (king x, king y, our distance to it, enemy heads in view near it)
         ki = self.kinfo
         if ki is not None and ki[2] > length:
-            if escort_on and t.rnd >= p["escort_r"] and length <= p["escort_len"]:
+            if p["escort_r"] and t.rnd >= p["escort_r"] and length <= p["escort_len"]:
                 esc = (ki[0], ki[1], tdist(hx, hy, ki[0], ki[1]),
                        [(hc % w_, hc // w_) for hc, (enemy, _) in heads.items()
                         if enemy and tdist(hc % w_, hc // w_, ki[0], ki[1]) <= p["escort_ring"] + 2])

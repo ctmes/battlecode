@@ -144,8 +144,13 @@ def main():
     seeds = range(args.seed_base, args.seed_base + args.seeds)
     jobs = [(lab, mine[lab], o, opps[o], m, s, side, not args.wall_budget)
             for lab in cands for o in opps for m in maps for s in seeds for side in "AB"]
-    with concurrent.futures.ProcessPoolExecutor(args.workers, initializer=_init) as ex:
-        res = list(ex.map(play, jobs, chunksize=2))
+    # a fresh pool every workers x MAX_TASKS games: the 1.x engine leaks ~21 MB a game in a long-lived worker, and a
+    # 4,000-game run died of it (MemoryError, 30 Sep) -- the same fix as league.League.run
+    import league
+    res, step = [], args.workers * league.MAX_TASKS
+    for i in range(0, len(jobs), step):
+        with concurrent.futures.ProcessPoolExecutor(args.workers, initializer=_init) as ex:
+            res += list(ex.map(play, jobs[i:i + step], chunksize=2))
     print(f"{len(res)} games: {len(maps)} maps x {args.seeds} seeds (from {args.seed_base}) x 2 seats per pairing\n")
     print(f"{'candidate':14s} {'vs':14s} {'score':>18s} {'longest@500 us/them':>20s} {'tiebreak losses':>16s} "
           f"{'eliminated':>11s} {'errors':>6s}")
