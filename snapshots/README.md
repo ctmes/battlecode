@@ -63,3 +63,16 @@ so that an opponent never changes when bot/brain.py does. Never edit a snapshot;
   each): mh6 68.5% [62-75], mh5 71.5, mh4 82.0, topstyle 94.0 (mh6 86.0), portal_farmer 96.0 (mh6 89.5), farmer 98.0;
   no map below 50% vs anyone, Devil 90-100%, Prisoners Dilemma 100%. Judge sandbox (Slithery Fight, rally on too):
   p99 15.2M, max 18.6M points per turn (mh6 18.2M).
+- `mh8_2026-09-29/`: a complete, submittable bot folder whose DEFAULTS are mh8 = mh7 + sonar: three radar rays a turn
+  (radar 2, protocol 3), each carrying the king's head (rally_r 250, rally_pull 100: dragons relay the longest
+  teammate they have heard of, and short ones close in on it). Level with mh7 held out (49.5-51.0%); not submitted.
+- `mh7s_2026-09-29/`, `mh7h_2026-09-30/`: frozen code only (DEFAULTS = the base) for tune.py's sparring partners
+  "mh7ram" (mh7 + sprint rams) and "mh7hunt" (+ hunting long enemy heads with short dragons).
+- `mh9_2026-09-30/`: a complete, submittable bot folder whose DEFAULTS are mh9 = mh8 tuned for 9 hours by CMA-ES over
+  73 parameters (radar fixed at 2; run mh8_9h in the frozen copy D:\Projects\battlecode-tune9h, the mean of its last
+  15 generation means). The tuner switched on the king guard (guard_len 18), bodyguards (escort_r 290) and hunting
+  enemy kings (hunt 419, hunt_len 21), kept sprints off, and moved rally to round 353. Reproduces the benched
+  candidate game for game (40/40). Held out (seeds 9,700,000-9,700,009, 200 games each): mh8 65.0% [58-71], mh7 69.0
+  [62-75], mh7hunt 74.8, topstyle 96.5, mh6 72.0 (mh8 on the same games: 50.5 vs mh7, 64.5, 93.5, 66.5); longest
+  dragon at round 500 about 37 vs 30. Weak on Default (30-45% vs our own family) and Queen Of Spades (30-35% vs
+  mh8/mh7).

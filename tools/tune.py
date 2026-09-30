@@ -150,6 +150,8 @@ OPPONENTS = {
     "mh7": ("frozen", (str(ROOT / "snapshots" / "mh7_2026-09-29"), {})),
     # mh7 + sonar (radar 2: three rays a turn, each carrying the king's head for the rally relay from round 250)
     "mh8": ("frozen", (str(ROOT / "snapshots" / "mh8_2026-09-29"), {})),
+    # mh8 tuned 9 hours (run mh8_9h, mean of its last 15 means): guard, bodyguards and hunting on; DEFAULTS = mh9
+    "mh9": ("frozen", (str(ROOT / "snapshots" / "mh9_2026-09-30"), {})),
     # mh5 that sprint-rams any enemy head 2-3 steps away with its dragons up to 3 long, as the ladder's top 3 do
     # (11-38% of their sprints are rams; 323 of them hit mh4 in 55 ladder games). Frozen code: mh5 + sprints + radar
     # (snapshots/mh5s_2026-09-29, DEFAULTS = the base, all new mechanisms off)
