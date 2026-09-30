@@ -65,7 +65,8 @@ def extract(data, map_text=None, hook=None):
     hook(kind, *args), if given, sees the game as it is tracked: ("init", state dict), ("eat", round, eater, pos,
     source), ("pearl_on", round, pos, source, id of the dragon whose death dropped it or None), ("split", round,
     parent, child), ("death", round, id, reason, killer or None, split size asked for or None), ("move", round, id,
-    directions) before the move is applied, ("end", round)."""
+    directions) before the move is applied, ("turn", round, id) as a dragon's turn starts (the board as it acts on),
+    ("split_req", round, id, child size asked for) as it asks to split, ("end", round)."""
     msg = rp.Message(unpack(data))
     root = msg.struct(0, 0)
     s, pw = root[0], root[3]
@@ -120,11 +121,15 @@ def extract(data, map_text=None, hook=None):
             turn_no += 1
             if cur in bodies:
                 T[team_of[cur]]["turns"] += 1
+                if hook:
+                    hook("turn", rnd, cur)
             sonar_seen = False
         elif k == 4:
             a = msg.ptr(msg.ptr(ev, 0), 0)
             if a is not None and msg.u16(a, 0) == 1:
                 split_req = msg.i32(a, 4)
+                if hook and cur in bodies:
+                    hook("split_req", rnd, cur, split_req)
             if a is not None and msg.u16(a, 0) == 0:
                 dirs = u16_list(msg, a, 0)
                 if cur in bodies and dirs:

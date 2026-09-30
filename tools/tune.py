@@ -152,6 +152,8 @@ OPPONENTS = {
     "mh8": ("frozen", (str(ROOT / "snapshots" / "mh8_2026-09-29"), {})),
     # mh8 tuned 9 hours (run mh8_9h, mean of its last 15 means): guard, bodyguards and hunting on; DEFAULTS = mh9
     "mh9": ("frozen", (str(ROOT / "snapshots" / "mh9_2026-09-30"), {})),
+    # mh7 + food-weighted territory (voro_food 40: near an enemy head, win the valuable spawn tiles); DEFAULTS = mh10
+    "mh10": ("frozen", (str(ROOT / "snapshots" / "mh10_2026-09-30"), {})),
     # mh5 that sprint-rams any enemy head 2-3 steps away with its dragons up to 3 long, as the ladder's top 3 do
     # (11-38% of their sprints are rams; 323 of them hit mh4 in 55 ladder games). Frozen code: mh5 + sprints + radar
     # (snapshots/mh5s_2026-09-29, DEFAULTS = the base, all new mechanisms off)
@@ -180,6 +182,14 @@ OPPONENTS = {
                             "feed_min": 8, "feed_ratio": 1.5, "split_enemy_dist": 0, "food_pull": 40.0,
                             "sprint_max": 3, "sprint_ram": 1000.0, "sprint_ram_margin": -9,
                             "hunt": 300.0, "hunt_len": 10})),
+    # Imitations of ladder teams (30 Sep): networks trained on each team's replays (tools/imit_data.py,
+    # tools/imit_train.py, tools/imit_bot/brain.py) -- the only opponents here not built from our own code
+    "imit_cheji": ("frozen", (str(ROOT / "snapshots" / "imit_cheji"), {})),
+    "imit_cachemeoutside": ("frozen", (str(ROOT / "snapshots" / "imit_cachemeoutside"), {})),
+    "imit_cutlery": ("frozen", (str(ROOT / "snapshots" / "imit_cutlery"), {})),
+    "imit_stockfish": ("frozen", (str(ROOT / "snapshots" / "imit_stockfish"), {})),
+    "imit_sss": ("frozen", (str(ROOT / "snapshots" / "imit_sss"), {})),
+    "imit_forgot": ("frozen", (str(ROOT / "snapshots" / "imit_forgot"), {})),
     "v3": ("frozen", (str(ROOT / "snapshots" / "brain_2026-09-27"),
                       {"grow_care_len": 1, "grow_care_mult": 1.9346, "grow_care_margin": 1})),
     "tuned_0927": ("frozen", (str(ROOT / "snapshots" / "brain_2026-09-27"),

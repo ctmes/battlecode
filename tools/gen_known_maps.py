@@ -1,7 +1,8 @@
 """Writes bot/known_maps.py: the ladder's own maps (maps/ladder/*.map, recovered from ladder replays by
 tools/replay_maps.py) in the Brain's terms, so a dragon that recognises its map can know every portal pair, every
 kelp edge and every pearl-spawning tile from its first turn (bot/brain.py DEFAULTS "map_oracle"), and how much food
-lies around each tile (FIELDS, for DEFAULTS "food_pull").
+lies around each tile (FIELDS and RICH, for DEFAULTS "food_pull"/"food_rich") and what each tile is worth when
+contested (VALUES, for DEFAULTS "voro_food").
 
     .venv\\Scripts\\python.exe tools\\gen_known_maps.py [--check]
 
@@ -29,6 +30,13 @@ the generator): how much pearl spawning lies around that tile, as
 8 * log(F) / log(1 / GAMMA) above the map's floor, where F sums every spawn tile's rate (2 / (min_gap + max_gap) pearls
 per round) times GAMMA ** (its distance in moves, through kelp and portals). Near one fountain, a step towards it adds
 about 8; the floor is 31 steps' decay below the map's best tile, so the byte never saturates.
+
+RICH[name] = the same kind of field for the maps FIELDS leaves out, built from their rich tiles only (spawning at
+least RICH_MIN times the map's average rate per tile), so it points at Default's and Trophy's hot tiles instead of at
+open ground.
+
+VALUES[name] = ((weight, bitboard), ...): the map's spawn tiles grouped by worth, weight = log2(1 + rate / the map's
+average rate per tile), so an average tile is worth 1, a tile spawning 3x as often 2, a fountain about 5-7.
 """
 MAPS = {
 '''
@@ -38,13 +46,35 @@ DEPTH = 40  # moves searched out from each spawn tile
 # anywhere (Default 43%, Trophy 54%) the field only measures open ground, and pulling towards it lost there (bench,
 # 29 Sep: food_pull 40-320 vs mh6, Default 8-50%, Trophy 17-58%, while Devil and Prisoners Dilemma went 92-100%).
 MIN_CONCENTRATION = 0.6
+RICH_MIN = 2.0  # RICH fields: tiles spawning at least this many times the map's average rate per tile
 
 
-def field(m):
-    rate = {(x, y): 2.0 / (lo + hi) for (x, y), (lo, hi) in m.tiles.items() if hi > 0}
-    rs = sorted(rate.values(), reverse=True)
-    if sum(rs[:m.w * m.h // 10]) < MIN_CONCENTRATION * sum(rs):
-        return None
+def rates(m):
+    return {(x, y): 2.0 / (lo + hi) for (x, y), (lo, hi) in m.tiles.items() if hi > 0}
+
+
+def concentrated(m):
+    rs = sorted(rates(m).values(), reverse=True)
+    return sum(rs[:m.w * m.h // 10]) >= MIN_CONCENTRATION * sum(rs)
+
+
+def rich(m):
+    rate = rates(m)
+    mean = sum(rate.values()) / (m.w * m.h)
+    return {c: r for c, r in rate.items() if r >= RICH_MIN * mean}
+
+
+def values(m):
+    rate = rates(m)
+    mean = sum(rate.values()) / (m.w * m.h)
+    groups = {}
+    for (x, y), r in rate.items():
+        w = round(math.log2(1 + r / mean), 2)
+        groups[w] = groups.get(w, 0) | 1 << (y * m.w + x)
+    return tuple(sorted(groups.items(), reverse=True))
+
+
+def field(m, rate):
     f = collections.Counter()
     for src, r in rate.items():
         dist = {src: 0}
@@ -92,13 +122,15 @@ def entry(m):
 
 
 def render():
-    by_size, fields = {}, {}
+    by_size, fields, richs, vals = {}, {}, {}, {}
     for p in sorted((ROOT / "maps" / "ladder").glob("*.map")):
         m = GameMap.loads(p.read_text())
         by_size.setdefault((m.w, m.h), []).append((p.stem, *entry(m)))
-        f = field(m)
-        if f is not None:
-            fields[p.stem] = f
+        if concentrated(m):
+            fields[p.stem] = field(m, rates(m))
+        else:
+            richs[p.stem] = field(m, rich(m))
+        vals[p.stem] = values(m)
     out = [HEADER]
     for size in sorted(by_size):
         out.append(f"    {size}: (\n")
@@ -109,6 +141,14 @@ def render():
     out.append("FIELDS = {\n")
     for name in sorted(fields):
         out.append(f"    {name!r}: bytes.fromhex({fields[name].hex()!r}),\n")
+    out.append("}\n")
+    out.append("RICH = {\n")
+    for name in sorted(richs):
+        out.append(f"    {name!r}: bytes.fromhex({richs[name].hex()!r}),\n")
+    out.append("}\n")
+    out.append("VALUES = {\n")
+    for name in sorted(vals):
+        out.append(f"    {name!r}: ({''.join(f'({w!r}, {b:#x}), ' for w, b in vals[name])}),\n")
     out.append("}\n")
     return "".join(out)
 

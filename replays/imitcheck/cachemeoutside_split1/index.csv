@@ -1,0 +1,21 @@
+match,at,map,seat,opponent,opponent_elo,result,ranked
+1,2026-10-01T00:00:01Z,Autarky,A,mh7,0,loss,False
+2,2026-10-01T00:00:02Z,Autarky,B,mh7,0,loss,False
+3,2026-10-01T00:00:03Z,Default,A,mh7,0,loss,False
+4,2026-10-01T00:00:04Z,Default,B,mh7,0,loss,False
+5,2026-10-01T00:00:05Z,Devil,A,mh7,0,loss,False
+6,2026-10-01T00:00:06Z,Devil,B,mh7,0,loss,False
+7,2026-10-01T00:00:07Z,Portals,A,mh7,0,loss,False
+8,2026-10-01T00:00:08Z,Portals,B,mh7,0,loss,False
+9,2026-10-01T00:00:09Z,Prisoners Dilemma,A,mh7,0,loss,False
+10,2026-10-01T00:00:10Z,Prisoners Dilemma,B,mh7,0,loss,False
+11,2026-10-01T00:00:11Z,Queen Of Spades,A,mh7,0,loss,False
+12,2026-10-01T00:00:12Z,Queen Of Spades,B,mh7,0,loss,False
+13,2026-10-01T00:00:13Z,Schooltime,A,mh7,0,loss,False
+14,2026-10-01T00:00:14Z,Schooltime,B,mh7,0,loss,False
+15,2026-10-01T00:00:15Z,Slithery Fight,A,mh7,0,loss,False
+16,2026-10-01T00:00:16Z,Slithery Fight,B,mh7,0,loss,False
+17,2026-10-01T00:00:17Z,Trauma,A,mh7,0,loss,False
+18,2026-10-01T00:00:18Z,Trauma,B,mh7,0,loss,False
+19,2026-10-01T00:00:19Z,Trophy,A,mh7,0,loss,False
+20,2026-10-01T00:00:20Z,Trophy,B,mh7,0,loss,False

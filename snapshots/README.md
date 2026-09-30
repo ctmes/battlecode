@@ -76,3 +76,13 @@ so that an opponent never changes when bot/brain.py does. Never edit a snapshot;
   [62-75], mh7hunt 74.8, topstyle 96.5, mh6 72.0 (mh8 on the same games: 50.5 vs mh7, 64.5, 93.5, 66.5); longest
   dragon at round 500 about 37 vs 30. Weak on Default (30-45% vs our own family) and Queen Of Spades (30-35% vs
   mh8/mh7).
+- `mh10_2026-09-30/`: a complete, submittable bot folder whose DEFAULTS are mh10 = mh7 + food-weighted territory
+  (voro_food 40). Near an enemy head, a move scores 40 x (the spawn tiles it reaches strictly first minus those the
+  enemy heads reach first), each tile weighted by known_maps.VALUES = log2(1 + its spawn rate / the map's average
+  rate per tile): Default's best tiles 2.6, a fountain about 5-7, a tile that never spawns 0. Plain voro counts every
+  tile alike. Built from bot/brain.py (tools/gen_known_maps.py now also writes VALUES and RICH); food_rich and
+  food_seen, screened alongside it, are off. Plays mh7 game for game with voro_food 0, and reproduces the benched
+  candidate 40/40. Screens vs mh7: voro_food 5 / 15 / 40 / 80 / 150 = 48.3 / 58.3 / 65.0+56.7 / 43.3 / 45.0%. Held out
+  (seeds 9,800,000-9,800,009, 200 games each; mh7 on the same games in brackets): mh7 57.5% [51-64] (50), mh6 74.0
+  (66.5), topstyle 96.0 (92.5), mh7hunt 66.0 (60.0), portal_farmer 94.5 (97.5). Eliminated 28 times vs mh7 (41 in the
+  mirror), 8 vs mh6 (16). Weakest: Queen Of Spades vs mh7 (35%) and Default vs portal_farmer (70%).

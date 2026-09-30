@@ -23,10 +23,19 @@ SITE = "https://game.battlecode.au"
 PAUSE = 0.5  # seconds between requests: be polite to a shared competition server
 
 
-def fetch(path):
+def fetch(path, tries=4):
+    """GET with retries: the site timed out or reset connections on long histories (30 Sep), so back off and try
+    again (after 10, 30, 90 s) before giving up."""
     req = urllib.request.Request(SITE + path, headers={"User-Agent": "unswbc-replay-fetch"})
-    with urllib.request.urlopen(req, timeout=300) as reply:
-        return reply.read()
+    for i in range(tries):
+        try:
+            with urllib.request.urlopen(req, timeout=120) as reply:
+                return reply.read()
+        except (TimeoutError, ConnectionError, urllib.error.URLError) as e:
+            if i == tries - 1:
+                raise
+            print(f"  retry {i + 1} after {type(e).__name__} on {path[:60]}", flush=True)
+            time.sleep(10 * 3 ** i)
 
 
 def devalue(flat):

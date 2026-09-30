@@ -353,6 +353,55 @@ def test_food_pull_steers_up_the_field_only_with_no_pearl_in_view():
     print("ok: food_pull steers a dragon with no pearl in view towards richer ground, only when enabled")
 
 
+def test_food_rich_and_food_seen_extend_the_field():
+    import brain as B
+    import known_maps
+    sizes = {m[0]: w * h for (w, h), ms in known_maps.MAPS.items() for m in ms}
+    assert set(known_maps.RICH) == {"default", "trophy"} and not set(known_maps.RICH) & set(known_maps.FIELDS)
+    assert all(len(f) == sizes[name] for name, f in known_maps.RICH.items())
+    assert B.known_field("default") is None and B.known_field("default", 1) == known_maps.RICH["default"]
+    assert B.known_field("devil", 1) == known_maps.FIELDS["devil"]  # a map with its own field keeps it
+    parts = [("A", 1, 0, y, "N", 1 if y == 0 else 0) for y in range(3)]
+    east = (HY * W + (HX + 1) % W)
+    field = bytes(200 if c == east else 100 for c in range(W * H))
+
+    def act(params, pearls=()):
+        b = Brain(1, b"A", W, H, 64, params)
+        b.field = field
+        return b.act(render_block(0, set(pearls), {}, {}, parts, length=3))
+
+    pearl = {(-2, -3)}
+    assert act({"food_pull": 100.0}, pearl) != MOVES[1]  # food_seen 0: a pearl in view switches the field off
+    assert act({"food_pull": 100.0, "food_seen": 1.0}, pearl) == MOVES[1]  # on: a steep field still counts
+    assert act({"food_pull": 100.0, "food_seen": 0.01}, pearl) != MOVES[1]  # ... in proportion
+    print("ok: food_rich gives Default/Trophy their rich-tile field; food_seen keeps the field on beside a pearl")
+
+
+def test_voro_food_contests_rich_tiles_near_an_enemy_head():
+    import brain as B
+    import known_maps
+    sizes = {m[0]: w * h for (w, h), ms in known_maps.MAPS.items() for m in ms}
+    assert set(known_maps.VALUES) == set(sizes)
+    for name, bands in known_maps.VALUES.items():
+        assert all(w > 0 and 0 < b < 1 << sizes[name] for w, b in bands), name
+        assert B.known_values(name) == bands
+    me = [("A", 1, 0, y, "N", 1 if y == 0 else 0) for y in range(3)]  # 3 long, heading north
+    foe = [("B", 9, 5 + i, 0, "W", 1 if i == 0 else 0) for i in range(3)]  # enemy head 5 east, heading west
+    rich = sum(1 << (((HY + dy) % H) * W + (HX + 2) % W) for dy in (-1, 0, 1))  # three tiles 2 east: 3 from both
+
+    def act(params, bands):
+        b = Brain(1, b"A", W, H, 64, params)
+        b.vbands = bands
+        return b.act(render_block(0, set(), {}, {}, me + foe, length=3))
+
+    base = act({}, ((5.0, rich),))
+    assert base != MOVES[1], base  # voro_food off: the rich tiles don't matter
+    assert act({"voro_food": 20.0}, None) == base  # an unknown map has no values
+    assert act({"voro_food": 20.0}, ((5.0, rich),)) == MOVES[1]  # east: now they're mine, not a tie
+    assert act({"voro_food": 20.0, "voro": 0.0}, ((5.0, rich),)) == MOVES[1]  # works without plain voro
+    print("ok: voro_food steps to win the rich tiles an enemy head is contesting, only when enabled")
+
+
 def test_rally_relays_the_king_and_pulls_short_dragons_towards_it():
     import proto
     for x, y, n, r in ((0, 0, 8, 0), (63, 63, 127, 500), (5, 9, 200, 301)):
@@ -488,6 +537,8 @@ if __name__ == "__main__":
     test_feed_dies_next_to_a_long_teammate_only_when_enabled_and_safe()
     test_split_enemy_dist_only_blocks_splits_near_an_enemy_head()
     test_food_pull_steers_up_the_field_only_with_no_pearl_in_view()
+    test_food_rich_and_food_seen_extend_the_field()
+    test_voro_food_contests_rich_tiles_near_an_enemy_head()
     test_rally_relays_the_king_and_pulls_short_dragons_towards_it()
     test_guard_keeps_the_king_off_a_pearl_next_to_an_enemy_head()
     test_escort_holds_a_ring_round_the_king_and_closes_on_enemies_near_it()

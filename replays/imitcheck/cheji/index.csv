@@ -1,0 +1,41 @@
+match,at,map,seat,opponent,opponent_elo,result,ranked
+1,2026-10-01T00:00:01Z,Autarky,A,mh7,0,loss,False
+2,2026-10-01T00:00:02Z,Autarky,B,mh7,0,loss,False
+3,2026-10-01T00:00:03Z,Autarky,A,mh7,0,loss,False
+4,2026-10-01T00:00:04Z,Autarky,B,mh7,0,loss,False
+5,2026-10-01T00:00:05Z,Default,A,mh7,0,loss,False
+6,2026-10-01T00:00:06Z,Default,B,mh7,0,loss,False
+7,2026-10-01T00:00:07Z,Default,A,mh7,0,loss,False
+8,2026-10-01T00:00:08Z,Default,B,mh7,0,loss,False
+9,2026-10-01T00:00:09Z,Devil,A,mh7,0,loss,False
+10,2026-10-01T00:00:10Z,Devil,B,mh7,0,loss,False
+11,2026-10-01T00:00:11Z,Devil,A,mh7,0,loss,False
+12,2026-10-01T00:00:12Z,Devil,B,mh7,0,loss,False
+13,2026-10-01T00:00:13Z,Portals,A,mh7,0,loss,False
+14,2026-10-01T00:00:14Z,Portals,B,mh7,0,loss,False
+15,2026-10-01T00:00:15Z,Portals,A,mh7,0,loss,False
+16,2026-10-01T00:00:16Z,Portals,B,mh7,0,loss,False
+17,2026-10-01T00:00:17Z,Prisoners Dilemma,A,mh7,0,loss,False
+18,2026-10-01T00:00:18Z,Prisoners Dilemma,B,mh7,0,loss,False
+19,2026-10-01T00:00:19Z,Prisoners Dilemma,A,mh7,0,loss,False
+20,2026-10-01T00:00:20Z,Prisoners Dilemma,B,mh7,0,loss,False
+21,2026-10-01T00:00:21Z,Queen Of Spades,A,mh7,0,loss,False
+22,2026-10-01T00:00:22Z,Queen Of Spades,B,mh7,0,loss,False
+23,2026-10-01T00:00:23Z,Queen Of Spades,A,mh7,0,loss,False
+24,2026-10-01T00:00:24Z,Queen Of Spades,B,mh7,0,loss,False
+25,2026-10-01T00:00:25Z,Schooltime,A,mh7,0,loss,False
+26,2026-10-01T00:00:26Z,Schooltime,B,mh7,0,loss,False
+27,2026-10-01T00:00:27Z,Schooltime,A,mh7,0,loss,False
+28,2026-10-01T00:00:28Z,Schooltime,B,mh7,0,loss,False
+29,2026-10-01T00:00:29Z,Slithery Fight,A,mh7,0,loss,False
+30,2026-10-01T00:00:30Z,Slithery Fight,B,mh7,0,loss,False
+31,2026-10-01T00:00:31Z,Slithery Fight,A,mh7,0,loss,False
+32,2026-10-01T00:00:32Z,Slithery Fight,B,mh7,0,loss,False
+33,2026-10-01T00:00:33Z,Trauma,A,mh7,0,loss,False
+34,2026-10-01T00:00:34Z,Trauma,B,mh7,0,loss,False
+35,2026-10-01T00:00:35Z,Trauma,A,mh7,0,loss,False
+36,2026-10-01T00:00:36Z,Trauma,B,mh7,0,loss,False
+37,2026-10-01T00:00:37Z,Trophy,A,mh7,0,loss,False
+38,2026-10-01T00:00:38Z,Trophy,B,mh7,0,loss,False
+39,2026-10-01T00:00:39Z,Trophy,A,mh7,0,loss,False
+40,2026-10-01T00:00:40Z,Trophy,B,mh7,0,loss,False

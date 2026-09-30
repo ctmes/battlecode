@@ -5,7 +5,7 @@ The ladder runs unswbc 1.x. The old .venv has 0.3.6, whose engine takes no seed,
 run this with the 1.x environment instead:
 
     .venv-1x\\Scripts\\python.exe tools\\bench1x.py candidates.json [--vs mh3,farmer,portal_farmer] [--seeds 10]
-        [--seed-base 1] [--variants 0] [--workers 14] [--wall-budget] [--out results.json]
+        [--seed-base 1] [--variants 0] [--maps trophy,default] [--workers 14] [--wall-budget] [--out results.json]
 
 candidates.json maps a label to {"dir": snapshot folder, "params": {...}}, or to {} when the label names a frozen
 opponent in tools/tune.py (e.g. {"mh3": {}}). Opponents: frozen tune.py names, or the bench-only ones in EXTRA.
@@ -130,6 +130,7 @@ def main():
     ap.add_argument("--seeds", type=int, default=10, help="seeds per map (each played from both seats)")
     ap.add_argument("--seed-base", type=int, default=1)
     ap.add_argument("--variants", type=int, default=0, help="also play ladder variants 1..N (0 = the real maps only)")
+    ap.add_argument("--maps", default="", help="comma-separated ladder map names (default: the whole pool)")
     ap.add_argument("--workers", type=int, default=14)
     # budget_ns is wall-clock time here but CPU points on the judge, where the bot spends at most ~12.6M of its 60M,
     # so the budget almost never binds there. Locally, a loaded machine trips it at random, so it is off by default:
@@ -140,7 +141,10 @@ def main():
     cands = json.loads(pathlib.Path(args.candidates).read_text())
     mine = {lab: resolve(lab, spec) for lab, spec in cands.items()}
     opps = {o: resolve(o) for o in args.vs.split(",") if o}
-    maps = [("ladder", n, v) for n in ladder_maps.POOL for v in range(args.variants + 1)]
+    pool = args.maps.split(",") if args.maps else ladder_maps.POOL
+    if set(pool) - set(ladder_maps.POOL):
+        raise SystemExit(f"not ladder maps: {sorted(set(pool) - set(ladder_maps.POOL))}")
+    maps = [("ladder", n, v) for n in pool for v in range(args.variants + 1)]
     seeds = range(args.seed_base, args.seed_base + args.seeds)
     jobs = [(lab, mine[lab], o, opps[o], m, s, side, not args.wall_budget)
             for lab in cands for o in opps for m in maps for s in seeds for side in "AB"]

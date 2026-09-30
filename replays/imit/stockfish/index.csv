@@ -1,0 +1,151 @@
+match,at,map,seat,opponent,opponent_elo,result,ranked
+666686,2026-09-30T05:00:36.031Z,Schooltime,B,天天开心 :(,1537,win,False
+666687,2026-09-30T05:00:35.338Z,Slithery Fight,B,天天开心 :(,1537,win,False
+666680,2026-09-30T04:59:39.215Z,Autarky,B,天天开心 :(,1537,win,False
+666688,2026-09-30T04:59:38.972Z,Trauma,B,天天开心 :(,1537,win,False
+666683,2026-09-30T04:59:31.925Z,Portals,B,天天开心 :(,1537,win,False
+666617,2026-09-30T04:59:26.222Z,Schooltime,B,w daniel ma,1922,win,False
+666682,2026-09-30T04:59:23.852Z,Devil,B,天天开心 :(,1537,win,False
+666681,2026-09-30T04:59:18.566Z,Default,B,天天开心 :(,1537,win,False
+666689,2026-09-30T04:59:17.012Z,Trophy,B,天天开心 :(,1537,win,False
+666684,2026-09-30T04:59:13.619Z,Prisoners Dilemma,B,天天开心 :(,1537,loss,False
+666685,2026-09-30T04:59:12.850Z,Queen Of Spades,B,天天开心 :(,1537,win,False
+666614,2026-09-30T04:59:02.739Z,Portals,B,w daniel ma,1922,loss,False
+666612,2026-09-30T04:58:58.650Z,Default,B,w daniel ma,1922,loss,False
+666611,2026-09-30T04:58:50.644Z,Autarky,B,w daniel ma,1922,win,False
+666616,2026-09-30T04:58:50.431Z,Queen Of Spades,B,w daniel ma,1922,loss,False
+666619,2026-09-30T04:58:48.585Z,Trauma,B,w daniel ma,1922,win,False
+666620,2026-09-30T04:58:46.327Z,Trophy,B,w daniel ma,1922,win,False
+666613,2026-09-30T04:58:44.051Z,Devil,B,w daniel ma,1922,loss,False
+666615,2026-09-30T04:58:32.384Z,Prisoners Dilemma,B,w daniel ma,1922,loss,False
+666304,2026-09-30T04:57:41.026Z,Slithery Fight,B,bread first search,1953,win,False
+666303,2026-09-30T04:56:02.010Z,Schooltime,B,bread first search,1953,win,False
+666302,2026-09-30T04:55:20.933Z,Portals,B,bread first search,1953,win,False
+666305,2026-09-30T04:55:17.235Z,Default,B,bread first search,1953,win,False
+666108,2026-09-30T04:51:27.149Z,Slithery Fight,A,SSS,2034,win,False
+666109,2026-09-30T04:51:24.508Z,Trauma,A,SSS,2034,win,False
+666106,2026-09-30T04:51:11.195Z,Queen Of Spades,A,SSS,2034,win,False
+666101,2026-09-30T04:51:10.564Z,Autarky,A,SSS,2034,win,False
+666104,2026-09-30T04:51:10.265Z,Portals,A,SSS,2034,win,False
+666105,2026-09-30T04:51:10.146Z,Prisoners Dilemma,A,SSS,2034,win,False
+666107,2026-09-30T04:51:09.275Z,Schooltime,A,SSS,2034,win,False
+666103,2026-09-30T04:51:08.758Z,Devil,A,SSS,2034,win,False
+666110,2026-09-30T04:51:07.265Z,Trophy,A,SSS,2034,win,False
+666102,2026-09-30T04:51:02.570Z,Default,A,SSS,2034,win,False
+665265,2026-09-30T04:49:28.053Z,Slithery Fight,A,cheji bt,2116,win,False
+665746,2026-09-30T04:48:33.121Z,Schooltime,B,Weneedmoretokens,1786,win,True
+665264,2026-09-30T04:47:10.752Z,Schooltime,A,cheji bt,2116,win,False
+665744,2026-09-30T04:46:32.500Z,Default,B,Weneedmoretokens,1786,win,True
+665745,2026-09-30T04:46:16.615Z,Queen Of Spades,B,Weneedmoretokens,1786,win,True
+665743,2026-09-30T04:46:13.434Z,Devil,B,Weneedmoretokens,1786,win,True
+665742,2026-09-30T04:46:04.511Z,Prisoners Dilemma,B,Weneedmoretokens,1786,win,True
+665266,2026-09-30T04:43:40.469Z,Trauma,A,cheji bt,2116,win,False
+665261,2026-09-30T04:43:02.202Z,Portals,A,cheji bt,2116,win,False
+665340,2026-09-30T04:42:55.847Z,Slithery Fight,B,Knight Capital,1457,win,False
+665339,2026-09-30T04:42:54.848Z,Schooltime,B,Knight Capital,1457,win,False
+665258,2026-09-30T04:42:25.295Z,Autarky,A,cheji bt,2116,loss,False
+665259,2026-09-30T04:42:06.983Z,Default,A,cheji bt,2116,loss,False
+665254,2026-09-30T04:41:49.645Z,Schooltime,A,Cache me outside,2063,win,False
+665341,2026-09-30T04:41:47.670Z,Trauma,B,Knight Capital,1457,win,False
+665255,2026-09-30T04:41:27.644Z,Slithery Fight,A,Cache me outside,2063,win,False
+665333,2026-09-30T04:41:27.106Z,Autarky,B,Knight Capital,1457,win,False
+665335,2026-09-30T04:41:19.957Z,Devil,B,Knight Capital,1457,win,False
+665336,2026-09-30T04:41:19.194Z,Portals,B,Knight Capital,1457,win,False
+665337,2026-09-30T04:41:16.034Z,Prisoners Dilemma,B,Knight Capital,1457,win,False
+665334,2026-09-30T04:41:13.012Z,Default,B,Knight Capital,1457,win,False
+665338,2026-09-30T04:41:12.558Z,Queen Of Spades,B,Knight Capital,1457,win,False
+665342,2026-09-30T04:41:09.889Z,Trophy,B,Knight Capital,1457,win,False
+665263,2026-09-30T04:40:56.191Z,Queen Of Spades,A,cheji bt,2116,loss,False
+665256,2026-09-30T04:40:28.618Z,Trauma,A,Cache me outside,2063,loss,False
+665267,2026-09-30T04:40:08.883Z,Trophy,A,cheji bt,2116,win,False
+665248,2026-09-30T04:40:07.885Z,Autarky,A,Cache me outside,2063,loss,False
+665251,2026-09-30T04:40:03.862Z,Portals,A,Cache me outside,2063,win,False
+665253,2026-09-30T04:40:01.181Z,Queen Of Spades,A,Cache me outside,2063,loss,False
+665262,2026-09-30T04:39:59.147Z,Prisoners Dilemma,A,cheji bt,2116,loss,False
+665249,2026-09-30T04:39:55.732Z,Default,A,Cache me outside,2063,loss,False
+665260,2026-09-30T04:39:53.130Z,Devil,A,cheji bt,2116,win,False
+665250,2026-09-30T04:39:50.640Z,Devil,A,Cache me outside,2063,win,False
+665252,2026-09-30T04:39:47.559Z,Prisoners Dilemma,A,Cache me outside,2063,loss,False
+665257,2026-09-30T04:39:47.233Z,Trophy,A,Cache me outside,2063,loss,False
+665139,2026-09-30T04:38:17.369Z,Slithery Fight,B,SilverSamurai,1748,loss,False
+665137,2026-09-30T04:38:15.261Z,Schooltime,B,SilverSamurai,1748,loss,False
+665138,2026-09-30T04:37:23.267Z,Portals,B,SilverSamurai,1748,win,False
+665146,2026-09-30T04:37:21.412Z,Trauma,B,SilverSamurai,1748,win,False
+665144,2026-09-30T04:37:15.249Z,Autarky,B,SilverSamurai,1748,win,False
+665141,2026-09-30T04:37:10.516Z,Default,B,SilverSamurai,1748,win,False
+665140,2026-09-30T04:37:02.417Z,Queen Of Spades,B,SilverSamurai,1748,win,False
+665145,2026-09-30T04:36:59.959Z,Devil,B,SilverSamurai,1748,win,False
+665142,2026-09-30T04:36:53.858Z,Trophy,B,SilverSamurai,1748,win,False
+665143,2026-09-30T04:36:51.876Z,Prisoners Dilemma,B,SilverSamurai,1748,win,False
+664989,2026-09-30T04:36:26.681Z,Slithery Fight,B,SilverSamurai,1748,loss,False
+664987,2026-09-30T04:35:22.275Z,Schooltime,B,SilverSamurai,1748,win,False
+664952,2026-09-30T04:34:58.501Z,Slithery Fight,B,Cache me outside,2063,win,True
+664996,2026-09-30T04:34:42.722Z,Trauma,B,SilverSamurai,1748,win,False
+664994,2026-09-30T04:34:42.576Z,Autarky,B,SilverSamurai,1748,win,False
+664988,2026-09-30T04:34:23.531Z,Portals,B,SilverSamurai,1748,win,False
+664990,2026-09-30T04:34:22.602Z,Queen Of Spades,B,SilverSamurai,1748,win,False
+664991,2026-09-30T04:34:20.457Z,Default,B,SilverSamurai,1748,win,False
+664909,2026-09-30T04:34:11.286Z,Slithery Fight,B,DESTINY 3,1881,win,False
+664995,2026-09-30T04:34:09.697Z,Devil,B,SilverSamurai,1748,win,False
+664992,2026-09-30T04:34:07.629Z,Trophy,B,SilverSamurai,1748,win,False
+664956,2026-09-30T04:34:06.917Z,Trauma,B,Cache me outside,2063,loss,True
+664907,2026-09-30T04:34:05.118Z,Schooltime,B,DESTINY 3,1881,win,False
+664954,2026-09-30T04:34:04.848Z,Portals,B,Cache me outside,2063,win,True
+664993,2026-09-30T04:33:59.999Z,Prisoners Dilemma,B,SilverSamurai,1748,loss,False
+664953,2026-09-30T04:33:38.021Z,Trophy,B,Cache me outside,2063,loss,True
+664955,2026-09-30T04:33:32.560Z,Prisoners Dilemma,B,Cache me outside,2063,loss,True
+664914,2026-09-30T04:33:26.768Z,Autarky,B,DESTINY 3,1881,win,False
+664916,2026-09-30T04:33:23.840Z,Trauma,B,DESTINY 3,1881,win,False
+664915,2026-09-30T04:33:18.084Z,Devil,B,DESTINY 3,1881,win,False
+664908,2026-09-30T04:33:17.936Z,Portals,B,DESTINY 3,1881,win,False
+664910,2026-09-30T04:33:13.325Z,Queen Of Spades,B,DESTINY 3,1881,win,False
+664911,2026-09-30T04:33:07.821Z,Default,B,DESTINY 3,1881,win,False
+664913,2026-09-30T04:33:06.482Z,Prisoners Dilemma,B,DESTINY 3,1881,loss,False
+664912,2026-09-30T04:33:06.422Z,Trophy,B,DESTINY 3,1881,win,False
+661715,2026-09-30T04:28:29.277Z,Queen Of Spades,B,Cache me outside,2063,loss,True
+664431,2026-09-30T04:28:23.420Z,Slithery Fight,B,Peanut Butter,1934,win,False
+664391,2026-09-30T04:25:50.219Z,Slithery Fight,B,Peanut Butter,1934,win,False
+661716,2026-09-30T04:25:05.278Z,Trophy,B,Cache me outside,2063,loss,True
+664389,2026-09-30T04:24:54.273Z,Schooltime,B,Peanut Butter,1934,loss,False
+664435,2026-09-30T04:24:51.174Z,Default,B,Peanut Butter,1934,loss,False
+664429,2026-09-30T04:24:43.002Z,Schooltime,B,Peanut Butter,1934,win,False
+664349,2026-09-30T04:24:19.997Z,Schooltime,B,Peanut Butter,1934,loss,False
+664430,2026-09-30T04:24:13.776Z,Portals,B,Peanut Butter,1934,win,False
+664351,2026-09-30T04:24:08.718Z,Slithery Fight,B,Peanut Butter,1934,win,False
+664392,2026-09-30T04:24:05.396Z,Trophy,B,Peanut Butter,1934,loss,False
+664395,2026-09-30T04:24:04.807Z,Default,B,Peanut Butter,1934,loss,False
+664436,2026-09-30T04:24:04.743Z,Autarky,B,Peanut Butter,1934,loss,False
+664438,2026-09-30T04:23:56.089Z,Trauma,B,Peanut Butter,1934,win,False
+664398,2026-09-30T04:23:40.792Z,Trauma,B,Peanut Butter,1934,win,False
+664432,2026-09-30T04:23:33.461Z,Trophy,B,Peanut Butter,1934,loss,False
+664434,2026-09-30T04:23:21.175Z,Queen Of Spades,B,Peanut Butter,1934,win,False
+664390,2026-09-30T04:23:17.921Z,Portals,B,Peanut Butter,1934,win,False
+664433,2026-09-30T04:23:14.079Z,Prisoners Dilemma,B,Peanut Butter,1934,win,False
+664437,2026-09-30T04:23:13.531Z,Devil,B,Peanut Butter,1934,loss,False
+664396,2026-09-30T04:23:05.179Z,Autarky,B,Peanut Butter,1934,win,False
+664394,2026-09-30T04:22:59.318Z,Queen Of Spades,B,Peanut Butter,1934,loss,False
+664358,2026-09-30T04:22:56.485Z,Trauma,B,Peanut Butter,1934,win,False
+664350,2026-09-30T04:22:52.522Z,Portals,B,Peanut Butter,1934,win,False
+664397,2026-09-30T04:22:44.321Z,Devil,B,Peanut Butter,1934,loss,False
+664393,2026-09-30T04:22:33.685Z,Prisoners Dilemma,B,Peanut Butter,1934,win,False
+664355,2026-09-30T04:22:17.965Z,Default,B,Peanut Butter,1934,win,False
+664356,2026-09-30T04:22:08.896Z,Autarky,B,Peanut Butter,1934,loss,False
+664354,2026-09-30T04:21:57.572Z,Queen Of Spades,B,Peanut Butter,1934,win,False
+664352,2026-09-30T04:21:56.131Z,Trophy,B,Peanut Butter,1934,win,False
+664357,2026-09-30T04:21:46.680Z,Devil,B,Peanut Butter,1934,loss,False
+664353,2026-09-30T04:21:42.098Z,Prisoners Dilemma,B,Peanut Butter,1934,loss,False
+664007,2026-09-30T04:19:30.937Z,Slithery Fight,B,SSS,2034,loss,False
+664005,2026-09-30T04:18:01.277Z,Schooltime,B,SSS,2034,win,False
+663952,2026-09-30T04:17:44.768Z,Schooltime,B,Cache me outside,2063,win,False
+663922,2026-09-30T04:17:42.587Z,Schooltime,B,SSS,2034,win,False
+661712,2026-09-30T04:17:37.772Z,Trauma,B,Cache me outside,2063,loss,True
+664012,2026-09-30T04:17:35.899Z,Autarky,B,SSS,2034,win,False
+664014,2026-09-30T04:17:23.535Z,Trauma,B,SSS,2034,win,False
+663924,2026-09-30T04:17:18.890Z,Slithery Fight,B,SSS,2034,win,False
+663953,2026-09-30T04:17:08.519Z,Slithery Fight,B,Cache me outside,2063,win,False
+664009,2026-09-30T04:17:07.008Z,Default,B,SSS,2034,win,False
+664006,2026-09-30T04:16:58.798Z,Portals,B,SSS,2034,win,False
+664008,2026-09-30T04:16:47.964Z,Queen Of Spades,B,SSS,2034,loss,False
+664013,2026-09-30T04:16:47.263Z,Devil,B,SSS,2034,loss,False
+664010,2026-09-30T04:16:45.759Z,Trophy,B,SSS,2034,win,False
+664011,2026-09-30T04:16:41.202Z,Prisoners Dilemma,B,SSS,2034,loss,False

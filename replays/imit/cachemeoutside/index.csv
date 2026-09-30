@@ -1,0 +1,151 @@
+match,at,map,seat,opponent,opponent_elo,result,ranked
+665300,2026-09-30T04:40:49.182Z,Slithery Fight,B,Knight Capital,1457,win,False
+665299,2026-09-30T04:40:43.185Z,Schooltime,B,Knight Capital,1457,win,False
+665301,2026-09-30T04:40:34.271Z,Trauma,B,Knight Capital,1457,win,False
+665295,2026-09-30T04:40:32.198Z,Devil,B,Knight Capital,1457,win,False
+665256,2026-09-30T04:40:28.618Z,Trauma,B,Stockfish,2036,win,False
+665294,2026-09-30T04:40:22.571Z,Default,B,Knight Capital,1457,win,False
+665296,2026-09-30T04:40:20.056Z,Portals,B,Knight Capital,1457,win,False
+665293,2026-09-30T04:40:16.632Z,Autarky,B,Knight Capital,1457,win,False
+665298,2026-09-30T04:40:16.542Z,Queen Of Spades,B,Knight Capital,1457,win,False
+665297,2026-09-30T04:40:15.429Z,Prisoners Dilemma,B,Knight Capital,1457,win,False
+665302,2026-09-30T04:40:10.117Z,Trophy,B,Knight Capital,1457,win,False
+665248,2026-09-30T04:40:07.885Z,Autarky,B,Stockfish,2036,win,False
+665251,2026-09-30T04:40:03.862Z,Portals,B,Stockfish,2036,loss,False
+665253,2026-09-30T04:40:01.181Z,Queen Of Spades,B,Stockfish,2036,win,False
+665249,2026-09-30T04:39:55.732Z,Default,B,Stockfish,2036,win,False
+665250,2026-09-30T04:39:50.640Z,Devil,B,Stockfish,2036,loss,False
+665252,2026-09-30T04:39:47.559Z,Prisoners Dilemma,B,Stockfish,2036,win,False
+665257,2026-09-30T04:39:47.233Z,Trophy,B,Stockfish,2036,win,False
+665148,2026-09-30T04:38:07.723Z,Schooltime,B,UnderTheC,1710,win,True
+665147,2026-09-30T04:38:02.945Z,Slithery Fight,B,UnderTheC,1710,win,True
+665149,2026-09-30T04:37:39.783Z,Autarky,B,UnderTheC,1710,win,True
+665151,2026-09-30T04:37:34.306Z,Queen Of Spades,B,UnderTheC,1710,win,True
+665150,2026-09-30T04:37:32.381Z,Prisoners Dilemma,B,UnderTheC,1710,win,True
+664949,2026-09-30T04:36:21.930Z,Autarky,A,calc,2024,loss,True
+664951,2026-09-30T04:35:09.419Z,Portals,A,calc,2024,win,True
+664966,2026-09-30T04:35:08.553Z,Schooltime,A,中国必须人能飞😡,2032,win,False
+664947,2026-09-30T04:35:08.458Z,Trauma,A,calc,2024,win,True
+664950,2026-09-30T04:35:02.140Z,Queen Of Spades,A,calc,2024,loss,True
+664952,2026-09-30T04:34:58.501Z,Slithery Fight,A,Stockfish,2036,loss,True
+664978,2026-09-30T04:34:43.768Z,Slithery Fight,A,3.14159265,1980,win,False
+664968,2026-09-30T04:34:41.967Z,Slithery Fight,A,Team SKKU,1994,loss,False
+664963,2026-09-30T04:34:32.850Z,Slithery Fight,A,中国必须人能飞😡,2032,loss,False
+664977,2026-09-30T04:34:32.502Z,Portals,A,3.14159265,1980,loss,False
+664971,2026-09-30T04:34:30.680Z,Schooltime,A,Team SKKU,1994,loss,False
+664973,2026-09-30T04:34:20.181Z,Slithery Fight,A,Sabotage-d,1991,loss,False
+664981,2026-09-30T04:34:16.540Z,Schooltime,A,3.14159265,1980,loss,False
+664980,2026-09-30T04:34:11.859Z,Trauma,A,3.14159265,1980,win,False
+664956,2026-09-30T04:34:06.917Z,Trauma,A,Stockfish,2036,win,True
+664948,2026-09-30T04:34:06.576Z,Trophy,A,calc,2024,loss,True
+664954,2026-09-30T04:34:04.848Z,Portals,A,Stockfish,2036,loss,True
+664979,2026-09-30T04:34:04.535Z,Autarky,A,3.14159265,1980,win,False
+664960,2026-09-30T04:34:04.332Z,Trauma,A,SSS,2034,win,False
+664965,2026-09-30T04:34:03.142Z,Trauma,A,中国必须人能飞😡,2032,win,False
+664964,2026-09-30T04:33:58.819Z,Autarky,A,中国必须人能飞😡,2032,win,False
+664962,2026-09-30T04:33:58.578Z,Portals,A,中国必须人能飞😡,2032,loss,False
+664942,2026-09-30T04:33:55.324Z,Trauma,A,forgot to mention,2029,win,True
+664961,2026-09-30T04:33:55.155Z,Schooltime,A,SSS,2034,win,False
+664944,2026-09-30T04:33:54.892Z,Portals,A,forgot to mention,2029,loss,True
+664970,2026-09-30T04:33:52.092Z,Trauma,A,Team SKKU,1994,win,False
+664975,2026-09-30T04:33:50.771Z,Trauma,A,Sabotage-d,1991,win,False
+664972,2026-09-30T04:33:50.104Z,Portals,A,Sabotage-d,1991,win,False
+664969,2026-09-30T04:33:50.049Z,Autarky,A,Team SKKU,1994,win,False
+664967,2026-09-30T04:33:49.089Z,Portals,A,Team SKKU,1994,win,False
+664976,2026-09-30T04:33:48.992Z,Schooltime,A,Sabotage-d,1991,loss,False
+664813,2026-09-30T04:33:46.579Z,Schooltime,B,Hampter,1449,win,False
+664943,2026-09-30T04:33:46.474Z,Queen Of Spades,A,forgot to mention,2029,win,True
+664946,2026-09-30T04:33:46.420Z,Autarky,A,forgot to mention,2029,loss,True
+664957,2026-09-30T04:33:46.409Z,Portals,A,SSS,2034,win,False
+664959,2026-09-30T04:33:46.328Z,Autarky,A,SSS,2034,win,False
+664958,2026-09-30T04:33:46.264Z,Slithery Fight,A,SSS,2034,win,False
+664974,2026-09-30T04:33:41.529Z,Autarky,A,Sabotage-d,1991,win,False
+664953,2026-09-30T04:33:38.021Z,Trophy,A,Stockfish,2036,win,True
+664945,2026-09-30T04:33:33.921Z,Devil,A,forgot to mention,2029,win,True
+664955,2026-09-30T04:33:32.560Z,Prisoners Dilemma,A,Stockfish,2036,win,True
+664879,2026-09-30T04:33:28.213Z,Slithery Fight,B,DESTINY 3,1896,loss,False
+664886,2026-09-30T04:33:09.144Z,Trauma,B,DESTINY 3,1896,win,False
+664877,2026-09-30T04:33:08.653Z,Schooltime,B,DESTINY 3,1896,win,False
+664884,2026-09-30T04:33:07.089Z,Autarky,B,DESTINY 3,1896,win,False
+664878,2026-09-30T04:33:02.954Z,Portals,B,DESTINY 3,1896,loss,False
+664881,2026-09-30T04:33:02.469Z,Default,B,DESTINY 3,1896,loss,False
+664885,2026-09-30T04:32:59.613Z,Devil,B,DESTINY 3,1896,loss,False
+664880,2026-09-30T04:32:53.601Z,Queen Of Spades,B,DESTINY 3,1896,win,False
+664882,2026-09-30T04:32:47.209Z,Trophy,B,DESTINY 3,1896,win,False
+664883,2026-09-30T04:32:45.887Z,Prisoners Dilemma,B,DESTINY 3,1896,win,False
+664812,2026-09-30T04:31:58.624Z,Portals,B,Hampter,1449,win,False
+663962,2026-09-30T04:30:40.364Z,Slithery Fight,A,calc,2024,loss,False
+661715,2026-09-30T04:28:29.277Z,Queen Of Spades,A,Stockfish,2036,win,True
+663951,2026-09-30T04:25:18.388Z,Slithery Fight,A,cheji bt,2116,win,False
+661716,2026-09-30T04:25:05.278Z,Trophy,A,Stockfish,2036,win,True
+663973,2026-09-30T04:25:03.165Z,Schooltime,A,Peanut Butter,1934,win,False
+663961,2026-09-30T04:22:49.889Z,Schooltime,A,calc,2024,loss,False
+664145,2026-09-30T04:22:46.431Z,Schooltime,B,SSS,2034,loss,False
+663967,2026-09-30T04:22:00.277Z,Schooltime,A,Sponge(Albert and Bob),1977,loss,False
+663955,2026-09-30T04:21:34.038Z,Slithery Fight,A,中国必须人能飞😡,2032,win,False
+664147,2026-09-30T04:21:18.972Z,Slithery Fight,B,SSS,2034,loss,False
+664122,2026-09-30T04:20:59.862Z,Slithery Fight,B,SSS,2034,loss,False
+664090,2026-09-30T04:20:51.830Z,Schooltime,B,SSS,2034,loss,False
+664154,2026-09-30T04:20:23.758Z,Trauma,B,SSS,2034,win,False
+664120,2026-09-30T04:20:22.707Z,Schooltime,B,SSS,2034,loss,False
+664092,2026-09-30T04:20:00.343Z,Slithery Fight,B,SSS,2034,loss,False
+664146,2026-09-30T04:19:58.721Z,Portals,B,SSS,2034,win,False
+664129,2026-09-30T04:19:57.064Z,Trauma,B,SSS,2034,win,False
+664148,2026-09-30T04:19:49.296Z,Queen Of Spades,B,SSS,2034,loss,False
+664127,2026-09-30T04:19:44.936Z,Autarky,B,SSS,2034,win,False
+664149,2026-09-30T04:19:43.708Z,Default,B,SSS,2034,loss,False
+664152,2026-09-30T04:19:37.619Z,Autarky,B,SSS,2034,loss,False
+664099,2026-09-30T04:19:37.352Z,Trauma,B,SSS,2034,loss,False
+664121,2026-09-30T04:19:35.223Z,Portals,B,SSS,2034,loss,False
+664150,2026-09-30T04:19:32.910Z,Trophy,B,SSS,2034,loss,False
+664097,2026-09-30T04:19:30.807Z,Autarky,B,SSS,2034,loss,False
+664153,2026-09-30T04:19:30.487Z,Devil,B,SSS,2034,win,False
+664123,2026-09-30T04:19:30.248Z,Queen Of Spades,B,SSS,2034,loss,False
+664151,2026-09-30T04:19:24.565Z,Prisoners Dilemma,B,SSS,2034,win,False
+664124,2026-09-30T04:19:19.506Z,Default,B,SSS,2034,win,False
+664091,2026-09-30T04:19:16.146Z,Portals,B,SSS,2034,loss,False
+664126,2026-09-30T04:19:13.368Z,Prisoners Dilemma,B,SSS,2034,win,False
+664095,2026-09-30T04:19:12.357Z,Trophy,B,SSS,2034,win,False
+664128,2026-09-30T04:19:08.913Z,Devil,B,SSS,2034,win,False
+664125,2026-09-30T04:19:08.808Z,Trophy,B,SSS,2034,loss,False
+664093,2026-09-30T04:19:06.205Z,Queen Of Spades,B,SSS,2034,loss,False
+664098,2026-09-30T04:19:01.230Z,Devil,B,SSS,2034,loss,False
+663974,2026-09-30T04:18:58.918Z,Slithery Fight,A,Peanut Butter,1934,win,False
+664096,2026-09-30T04:18:49.624Z,Prisoners Dilemma,B,SSS,2034,loss,False
+664094,2026-09-30T04:18:43.467Z,Default,B,SSS,2034,win,False
+663968,2026-09-30T04:18:00.079Z,Slithery Fight,A,Sponge(Albert and Bob),1977,loss,False
+663952,2026-09-30T04:17:44.768Z,Schooltime,A,Stockfish,2036,loss,False
+661712,2026-09-30T04:17:37.772Z,Trauma,A,Stockfish,2036,win,True
+663966,2026-09-30T04:17:13.821Z,Slithery Fight,A,3.14159265,1980,loss,False
+663950,2026-09-30T04:17:13.519Z,Schooltime,A,cheji bt,2116,loss,False
+663953,2026-09-30T04:17:08.519Z,Slithery Fight,A,Stockfish,2036,loss,False
+663971,2026-09-30T04:16:57.367Z,Schooltime,A,Team SKKU,1994,loss,False
+663970,2026-09-30T04:16:54.966Z,Slithery Fight,A,bread first search,1953,loss,False
+663972,2026-09-30T04:16:50.464Z,Slithery Fight,A,Team SKKU,1994,loss,False
+663963,2026-09-30T04:16:35.661Z,Schooltime,A,forgot to mention,2029,loss,False
+663965,2026-09-30T04:16:32.799Z,Schooltime,A,3.14159265,1980,loss,False
+663969,2026-09-30T04:16:24.964Z,Schooltime,A,bread first search,1953,win,False
+663964,2026-09-30T04:16:24.888Z,Slithery Fight,A,forgot to mention,2029,loss,False
+663954,2026-09-30T04:16:02.977Z,Schooltime,A,中国必须人能飞😡,2032,loss,False
+663559,2026-09-30T04:09:37.615Z,Slithery Fight,B,noob,1836,loss,True
+661714,2026-09-30T04:09:00.819Z,Autarky,A,Stockfish,2036,win,True
+663555,2026-09-30T04:08:58.664Z,Autarky,B,noob,1836,win,True
+663556,2026-09-30T04:08:56.898Z,Portals,B,noob,1836,win,True
+663557,2026-09-30T04:08:52.835Z,Queen Of Spades,B,noob,1836,loss,True
+663558,2026-09-30T04:08:45.425Z,Prisoners Dilemma,B,noob,1836,win,True
+663431,2026-09-30T04:06:58.837Z,Slithery Fight,B,Team SKKU,1994,win,False
+663430,2026-09-30T04:06:25.048Z,Schooltime,B,Team SKKU,1994,loss,False
+663429,2026-09-30T04:05:54.116Z,Queen Of Spades,B,Team SKKU,1994,win,False
+663432,2026-09-30T04:05:48.061Z,Trauma,B,Team SKKU,1994,win,False
+663427,2026-09-30T04:05:45.475Z,Portals,B,Team SKKU,1994,loss,False
+663424,2026-09-30T04:05:42.854Z,Autarky,B,Team SKKU,1994,win,False
+663425,2026-09-30T04:05:39.542Z,Default,B,Team SKKU,1994,loss,False
+663428,2026-09-30T04:05:38.955Z,Prisoners Dilemma,B,Team SKKU,1994,win,False
+663433,2026-09-30T04:05:35.739Z,Trophy,B,Team SKKU,1994,win,False
+663426,2026-09-30T04:05:35.634Z,Devil,B,Team SKKU,1994,win,False
+661713,2026-09-30T04:01:45.700Z,Slithery Fight,A,Stockfish,2036,loss,True
+661653,2026-09-30T03:58:30.640Z,Schooltime,B,Cutlery,2053,loss,False
+661654,2026-09-30T03:58:09.384Z,Slithery Fight,B,Cutlery,2053,loss,False
+661647,2026-09-30T03:57:47.619Z,Autarky,B,Cutlery,2053,loss,False
+661655,2026-09-30T03:57:39.251Z,Trauma,B,Cutlery,2053,win,False
+661648,2026-09-30T03:57:33.117Z,Default,B,Cutlery,2053,win,False

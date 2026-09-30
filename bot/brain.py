@@ -71,6 +71,15 @@ DEFAULTS = {
     # Tried alongside it and dropped: "spread" (with no pearl in view, a bonus per step away from each teammate head
     # in view, for maps where food lands anywhere) scored 40-52% vs mh6 at 15-120, Default included.
     "food_pull": 0.0,
+    # Field on the other maps (30 Sep). Default and Trophy get no FIELDS entry: food lands everywhere, so an
+    # all-tiles field just measured open ground and lost. But 134 of Default's 1,024 tiles make 54% of its food, and
+    # 43 of Trophy's make 52%. 1 = on those maps, food_pull climbs known_maps.RICH instead: the same field built from
+    # the tiles spawning at least twice the map's average rate only. 0 = off.
+    "food_rich": 0,
+    # food_pull's weight, as a fraction, while a pearl IS in view (0 = the field switches off then, as before). A
+    # step up the field is worth up to food_pull (42 at mh7's setting) against pearl_near's 64 per step closer to the
+    # pearl, so at 1 it mostly breaks ties between pearl routes in favour of the one heading into rich ground.
+    "food_seen": 0.0,
     # Rallying on the king (29 Sep). mh6 lost 13 of 95 ladder games at round 500 on a shorter longest dragon while
     # holding more total length (113 vs 69); the top teams' kings get 57-75% of their food from teammates dying next
     # to them, but feeding (feed_r) only fires when a teammate happens to be within feed_dist. Sonar is the only way
@@ -179,6 +188,13 @@ DEFAULTS = {
     # Tron-style territory: weight of (cells I reach first - cells enemy heads reach first).
     "voro": 2.7837,
     "voro_radius": 5,          # ... measured this many steps out
+    # Food-weighted territory (30 Sep). voro counts every tile alike, so near an enemy a dead-end pocket counts the
+    # same as a fountain. In mh6's ladder eliminations the enemy ate 47 pearls on our half before round 150 to our 33,
+    # and whoever's head is nearest a new pearl eats it 75-93% of the time. On a known map this adds voro_food times
+    # the spawn tiles I reach strictly first minus those the enemy heads in view reach first, each weighted by
+    # known_maps.VALUES (log2(1 + its rate / the map's average rate per tile): Default's best tiles 2.6, a fountain
+    # about 5-7, a tile that never spawns 0). Uses voro_radius; runs even with voro 0. 0 = off.
+    "voro_food": 0.0,
     "deny": 0.0,               # bonus for a move that leaves a visible enemy head less room (area denial / herding)
     "deny_radius": 4,          # only enemy heads this close (Manhattan) are considered
     "deny_margin": 2,          # an enemy counts as enclosed when its region is smaller than its visible length + this
@@ -371,10 +387,18 @@ def known_maps():
     return _KNOWN.get("MAPS", {})
 
 
-def known_field(name):
-    """The known map's food field (known_maps.FIELDS, one byte per cell), or None if this copy has none."""
+def known_field(name, rich=0):
+    """The known map's food field (known_maps.FIELDS, one byte per cell), or with `rich` its RICH field where it has
+    no FIELDS entry; None if this copy has neither."""
     known_maps()
-    return _KNOWN.get("FIELDS", {}).get(name)
+    f = _KNOWN.get("FIELDS", {}).get(name)
+    return _KNOWN.get("RICH", {}).get(name) if f is None and rich else f
+
+
+def known_values(name):
+    """The known map's spawn tiles by worth (known_maps.VALUES: ((weight, bitboard), ...)), or None."""
+    known_maps()
+    return _KNOWN.get("VALUES", {}).get(name)
 
 
 class Brain:
@@ -422,6 +446,7 @@ class Brain:
         self.oracle = None  # map_oracle: None while undecided, False for an unknown map, else the known map's name
         self.cands = None  # known maps still consistent with what this dragon has seen
         self.field = None  # food_pull: the known map's food field (bytes, one per cell)
+        self.vbands = None  # voro_food: the known map's ((weight, spawn-tile bitboard), ...)
         self.kinfo = None  # rally: (x, y, length, round) of the longest teammate heard of (maybe this dragon)
         self.king_msg = None  # rally: this turn's SONAR_KING payload
         self.is_king = False  # rally: this dragon claimed the king's place this turn (see guard_len)
@@ -653,7 +678,9 @@ class Brain:
         self.okv = self.full ^ (kv | pv)
         self.spawns |= spawns
         if self.p["food_pull"]:
-            self.field = known_field(name)
+            self.field = known_field(name, self.p["food_rich"])
+        if self.p["voro_food"]:
+            self.vbands = known_values(name)
         if self.p["oracle_seen"]:
             self.seen = self.full
         self.link_dst, self.lmap, self.lsrc = {}, {}, 0  # pairs learned so far are among these
@@ -877,6 +904,11 @@ class Brain:
 
     def territory(self, mine0, foes, free, radius):
         """Cells I reach strictly first minus cells the enemy heads reach strictly first (simultaneous dilation)."""
+        m, e = self.regions(mine0, foes, free, radius)
+        return m.bit_count() - e.bit_count()
+
+    def regions(self, mine0, foes, free, radius):
+        """(cells I reach strictly first, cells the enemy heads reach strictly first), dilating together."""
         free = free | mine0 | foes
         m, e = mine0, foes
         step = self._step
@@ -889,7 +921,7 @@ class Brain:
             if m2 == m and e2 == e:
                 break
             m, e = m2, e2
-        return m.bit_count() - e.bit_count()
+        return m, e
 
     def safe_moves(self, ex, ey, occ, extra):
         """How many of an enemy head's moves would not kill a dragon that only looks at its four neighbours."""
@@ -1256,16 +1288,20 @@ class Brain:
                 threat |= step(reach, self.full) & ~(near | (1 << hc))
 
         foe_heads = 0  # bitboard of enemy heads close enough to contest territory
-        if p["voro"] > 0:
+        vb = self.vbands if p["voro_food"] else None
+        if p["voro"] > 0 or vb:
             for hc, (enemy, pid) in heads.items():
                 if enemy:
                     ex, ey = hc % w_, hc // w_
                     if min((ex - hx) % w_, (hx - ex) % w_) + min((ey - hy) % h_, (hy - ey) % h_) <= p["voro_radius"]:
                         foe_heads |= 1 << hc
 
-        fld = self.field if lay is None and not pm else None  # food_pull: only with no pearl in view
+        fld = self.field if lay is None and not pm else None  # food_pull: only with no pearl in view ...
         if fld is not None:
             fpull, fhere = p["food_pull"] / 8, fld[hidx]
+        elif self.field is not None and p["food_seen"]:  # ... or scaled by food_seen
+            fld = self.field
+            fpull, fhere = p["food_pull"] * p["food_seen"] / 8, fld[hidx]
         def tdist(ax, ay, bx, by):
             return min((ax - bx) % w_, (bx - ax) % w_) + min((ay - by) % h_, (by - ay) % h_)
 
@@ -1347,7 +1383,10 @@ class Brain:
                     if short > base_short:
                         s += p["deny"] * (short - base_short) / need_e
             if foe_heads and not self.over():
-                s += p["voro"] * self.territory(1 << tidx, foe_heads, free, p["voro_radius"])
+                mine, theirs = self.regions(1 << tidx, foe_heads, free, p["voro_radius"])
+                s += p["voro"] * (mine.bit_count() - theirs.bit_count())
+                if vb:
+                    s += p["voro_food"] * sum(w * ((mine & b).bit_count() - (theirs & b).bit_count()) for w, b in vb)
             for ex, ey, before in sq:
                 after = self.safe_moves(ex, ey, occ, tidx)
                 if after < before:  # fewer exits (0 = boxed in: it dies next turn)
