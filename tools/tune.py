@@ -360,7 +360,7 @@ def fitness(per_opp, vs):
 
 RUN_DEFAULTS = {"generations": 20, "pop": 16, "maps": 10, "max_side": 32, "seed": 1000, "sigma": 0.15,
                 "vs": "defaults:2,old:2", "params": "", "start": "", "no_bundled": False, "ladder": 0,
-                "seeds": 0, "base": "", "checkpoint": 0, "hours": 0}
+                "seeds": 0, "base": "", "checkpoint": 0, "hours": 0, "pool": ""}
 
 
 def run(args):
@@ -385,7 +385,8 @@ def run(args):
         es.load(saved["state"])
         history = saved["history"]
     anchors = bundled(args.max_side) if not args.no_bundled else []
-    n_ladder = (args.ladder + args.seeds) * len(ladder_maps.POOL)
+    pool = args.pool.split(",") if args.pool else list(ladder_maps.POOL)  # --pool: tune for these maps alone
+    n_ladder = (args.ladder + args.seeds) * len(pool)
     print(f"tuning {len(names)} parameters, population {args.pop}, {args.maps} generated + {len(anchors)} bundled + "
           f"{n_ladder} ladder maps ({'engine seeds' if args.seeds else 'variants'}) x 2 sides x {len(vs)} opponents = "
           f"{(args.maps + len(anchors) + n_ladder) * 2 * len(vs)} games per candidate", flush=True)
@@ -401,7 +402,7 @@ def run(args):
             maps += ladder_maps.train_specs(args.ladder, g) if args.ladder else []  # fresh variants, never held-out ones
             # the maps as played with fresh engine seeds; ship decisions use 9,000,000 up (tools/bench1x.py)
             maps += [SeededMap(("ladder", n, 0), args.seed + g * args.seeds + i)
-                     for n in ladder_maps.POOL for i in range(args.seeds)]
+                     for n in pool for i in range(args.seeds)]
             points = es.ask(random.Random(f"tune/{args.name}/{g}"))
             mean_params = decode(es.m, names)  # the last candidate is the mean this generation started from
             per = play_all(lg, [{**base, **decode(p, names)} for p in points] + [{**base, **mean_params}], maps, vs)
@@ -499,6 +500,8 @@ def main():
                    help="every N generations also keep <name>_gen<N>.json, which later generations do not overwrite")
     r.add_argument("--hours", type=float, default=None,
                    help="start no new generation after this many hours of this session (0 = no limit)")
+    r.add_argument("--pool", default=None, help="comma list of ladder maps (tools/ladder_maps.py POOL names) that "
+                                                "--seeds plays; default all ten (for per-map tuning)")
     r.add_argument("--resume", action="store_true")
     r.add_argument("--workers", type=int, default=None, help="always auto-detected when omitted, even on --resume")
     a = sub.add_parser("average", help="average the last few generation means of a run into NAME_avgK.json")

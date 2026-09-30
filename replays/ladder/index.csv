@@ -1,4 +1,44 @@
 match,at,map,seat,opponent,opponent_elo,result,ranked
+661062,2026-09-30T03:49:01.176Z,Slithery Fight,A,Bhole Chature,1660,win,False
+660862,2026-09-30T03:48:03.117Z,Slithery Fight,A,Sponge(Albert and Bob),1979,loss,False
+661055,2026-09-30T03:48:02.191Z,Autarky,A,Bhole Chature,1660,loss,False
+661061,2026-09-30T03:47:56.502Z,Schooltime,A,Bhole Chature,1660,win,False
+661064,2026-09-30T03:47:50.937Z,Trophy,A,Bhole Chature,1660,loss,False
+661060,2026-09-30T03:47:32.171Z,Queen Of Spades,A,Bhole Chature,1660,win,False
+661059,2026-09-30T03:47:31.970Z,Prisoners Dilemma,A,Bhole Chature,1660,loss,False
+661063,2026-09-30T03:47:29.499Z,Trauma,A,Bhole Chature,1660,loss,False
+661056,2026-09-30T03:47:28.517Z,Default,A,Bhole Chature,1660,loss,False
+661058,2026-09-30T03:47:28.082Z,Portals,A,Bhole Chature,1660,win,False
+661057,2026-09-30T03:47:26.001Z,Devil,A,Bhole Chature,1660,loss,False
+660852,2026-09-30T03:46:49.706Z,Slithery Fight,A,Wapowpow,1648,loss,False
+660882,2026-09-30T03:46:22.774Z,Slithery Fight,A,胆子真是肥嘟嘟的,1649,loss,False
+660881,2026-09-30T03:46:12.232Z,Schooltime,A,胆子真是肥嘟嘟的,1649,win,False
+660846,2026-09-30T03:46:05.007Z,Default,A,Wapowpow,1648,loss,False
+660851,2026-09-30T03:46:04.628Z,Schooltime,A,Wapowpow,1648,win,False
+660858,2026-09-30T03:46:03.005Z,Portals,A,Sponge(Albert and Bob),1979,loss,False
+660877,2026-09-30T03:46:00.563Z,Devil,A,胆子真是肥嘟嘟的,1649,win,False
+660863,2026-09-30T03:45:59.394Z,Trauma,A,Sponge(Albert and Bob),1979,loss,False
+660875,2026-09-30T03:45:58.102Z,Autarky,A,胆子真是肥嘟嘟的,1649,loss,False
+660855,2026-09-30T03:45:57.701Z,Autarky,A,Sponge(Albert and Bob),1979,loss,False
+660876,2026-09-30T03:45:55.654Z,Default,A,胆子真是肥嘟嘟的,1649,win,False
+660861,2026-09-30T03:45:52.808Z,Schooltime,A,Sponge(Albert and Bob),1979,loss,False
+660880,2026-09-30T03:45:48.422Z,Queen Of Spades,A,胆子真是肥嘟嘟的,1649,win,False
+660878,2026-09-30T03:45:48.251Z,Portals,A,胆子真是肥嘟嘟的,1649,loss,False
+660879,2026-09-30T03:45:46.400Z,Prisoners Dilemma,A,胆子真是肥嘟嘟的,1649,win,False
+660884,2026-09-30T03:45:43.696Z,Trophy,A,胆子真是肥嘟嘟的,1649,win,False
+660845,2026-09-30T03:45:43.637Z,Autarky,A,Wapowpow,1648,loss,False
+660883,2026-09-30T03:45:40.435Z,Trauma,A,胆子真是肥嘟嘟的,1649,loss,False
+660848,2026-09-30T03:45:37.902Z,Portals,A,Wapowpow,1648,win,False
+660853,2026-09-30T03:45:35.930Z,Trauma,A,Wapowpow,1648,loss,False
+660854,2026-09-30T03:45:35.044Z,Trophy,A,Wapowpow,1648,loss,False
+660847,2026-09-30T03:45:34.469Z,Devil,A,Wapowpow,1648,win,False
+660856,2026-09-30T03:45:34.400Z,Default,A,Sponge(Albert and Bob),1979,loss,False
+660860,2026-09-30T03:45:30.394Z,Queen Of Spades,A,Sponge(Albert and Bob),1979,loss,False
+660864,2026-09-30T03:45:27.235Z,Trophy,A,Sponge(Albert and Bob),1979,loss,False
+660849,2026-09-30T03:45:21.745Z,Prisoners Dilemma,A,Wapowpow,1648,win,False
+660859,2026-09-30T03:45:19.598Z,Prisoners Dilemma,A,Sponge(Albert and Bob),1979,loss,False
+660857,2026-09-30T03:45:17.962Z,Devil,A,Sponge(Albert and Bob),1979,loss,False
+660850,2026-09-30T03:45:14.410Z,Queen Of Spades,A,Wapowpow,1648,loss,False
 605459,2026-09-29T15:18:50.127Z,Autarky,B,Lorem Ipsum,1662,win,True
 604340,2026-09-29T14:43:27.055Z,Slithery Fight,B,Quantify,1583,loss,True
 604342,2026-09-29T14:42:52.804Z,Trauma,B,Quantify,1583,win,True

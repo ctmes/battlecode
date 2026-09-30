@@ -453,6 +453,25 @@ def test_hunt_closes_on_a_long_enemy_head():
     print("ok: hunt sends a short dragon at a long enemy head, only when enabled")
 
 
+def test_map_params_apply_once_the_map_is_recognised():
+    import brain as B
+    fake = ("fakemap", 0, 0, 0, 0, (), 0)  # no kelp, no portals: agrees with a Brain that has learned none
+    B.MAP_PARAMS["fakemap"] = {"trap": 7.0}
+    try:
+        b = Brain(1, b"A", W, H, 64, {"trap": 1.0})
+        b.cands = [fake]
+        b.recognise(0, 0)
+        assert b.oracle == "fakemap" and b.p["trap"] == 7.0, b.p["trap"]
+        off = Brain(1, b"A", W, H, 64, {"trap": 1.0, "map_params": 0})
+        off.cands = [fake]
+        off.recognise(0, 0)
+        assert off.oracle == "fakemap" and off.p["trap"] == 1.0
+        assert B.DEFAULTS["trap"] != 7.0  # the shared DEFAULTS are never written
+    finally:
+        del B.MAP_PARAMS["fakemap"]
+    print("ok: MAP_PARAMS layer a map's own settings over the rest once the oracle recognises it")
+
+
 if __name__ == "__main__":
     test_sprint_paths_follow_the_engine_step_by_step()
     test_sprint_ram_takes_an_enemy_head_two_steps_away()
@@ -474,3 +493,4 @@ if __name__ == "__main__":
     test_escort_holds_a_ring_round_the_king_and_closes_on_enemies_near_it()
     test_feed_ahead_dies_only_in_front_of_the_king()
     test_hunt_closes_on_a_long_enemy_head()
+    test_map_params_apply_once_the_map_is_recognised()

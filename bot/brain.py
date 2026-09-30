@@ -112,6 +112,9 @@ DEFAULTS = {
     # ram / sprint_ram then take the trade. 0 = off.
     "hunt": 0.0,
     "hunt_len": 10,
+    # Per-map settings (30 Sep): once the map oracle recognises a ladder map, MAP_PARAMS[its name] (below) is layered
+    # over these settings for the rest of the game. 0 = ignore MAP_PARAMS.
+    "map_params": 1,
     # Sprinting: MOVE with 2+ direction letters (e.g. MOVE NNE) takes that many steps in one turn; every step after
     # the first costs a tail segment unless it eats a pearl, and a dragon of length 2 cannot pay for one (it dies
     # with no valid action). sprint_paths() applies each candidate path step by step exactly as the engine does
@@ -347,6 +350,10 @@ DEFAULTS = {
     "budget_ns": 60_000_000,   # self-metering: skip optional work past this (points on the judge)
 }
 
+
+# Known map name -> settings tuned for that map alone (DEFAULTS "map_params"); empty here, filled by a snapshot's
+# MAP_PARAMS.update(...) from per-map tuning runs (tools/tune.py --pool).
+MAP_PARAMS = {}
 
 _KNOWN = {}
 
@@ -638,6 +645,9 @@ class Brain:
             return  # several still fit: look again next turn
         name, kh, kv, ph, pv, pairs, spawns = self.cands[0]
         self.oracle = name
+        over = MAP_PARAMS.get(name) if self.p["map_params"] else None
+        if over:  # this map's own tuned settings, from here on (a new dict: DEFAULTS is shared)
+            self.p = {**self.p, **over}
         self.kh, self.kv, self.ph, self.pv = kh, kv, ph, pv
         self.okh = self.full ^ (kh | ph)
         self.okv = self.full ^ (kv | pv)
@@ -908,6 +918,7 @@ class Brain:
         self.seen |= vis
         if self.oracle is None and p["map_oracle"] and p["portals"]:
             self.recognise(x0, y0)
+            p = self.p  # the map's own settings (MAP_PARAMS) apply from the turn it is recognised
         if p["dive_len"] and p["dive_scope"] == 2:  # before any early return, so no turn breaks the two-turn test
             cds, c1 = t.cds, 0
             for i in range(49):
